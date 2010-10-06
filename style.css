@@ -1,0 +1,133 @@
+div#pluginrepo__plugin {
+    background-color: #fff;
+    border: 1px solid __border__;
+    padding: 0.7em 1em 0.2em 1em;
+    width: 500px;
+    font-size: 90%;
+}
+
+div#pluginrepo__plugin div {
+    background: #fff url(dwplugin.png) 5px 5px no-repeat;
+    height: auto !important;
+    height: 80px;
+    min-height: 80px;
+    padding-left: 80px;
+    margin-bottom: 1em;
+    font-size: 105%;
+}
+
+
+div#pluginrepo__plugin p.security {
+    background-color: #fcc;
+    color: #000;
+    border: 1px solid #faa;
+    padding: 0.3em;
+}
+
+div#pluginrepo__repo table {
+    width: 100%;
+    margin-top: 2em;
+}
+
+div#pluginrepo__repo table th a:link,
+div#pluginrepo__repo table th a:active,
+div#pluginrepo__repo table th a:hover,
+div#pluginrepo__repo table th a:visited {
+    color: #000;
+}
+
+
+div#pluginrepo__repo div.prog-border {
+    background: #FFFFFF none repeat scroll 0%;
+    border: 1px solid silver;
+    height: 5px;
+    margin: 0pt;
+    padding: 1px;
+    width: 65px;
+}
+
+div#pluginrepo__repo .prog-bar {
+    background: #8CACBB none repeat scroll 0%;
+    height: 100%;
+    margin: 0pt;
+    padding: 0pt;
+}
+
+
+div#pluginrepo__repo div.repo_info {
+    width: 20%;
+    float: left;
+}
+
+div#pluginrepo__repo div.repo_cloud {
+    width: 75%;
+    float: right;
+    overflow: auto;
+    height: inherit;
+    padding-right: 0.5em;
+    margin: 0 auto;
+}
+
+div#pluginrepo__repo div.repo_cloud a.cl0 { font-size: 0.7em }
+div#pluginrepo__repo div.repo_cloud a.cl1 { font-size: 0.9em }
+div#pluginrepo__repo div.repo_cloud a.cl2 { font-size: 1em }
+div#pluginrepo__repo div.repo_cloud a.cl3 { font-size: 1.3em }
+div#pluginrepo__repo div.repo_cloud a.cl4 { font-size: 1.6em }
+div#pluginrepo__repo div.repo_cloud a.cl5 { font-size: 1.9em }
+
+
+ul#pluginrepo__foldout {
+    margin: 0;
+    list-style-type: none;
+    margin-bottom: 4em;
+}
+
+ul#pluginrepo__foldout li {
+    float: left;
+}
+
+ul#pluginrepo__foldout a.bugs {
+    background: transparent url(bugs.png) top left no-repeat;
+}
+
+ul#pluginrepo__foldout a.repo {
+    background: transparent url(repo.png) top left no-repeat;
+}
+
+ul#pluginrepo__foldout a.donate {
+    background: transparent url(donate.png) top left no-repeat;
+}
+
+ul#pluginrepo__foldout a.download {
+    background: transparent url(download.png) top left no-repeat;
+}
+
+ul#pluginrepo__foldout a {
+    display: block;
+    width: 0px;
+    height: 30px;
+    overflow: hidden;
+    white-space: nowrap;
+    padding-left: 30px;
+    line-height: 32px;
+    font-size: 17px;
+    text-decoration: none;
+    border-left: 1px solid __border__;
+    border-bottom: 1px solid __border__;
+    border-right: 1px solid __border__;
+    margin: 0 3px 0px 3px;
+
+    -moz-border-radius-bottomleft: 3px;
+    -webkit-border-bottom-left-radius: 3px;
+    -moz-border-radius-bottomright: 3px;
+    -webkit-border-bottom-right-radius: 3px;
+
+    text-indent: -9000px;
+}
+
+ul#pluginrepo__foldout a:hover,
+ul#pluginrepo__foldout a:active {
+    width: 200px;
+    text-indent: 0px;
+}
+
