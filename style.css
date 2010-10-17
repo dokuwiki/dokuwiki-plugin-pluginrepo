@@ -7,7 +7,7 @@ div#pluginrepo__plugin {
 }
 
 div#pluginrepo__plugin div {
-    background: #fff url(dwplugin.png) 5px 5px no-repeat;
+    background: #fff url(images/dwplugin.png) 5px 5px no-repeat;
     height: auto !important;
     height: 80px;
     min-height: 80px;
@@ -112,19 +112,19 @@ ul#pluginrepo__foldout li {
 }
 
 ul#pluginrepo__foldout a.bugs {
-    background: transparent url(bugs.png) top left no-repeat;
+    background: transparent url(images/bugs.png) top left no-repeat;
 }
 
 ul#pluginrepo__foldout a.repo {
-    background: transparent url(repo.png) top left no-repeat;
+    background: transparent url(images/repo.png) top left no-repeat;
 }
 
 ul#pluginrepo__foldout a.donate {
-    background: transparent url(donate.png) top left no-repeat;
+    background: transparent url(images/donate.png) top left no-repeat;
 }
 
 ul#pluginrepo__foldout a.download {
-    background: transparent url(download.png) top left no-repeat;
+    background: transparent url(images/download.png) top left no-repeat;
 }
 
 ul#pluginrepo__foldout a {
