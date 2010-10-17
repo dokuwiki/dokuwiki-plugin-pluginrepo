@@ -24,6 +24,15 @@ div#pluginrepo__plugin p.security {
     padding: 0.3em;
 }
 
+div#pluginrepo__authorpush {
+    background-color: #fff;
+    border: 1px solid __border__;
+    padding: 0.7em 1em 0.2em 1em;
+    width: 200px;
+    float: right;
+    font-size: 90%;
+}
+
 div#pluginrepo__repo table {
     width: 100%;
     margin-top: 2em;
@@ -53,10 +62,26 @@ div#pluginrepo__repo .prog-bar {
     padding: 0pt;
 }
 
+div#pluginrepo__repo div.repo_infos {
+  /*  border: 2px solid red;*/
+    width: 57%;
+    float: left;
+}
 
 div#pluginrepo__repo div.repo_info {
-    width: 20%;
+  /*  border: 2px solid blue;*/
+}
+
+div#pluginrepo__repo div.repo_info2 {
+ /*   border: 2px solid green;*/
+    width: 48%;
     float: left;
+}
+
+div#pluginrepo__repo div.repo_info3 {
+  /*  border: 2px solid black;*/
+    width: 48%;
+    float: right;
 }
 
 div#pluginrepo__repo div.repo_cloud {
@@ -127,6 +152,11 @@ ul#pluginrepo__foldout a {
 
 ul#pluginrepo__foldout a:hover,
 ul#pluginrepo__foldout a:active {
+    width: 200px;
+    text-indent: 0px;
+}
+
+ul#pluginrepo__foldout a.download {
     width: 200px;
     text-indent: 0px;
 }

@@ -1,0 +1,7 @@
+base   pluginrepo
+author Andreas Gohr/Håkan Sandell
+email  sandell.hakan@gmail.com
+date   2010-10-14
+name   Repository plugin
+desc   Helps organizing the plugin repository
+url    http://github.com/HåkanS/dokuwiki-plugin-cumulus/zipball/master
