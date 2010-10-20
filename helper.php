@@ -90,6 +90,8 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      * Create database connection and return PDO object
      */
     function _getPluginsDB() {
+        global $conf;
+
         $db = null;
         try {
             // remember to use dblib:host=your_hostname;dbname=your_db;charset=UTF-8 for MSSQL ???
@@ -110,22 +112,25 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         } catch(PDOException $e) {
             $this->_initPluginDB($db);
         }
-        // TODO: koppla till conf(debug) eller alltid silent
-        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
+
+        if ($conf['allowdebug']) {
+            $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
+        } else {
+            $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
+        }
         return $db;
     }
 
     /**
      * Return array of plugins with some metadata
+     * available filters: 'plugins','plugintype','plugintag','pluginsort','pluginissues'
      */
     function getPlugins($filter=null) {
         $db = $this->_getPluginsDB();
         if (!$db) return;
 
-        // TODO: don't filter security issues for plugin manager
-        // TODO: add complex filters like field = null, name like a% Needed for gardening
+        // return named plugins OR with certain tag/type
         $plugins = $filter['plugins'];
-
         if ($plugins) {
             if (!is_array($plugins)) {
                 $plugins = array($plugins);
@@ -138,13 +143,19 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
 
         $sort = strtolower(trim($filter['pluginsort']));
         $sortsql = $this->_getPluginsSortSql($sort);
+        
+        if ($filter['pluginissues']) {
+            $hideunsecure = "1";
+        } else {
+            $hideunsecure = "A.securityissue = ''";
+        }
 
         // TODO: remove A.
         // TODO: why funny char around `key`
         if ($this->types[$type]) {
             $stmt = $db->prepare("SELECT A.*, COUNT(C.value) as cnt
                                     FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value and C.key = 'plugin'
-                                   WHERE A.securityissue = ''
+                                   WHERE $hideunsecure
                                      AND (A.type & :type)
                                    GROUP BY A.plugin
                                 $sortsql");
@@ -153,7 +164,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         } elseif($tag) {
             $stmt = $db->prepare("SELECT A.*, COUNT(C.value) as cnt
                                     FROM plugin_tags B, plugins A LEFT JOIN popularity C ON A.plugin = C.value and C.key = 'plugin'
-                                   WHERE A.securityissue = ''
+                                   WHERE $hideunsecure
                                      AND A.plugin = B.plugin
                                      AND B.tag = :tag
                                    GROUP BY A.plugin
@@ -163,7 +174,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         } else {
             $stmt = $db->prepare("SELECT A.*, COUNT(C.value) as cnt
                                     FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value and C.key = 'plugin'
-                                   WHERE A.securityissue = '' 
+                                   WHERE $hideunsecure 
                               $pluginsql
                                    GROUP BY A.plugin
                                 $sortsql");
@@ -246,21 +257,57 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     /**
      * Return array of tags and their frequency in the repository
      */
-    function getTags() {
+    function getTags($minlimit = 0) {
         $db = $this->_getPluginsDB();
         if (!$db) return;
 
-        $sql = "SELECT A.tag, COUNT(A.tag) as cnt
-                  FROM plugin_tags as A, plugins as B
-                 WHERE A.plugin = B.plugin
-                   AND B.securityissue = ''
-              GROUP BY tag";
-        $stmt = $db->query($sql);
+        $stmt = $db->prepare("SELECT A.tag, COUNT(A.tag) as cnt
+                                FROM plugin_tags as A, plugins as B
+                               WHERE A.plugin = B.plugin
+                                 AND B.securityissue = ''
+                            GROUP BY tag
+                              HAVING cnt >= ?
+                            ORDER BY cnt DESC");
+        $stmt->execute(array($minlimit));
         $tags = $stmt->fetchAll(PDO::FETCH_ASSOC);        
 
         // TODO: handle template & plugin, maybe by args
 
         return $tags;
+    }
+
+    function getMaxPopularity() {
+        $db = $this->_getPluginsDB();
+        if (!$db) return;
+
+        $sql = "SELECT COUNT(uid) as cnt
+                  FROM popularity
+                 WHERE key = 'plugin'
+              GROUP BY value
+              ORDER BY cnt DESC
+                 LIMIT 1";
+        $stmt = $db->query($sql);
+        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $popmax = $res[0]['cnt'];
+        if(!$popmax) $popmax = 1;
+        return $popmax;
+
+        // TODO: return $allcnt
+
+        // foreach($this->bundled as $bnd){
+            // $sql .= " AND `value` != '$bnd'";
+        // }
+
+        // get maximum pop
+        // $sql = "SELECT COUNT(DISTINCT uid) as cnt
+                  // FROM popularity
+                 // WHERE `key` = 'plugin'
+                   // AND `value` = 'popularity'";
+        // $res = mysql_query($sql,$this->db);
+        // $row = mysql_fetch_assoc($res);
+        // $allcnt = $row['cnt'];
+        // if(!$allcnt) $allcnt = 1;
+        // mysql_free_result($res);
     }
 
     /**

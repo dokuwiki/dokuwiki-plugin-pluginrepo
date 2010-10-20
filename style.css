@@ -24,7 +24,7 @@ div#pluginrepo__plugin p.security {
     padding: 0.3em;
 }
 
-div#pluginrepo__authorpush {
+div#pluginrepo__pluginauthorpush {
     background-color: #fff;
     border: 1px solid __border__;
     padding: 0.7em 1em 0.2em 1em;
@@ -33,20 +33,65 @@ div#pluginrepo__authorpush {
     font-size: 90%;
 }
 
-div#pluginrepo__repo table {
+div#pluginrepo__table div.repo_alphabet {
+ /*   border: 2px solid green;*/
+    width: 70%;
+    float: left;
+}
+div#pluginrepo__table div.repo_resetfilter {
+ /*   border: 2px solid blue;*/
+    float: right;
+}
+
+div#pluginrepo__table table {
     width: 100%;
     margin-top: 2em;
 }
 
-div#pluginrepo__repo table th a:link,
-div#pluginrepo__repo table th a:active,
-div#pluginrepo__repo table th a:hover,
-div#pluginrepo__repo table th a:visited {
+div#pluginrepo__table table th a:link,
+div#pluginrepo__table table th a:active,
+div#pluginrepo__table table th a:hover,
+div#pluginrepo__table table th a:visited {
     color: #000;
 }
 
+div#pluginrepo__table div.repo_authorsort {
+    float: right;
+}
 
-div#pluginrepo__repo div.prog-border {
+div#pluginrepo__table div.repo_plugintitle {
+    padding-bottom: 0.2em;
+    float: left;
+}
+
+div#pluginrepo__table div.repo_plugintitle a{
+    font-weight: bold;
+}
+
+div#pluginrepo__table div.repo_download {
+    float: right;
+}
+
+div#pluginrepo__table div.repo_download a{
+    background: transparent url(images/download.gif) 0px 2px no-repeat;
+    padding: 0px 0px 0px 12px;
+    font-weight: bold;
+}
+
+
+div#pluginrepo__table div.repo_provides {
+    padding-top: 0.5em;
+    font-size: 70%;
+    float: left;
+}
+
+div#pluginrepo__table div.repo_mail {
+    padding-top: 0.5em;
+    font-size: 70%;
+    float: right;
+}
+
+div#pluginrepo__table div.prog-border {
     background: #FFFFFF none repeat scroll 0%;
     border: 1px solid silver;
     height: 5px;
@@ -55,7 +100,7 @@ div#pluginrepo__repo div.prog-border {
     width: 65px;
 }
 
-div#pluginrepo__repo .prog-bar {
+div#pluginrepo__table .prog-bar {
     background: #8CACBB none repeat scroll 0%;
     height: 100%;
     margin: 0pt;
@@ -69,17 +114,17 @@ div#pluginrepo__repo div.repo_infos {
 }
 
 div#pluginrepo__repo div.repo_info {
-  /*  border: 2px solid blue;*/
+    border: 2px solid blue;
 }
 
 div#pluginrepo__repo div.repo_info2 {
- /*   border: 2px solid green;*/
+    border: 2px solid green;
     width: 48%;
     float: left;
 }
 
 div#pluginrepo__repo div.repo_info3 {
-  /*  border: 2px solid black;*/
+    border: 2px solid black;
     width: 48%;
     float: right;
 }

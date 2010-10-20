@@ -16,7 +16,9 @@ $lang['conflicts_with']      = 'Conflicts with';
 $lang['requires']            = 'Requires';
 $lang['similar_to']          = 'Similar to';
 $lang['tagged_with']         = 'Tagged with';
-// TODO: add security translation string
+$lang['securityissue']       = 'The following security issue was reported for this plugin:';
+$lang['securityrecommendation'] = 'It is not recommended to use this plugin until this issue was fixed. Plugin authors should read the %s';
+$lang['securitylink']        = 'plugin security guidelines';
 $lang['downloadurl']         = 'Download the Plugin';
 $lang['bugtracker']          = 'Bugs / Feature Wishes';
 $lang['sourcerepo']          = 'Source Repository';

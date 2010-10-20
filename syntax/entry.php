@@ -54,27 +54,8 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
     /**
      * Handle the match - parse the data
      */
-     
-    // TODO: parse entry block as DATA plugin
     function handle($match, $state, $pos, &$handler){
         return $this->hlp->parseData($match);
-
-        // get lines
-        $lines = explode("\n",$match);
-        array_pop($lines);
-        array_shift($lines);
-
-        // parse info
-        $data = array();
-        foreach ( $lines as $line ) {
-            //ignore comments
-            $line = preg_replace('/(?<!&)#.*$/','',$line);
-            $line = trim($line);
-            if(empty($line)) continue;
-            $line = preg_split('/\s*:\s*/',$line,2);
-            $data[strtolower($line[0])] = $line[1];
-        }
-        return $data;
     }
 
     /**
@@ -101,10 +82,13 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         }
     }
 
+    /**
+     * Override getLang to be able to select language by namespace
+     */
     function getLang($langcode,$id) {
         return $this->hlp->getLang($langcode,$id);
     }
-    
+
     /**
      * Output the data in a table
      */
@@ -120,7 +104,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         // TODO: better CSS for same author
         // TODO: different for 3 and more, limit when 50
         if ($rel['sameauthor']) {
-            $R->doc .= '<div id="pluginrepo__authorpush">';
+            $R->doc .= '<div id="pluginrepo__pluginauthorpush">';
             $R->doc .= $this->getLang($lang,'by_same_author');
             $R->doc .= '<ul><li>';
             $R->doc .= $this->hlp->listplugins($rel['sameauthor'],$R,'</li><li>');
@@ -150,6 +134,11 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             $R->doc .= '<span class="compatible">';
             $R->doc .= $this->getLang($lang,'compatible_with');
             $R->doc .= ' <em>DokuWiki '.hsc($data['compatible']).'</em>.</span>';
+            
+            $R->doc .= '<table class="inline">';
+            $R->doc .= '<tr><th>2009-02-14</th><th>2009-12-25<br/>"Lemming"</th><th>2009-02-25<br/>"Anteater"</th></th>';
+            $R->doc .= '<tr><td>y</td><td>y</td><td></td></tr>';
+            $R->doc .= '</table>';
         }else{
             $R->doc .= '<span class="compatible">';
             $R->doc .= $this->getLang($lang,'no_compatibility');
@@ -192,19 +181,19 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         if($data['tags']){
             $R->doc .= '<span class="tags">';
             $R->doc .= $this->getLang($lang,'tagged_with');
-            $R->doc .= '<em>';
+            $R->doc .= ' <em>';
             $R->doc .= $this->hlp->listtags($data['tags']);
             $R->doc .= '</em>.</span><br />';
         }
         $R->doc .= '</p>';
 
-// TODO: new security function w. warning and page links ?
+// TODO: new security warning function ?
         if($data['securityissue']){
             $R->doc .= '<p class="security">';
-            $R->doc .= '<b>The following security issue was reported for this plugin:</b><br /><br />';
+            $R->doc .= '<b>'.$this->getLang($lang,'securityissue').'</b><br /><br />';
             $R->doc .= '<i>'.hsc($data['securityissue']).'</i><br /><br />';
-            $R->doc .= 'It is not recommended to use this plugin until this issue was fixed. Plugin authors should read the ';
-            $R->doc .= $R->internallink('devel:security','plugin security guidelines',NULL,true);
+            $securitylink = $R->internallink('devel:security',$this->getLang($lang,'securitylink'),NULL,true);
+            $R->doc .= sprintf($this->getLang($lang,'securityrecommendation'),$securitylink);
             $R->doc .= '.</p>';
         }
         $R->doc .= '</div>';
@@ -317,6 +306,15 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         foreach($deps as $dep){
             $stmt = $db->prepare('INSERT OR IGNORE INTO plugin_similar (plugin, other) VALUES (?,LOWER(?))');
             $stmt->execute(array($id,$dep));
+        }
+
+        // TODO: remove debug
+        $stmt = $db->prepare('DELETE FROM popularity WHERE value = ?');
+        $stmt->execute(array($id));
+        $users = rand(0,20);
+        for ($i = 0; $i < $users; $i++) {
+            $stmt = $db->prepare('INSERT OR IGNORE INTO popularity (uid, key, value) VALUES (?,?,?)');
+            $stmt->execute(array("U".$i,'plugin',$id));
         }
     }
 }
