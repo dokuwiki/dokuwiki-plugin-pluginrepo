@@ -78,7 +78,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
 
         // sanitize input
         $data['select'] = 'plugin '.$data['select'];
-        $fields = preg_split("/[\s,]+/",$data['select']);
+        $fields = preg_split("/[[;,\s]]+/",$data['select']);
         $fields = array_filter($fields);
         $fields = array_unique($fields);
         foreach ($fields as $field) {

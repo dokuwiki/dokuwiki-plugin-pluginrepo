@@ -309,7 +309,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         }
 
         // TODO: remove debug
-        $stmt = $db->prepare('DELETE FROM popularity WHERE value = ?');
+        $stmt = $db->prepare('DELETE FROM popularity WHERE popularity.value = ?');
         $stmt->execute(array($id));
         $users = rand(0,20);
         for ($i = 0; $i < $users; $i++) {

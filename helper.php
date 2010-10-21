@@ -151,7 +151,6 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         }
 
         // TODO: remove A.
-        // TODO: why funny char around `key`
         if ($this->types[$type]) {
             $stmt = $db->prepare("SELECT A.*, COUNT(C.value) as cnt
                                     FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value and C.key = 'plugin'
@@ -280,29 +279,36 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $db = $this->_getPluginsDB();
         if (!$db) return;
 
+        $bundled = preg_split('/[;,\s]/',$this->getConf('bundled'));
+        $bundled = array_filter($bundled);
+        $bundled = array_unique($bundled);
+        
         $sql = "SELECT COUNT(uid) as cnt
                   FROM popularity
-                 WHERE key = 'plugin'
-              GROUP BY value
-              ORDER BY cnt DESC
+                 WHERE popularity.key = 'plugin' ";
+
+        $sql .= str_repeat("AND popularity.value != ? ",count($bundled));
+
+        $sql .= "GROUP BY popularity.value
+                 ORDER BY cnt DESC
                  LIMIT 1";
-        $stmt = $db->query($sql);
+
+        $stmt = $db->prepare($sql); 
+        $stmt->execute($bundled);
         $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
         $popmax = $res[0]['cnt'];
         if(!$popmax) $popmax = 1;
+// TODO: bug with popularity
         return $popmax;
 
         // TODO: return $allcnt
 
-        // foreach($this->bundled as $bnd){
-            // $sql .= " AND `value` != '$bnd'";
-        // }
-
         // get maximum pop
         // $sql = "SELECT COUNT(DISTINCT uid) as cnt
                   // FROM popularity
-                 // WHERE `key` = 'plugin'
-                   // AND `value` = 'popularity'";
+                 // WHERE `popularity.key` = 'plugin'
+                   // AND `popularity.value` = 'popularity'";
         // $res = mysql_query($sql,$this->db);
         // $row = mysql_fetch_assoc($res);
         // $allcnt = $row['cnt'];

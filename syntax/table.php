@@ -293,7 +293,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         }
         $header .= ' ('.count($plugins).')';
 
-//        $R->header($header, 3, null);
+//TODO:        $R->header($header, 3, null);
         $R->section_open(3);
         $R->doc .= '<div id="pluginrepo__table">';
 
@@ -327,7 +327,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
      * TODO
      */
     function _newTable($plugins,$popmax,$R) {
-
+// TODO: adv. sorting with arrows
         $R->doc .= '<table class="inline">';
         $R->doc .= '<tr><th><a href="'.wl($this->getConf('main'),$linkopt.'pluginsort=p').'" title="Sort by name">Plugin</a>
                             <div class="repo_authorsort"><a href="'.wl($this->getConf('main'),$linkopt.'pluginsort=a').'" title="Sort by author">Author</a></div></th>
@@ -370,6 +370,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
             $R->doc .= '<td>';
             $R->doc .= hsc($row['A.lastupdate']);
+            $R->doc .= '<br/>cnt = '.hsc($row['cnt']); // TODO: remove debug
             $R->doc .= '</td>';
 
             // TODO: convert comp to something small
