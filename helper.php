@@ -17,7 +17,8 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                     2  => 'Admin',
                     4  => 'Action',
                     8  => 'Render',
-                    16 => 'Helper');
+                    16 => 'Helper',
+                    32 => 'Template');
 
     /**
      * Parse syntax data block, return keyed array of values
@@ -48,6 +49,14 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
             }else{
                 $data[$key] = trim($value);
             }
+        }
+        // sqlite plugin compability (formerly used for templates)
+        if ($data['lastupdate_dt']) $data['lastupdate'] = $data['lastupdate_dt'];
+        if ($data['template_tags']) $data['tags'] = $data['template_tags'];
+        if ($data['author_mail']) {
+            list($mail,$name) = preg_split('/\s+/',$data['author_mail'],2);
+            $data['author'] = $name;
+            $data['email'] = $mail;
         }
         return $data;
     }
@@ -123,7 +132,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
 
     /**
      * Return array of plugins with some metadata
-     * available filters: 'plugins','plugintype','plugintag','pluginsort','pluginissues'
+     * available filters: 'plugins','plugintype','plugintag','pluginsort','showissues','showtemplates'
      */
     function getPlugins($filter=null) {
         $db = $this->_getPluginsDB();
@@ -136,6 +145,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                 $plugins = array($plugins);
             }
             $pluginsql = substr("AND plugin IN (".str_repeat("?,",count($plugins)),0,-1).")";
+            $filter['pluginissues'] = 'show';
         } else {
             $type = (int)$filter['plugintype'];
             $tag  = strtolower(trim($filter['plugintag']));
@@ -144,17 +154,22 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $sort = strtolower(trim($filter['pluginsort']));
         $sortsql = $this->_getPluginsSortSql($sort);
         
-        if ($filter['pluginissues']) {
-            $hideunsecure = "1";
+        if ($filter['showissues'] == 'yes') {
+            $shown = "1";
         } else {
-            $hideunsecure = "A.securityissue = ''";
+            $shown = "A.securityissue = ''";
+        }
+        if ($filter['showtemplates'] != 'yes') {
+            $shown .= " AND A.type <> 32";
         }
 
         // TODO: remove A.
+        // TODO: not possible to filter on type AND tag (cloude doesn't work for templates)
+        // TODO: this code cant handle template popularity (key='conf_template')
         if ($this->types[$type]) {
             $stmt = $db->prepare("SELECT A.*, COUNT(C.value) as cnt
                                     FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value and C.key = 'plugin'
-                                   WHERE $hideunsecure
+                                   WHERE $shown
                                      AND (A.type & :type)
                                    GROUP BY A.plugin
                                 $sortsql");
@@ -163,7 +178,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         } elseif($tag) {
             $stmt = $db->prepare("SELECT A.*, COUNT(C.value) as cnt
                                     FROM plugin_tags B, plugins A LEFT JOIN popularity C ON A.plugin = C.value and C.key = 'plugin'
-                                   WHERE $hideunsecure
+                                   WHERE $shown
                                      AND A.plugin = B.plugin
                                      AND B.tag = :tag
                                    GROUP BY A.plugin
@@ -173,7 +188,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         } else {
             $stmt = $db->prepare("SELECT A.*, COUNT(C.value) as cnt
                                     FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value and C.key = 'plugin'
-                                   WHERE $hideunsecure 
+                                   WHERE $shown 
                               $pluginsql
                                    GROUP BY A.plugin
                                 $sortsql");

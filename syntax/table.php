@@ -242,7 +242,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
         ksort($tags);
         foreach($tags as $tag => $size){
-            $R->doc .= '<a href="'.wl($this->conf['main'],array('plugintag'=>$tag)).
+            $R->doc .= '<a href="'.wl($this->getConf('main'),array('plugintag'=>$tag)).
                        '" class="wikilink1 cl'.$size.'" '.
                        'title="List all plugins with this tag">'.hsc($tag).'</a> ';
         }
@@ -274,8 +274,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
      * TODO
      */
     function _showPluginTable($id, &$R, $data){
-
-        $plugins = $this->hlp->getPlugins($_REQUEST);
+        $plugins = $this->hlp->getPlugins(array_merge($_REQUEST,$data));
         $popmax = $this->hlp->getMaxPopularity();
         if(!$allcnt) $allcnt = 1;
 
@@ -327,7 +326,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
      * TODO
      */
     function _newTable($plugins,$popmax,$R) {
-// TODO: adv. sorting with arrows
+// TODO: adv. sorting with arrows '<span>&darr;</span> ''<span>&uarr;</span> ' $ckey = '^'.$ckey;
         $R->doc .= '<table class="inline">';
         $R->doc .= '<tr><th><a href="'.wl($this->getConf('main'),$linkopt.'pluginsort=p').'" title="Sort by name">Plugin</a>
                             <div class="repo_authorsort"><a href="'.wl($this->getConf('main'),$linkopt.'pluginsort=a').'" title="Sort by author">Author</a></div></th>
@@ -337,7 +336,11 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
                     </tr>';
 
         foreach($plugins as $row) {
-            $link = $R->internallink(':plugin:'.$row['A.plugin'], ucfirst($row['A.plugin']).' plugin',null,true);
+            if ($row['A.type'] == 32) {
+                $link = $R->internallink(':template:'.$row['A.plugin'], ucfirst($row['A.plugin']).' template',null,true);
+            } else {
+                $link = $R->internallink(':plugin:'.$row['A.plugin'], ucfirst($row['A.plugin']).' plugin',null,true);
+            }
             if(strpos($link,'class="wikilink2"')){
                 $this->_delete($row['A.plugin']);
                 continue;
@@ -372,6 +375,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
             $R->doc .= hsc($row['A.lastupdate']);
             $R->doc .= '<br/>cnt = '.hsc($row['cnt']); // TODO: remove debug
             $R->doc .= '</td>';
+// TODO: add template img
 
             // TODO: convert comp to something small
             $R->doc .= '<td>';

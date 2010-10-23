@@ -52,7 +52,11 @@ function getRepository($opt) {
         $feed .= "  <plugin>\n";
         $id = hsc($plugin['A.plugin']);
         $feed .= "    <id>$id</id>\n";
-        $feed .= "    <link><a href=\"".DOKU_URL."doku.php?id=plugin:$id\" title=\"plugin:$id\">$id</a></link>\n";
+        if ($plugin['A.type'] == 32) {
+            $feed .= "    <link><a href=\"".DOKU_URL."doku.php?id=template:$id\" title=\"template:$id\">$id</a></link>\n";
+        } else {
+            $feed .= "    <link><a href=\"".DOKU_URL."doku.php?id=plugin:$id\" title=\"plugin:$id\">$id</a></link>\n";
+        }
         $feed .= "    <name>".hsc($plugin['A.name'])."</name>\n";
         $feed .= "    <description>".hsc($plugin['A.description'])."</description>\n";
         $feed .= "    <type>";

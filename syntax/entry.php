@@ -49,13 +49,20 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
      */
     function connectTo($mode) {
         $this->Lexer->addSpecialPattern('----+ *plugin *-+\n.*?\n----+',$mode,'plugin_pluginrepo_entry');
+        $this->Lexer->addSpecialPattern('----+ *template *-+\n.*?\n----+',$mode,'plugin_pluginrepo_entry');
     }
 
     /**
      * Handle the match - parse the data
      */
     function handle($match, $state, $pos, &$handler){
-        return $this->hlp->parseData($match);
+        global $ID;
+
+        $data = $this->hlp->parseData($match);
+        if (getNS($ID) == 'template') {
+            $data['type'] = 'template';
+        }
+        return $data;
     }
 
     /**
@@ -99,8 +106,8 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $lang =(count($lang) == 2 ? $lang[0] : 'en');
 
         $rel = $this->hlp->getPluginRelations($id);
+        $type = $this->hlp->parsetype($data['type']);
 
-        // TODO: add startSectionEdit etc from DATA plugin
         // TODO: better CSS for same author
         // TODO: different for 3 and more, limit when 50
         if ($rel['sameauthor']) {
@@ -112,7 +119,17 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         }
 
         $R->doc .= '<div id="pluginrepo__plugin"><div>';
-        $R->doc .= '<p><strong>'.$id.' plugin</strong> by ';
+
+        if ($data['screenshot_img']) {
+// TODO: working img for plugin/template entry
+            $val = $data['screenshot_img'];
+            $title = 'screenshot: '.basename(str_replace(':','/',$val));
+//            $R->doc .= '<a href="'.ml($val).'" class="media" rel="lightbox"><img src="'.ml($val,"w=40").'" alt="'.hsc($title).'" title="'.hsc($title).'" width="40" /></a>';
+        }
+
+        $R->doc .= '<p><strong>'.$id.' ';
+        $R->doc .= ($type == 32 ? 'template':'plugin');
+        $R->doc .= '</strong> by ';
         $R->emaillink($data['email'],$data['author']);
         $R->doc .= '<br />'.hsc($data['description']).'</p>';
 
@@ -122,8 +139,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             $R->doc .= $this->getLang($lang,'last_updated_on');
             $R->doc .= ' <em>'.$data['lastupdate'].'</em>.</span> ';
         }
-        $type = $this->hlp->parsetype($data['type']);
-        if($type){
+        if($type && $type != 32){
             $R->doc .= '<span class="type">';
             $R->doc .= $this->getLang($lang,'provides');
             $R->doc .= ' <em>'.$this->hlp->listtype($type).'</em>.</span>';
