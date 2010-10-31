@@ -150,8 +150,9 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             $R->doc .= $this->getLang($lang,'provides');
             $R->doc .= ' <em>'.$this->hlp->listtype($type).'</em>.</span>';
         }
+        $R->doc .= '</p>';
 
-        $R->doc .= '<br />';
+        $R->doc .= '<p>';
         if (!$data['compatible']) {
             $R->doc .= '<span class="compatible">';
             $R->doc .= $this->getLang($lang,'no_compatibility');
@@ -170,6 +171,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
                 $rowtd = "<td>".$value."</td>".$rowtd;
             }
             $R->doc .= '<tr>'.$rowth.'</tr>';
+// TODO: better handling of plugins with old compat (not the latest 4)
             if (strpos($data['compatible'],'devel') === false) {
                 $R->doc .= '<tr>'.$rowtd.'</tr>';
             } else {
@@ -232,9 +234,14 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             $R->doc .= sprintf($this->getLang($lang,'securityrecommendation'),$securitylink);
             $R->doc .= '.</p>';
         }
-        $R->doc .= '</div>';
 
-// TODO: add warning about faulty names containing underscore
+        if(strpos($id,'_') !== false) {
+            $R->doc .= '<p class="security">';
+            $R->doc .= '<b>'.$this->getLang($lang,'name_underscore').'</b>';
+            $R->doc .= '</p>';
+        }
+
+        $R->doc .= '</div>';
         
         // add tabs
         $R->doc .= '<ul id="pluginrepo__foldout">';
