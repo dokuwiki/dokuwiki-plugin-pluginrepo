@@ -20,6 +20,7 @@ $lang['tagged_with']         = 'Tagged with';
 $lang['securityissue']       = 'The following security issue was reported for this plugin:';
 $lang['securityrecommendation'] = 'It is not recommended to use this plugin until this issue was fixed. Plugin authors should read the %s';
 $lang['securitylink']        = 'plugin security guidelines';
+$lang['name_underscore']     = 'Plugin name contains underscore, will not generate popularity points.';
 $lang['downloadurl']         = 'Download the Plugin';
 $lang['bugtracker']          = 'Bugs / Feature Wishes';
 $lang['sourcerepo']          = 'Source Repository';
