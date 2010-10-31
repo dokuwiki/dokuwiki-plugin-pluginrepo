@@ -403,11 +403,11 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     }
 
     /**
-     * Clean comma separated list of plugins, return rendered as internallinks
+     * Clean list of plugins, return rendered as internallinks
+     * input may be comma separated or array
      */
-    // TODO: only used in "entry"
-    function listplugins($string,&$R,$sep=', ') {
-        $plugins = explode(',',$string);
+    function listplugins($plugins,&$R,$sep=', ') {
+        if (!is_array($plugins)) $plugins = explode(',',$plugins);
         $plugins = array_map('trim',$plugins);
         $plugins = array_map('strtolower',$plugins);
         $plugins = array_unique($plugins);
@@ -423,7 +423,6 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     /**
      * Convert comma separated list of tags to filterlinks
      */
-    // TODO: only used in "entry"
     function listtags($string){
         $tags = $this->parsetags($string);
         $out = array();

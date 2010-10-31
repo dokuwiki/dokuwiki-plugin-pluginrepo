@@ -360,7 +360,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
             $R->doc .= '<div class="repo_provides">';
             $R->doc .= 'Provides: '.$this->hlp->listtype($plugin['A.type']) .' Tags:  ';
-// TODO: add tags
+// TODO: add tags and call to $this->hlp->listtags()
             $R->doc .= '</div>';
 
             $R->doc .= '<div class="repo_mail">Author: ';
