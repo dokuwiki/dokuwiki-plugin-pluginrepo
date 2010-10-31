@@ -6,8 +6,7 @@ div#pluginrepo__plugin {
     font-size: 90%;
 }
 
-div.pluginrepo__pluginsmall {
-    width: 500px;
+div.pluginrepo__query div.pluginrepo__querytotal {
 }
 
 div#pluginrepo__plugin div {

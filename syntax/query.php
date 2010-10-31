@@ -15,7 +15,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
      */
     var $hlp = null;
     var $allowedfields = array('plugin','name','description','author','email',
-                               'compatible','lastupdate','type','securityissue',
+                               'compatible','lastupdate','type','securityissue','screenshot',
                                'downloadurl','bugtracker','sourcerepo','donationurl');
     
     /**
@@ -97,32 +97,51 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
             $R->doc .= "<b>Repoquery error - Missing WHERE clause</b><br/>";
             return;
         }
+        $error = $data['where'];
+        foreach ($this->allowedfields as $field) {
+            $error = str_replace($field,'',$error);
+        }
+        $error = preg_replace('/(LIKE|AND|OR|NOT|IS|NULL|[<>=\?\(\)])/i','',$error);
+        if (trim($error)) {
+            $R->doc .= "<b>Repoquery error - Unsupported chars in WHERE clause:</b> $error<br/>";
+            return;
+        }
         $wheresql = $data['where'];
-        // TODO: protect advanced where query
 
         // sanitize HAVING input
-        $havingsql = ($data['having'] ? 'HAVING '.$data['having'] : '');
-        // TODO: protect advanced having query
+        if (preg_match('/^cnt\s*[=><]\s*\d+$/i',$data['having'])) {
+            $havingsql = 'HAVING '.$data['having'];
+        }
         
-        $stmt = $db->prepare("SELECT A.*, COUNT(C.value) as cnt  
-                                FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value and C.key = 'plugin'
+        $stmt = $db->prepare("SELECT A.*, COUNT(C.value) as cnt
+                                FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value AND C.key = 'plugin'
                                WHERE $wheresql 
-                            GROUP BY plugin
+                            GROUP BY A.plugin
                              $havingsql
                             ORDER BY $ordersql");
-        $stmt->execute(array(''));
+
+        // prepare VALUES input and execute query
+        $values = preg_split("/,/",$data['values']);
+        $values = array_map('trim',$values);
+        $values = array_filter($values);
+        $stmt->execute($values);
         $datarows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        $headline = 'Plugins WHERE '.vsprintf(str_replace('?','%s',$wheresql),$values);
+        $headline .= ($havingsql?' '.$havingsql:'');
+
+        $R->doc .= '<div class="pluginrepo__query">';
         if (count($fields) == 0) {
             // sort into alpha groups if only displaying plugin links
             $plugingroups = array();
             foreach ($datarows as $row) {
-                $firstchar = substr($row['A.plugin'],0,1);
+                $firstchar = substr(noNS($row['A.plugin']),0,1);
                 $plugingroups[$firstchar][] = $row['A.plugin'];
             }
 
             $R->doc .= '<table class="inline">';
-            $R->doc .= '<tr><th colspan="3">Plugins WHERE '.$wheresql.'</th></tr>';
+            $R->doc .= '<tr><th colspan="3">'.$headline.'</th></tr>';
+            ksort($plugingroups);
             foreach($plugingroups as $key => $plugins) {
                 $R->doc .= '<tr>';
 
@@ -154,7 +173,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
             foreach ($fields as $field) {
                 $R->doc .= '<th>'.ucfirst(str_replace('A.','',$field)).'</th>';
             }
-            $R->doc .= '<th colspan="2">Plugins WHERE '.$wheresql.'</th></tr>';
+            $R->doc .= '<th colspan="2">'.$headline.'</th></tr>';
             $prevkey = '';
             foreach ($datarows as $row) {
                 $groupkey = '';
@@ -193,7 +212,8 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
             }
             $R->doc .= '</table>';
         }
-
+        $R->doc .= '<div class="pluginrepo__querytotal">'.count($datarows).' plugins matching query</div>';
+        $R->doc .= '</div>';
         return true;
     }
 
