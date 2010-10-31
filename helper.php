@@ -11,6 +11,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
 
     var $localised = array();      // set to true by setupLocale() after loading language dependent strings
     var $lang = array();           // array to hold language dependent strings, best accessed via ->getLang()
+    var $dokuReleases;             // array of DokuWiki releases (name & date)
 
     var $types = array(
                     1  => 'Syntax',
@@ -97,19 +98,27 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
 
     /**
      * Create database connection and return PDO object
+     * the config option 'db_name' must contain the
+     * DataSourceName, which consists of the PDO driver name, 
+     * followed by a colon, followed by the PDO driver-specific connection syntax
+     * see http://se2.php.net/manual/en/pdo.construct.php
+     *
+     * Example: 'mysql:dbname=testdb;host=127.0.0.1'
+     *      or  'sqlite2:C:\DokuWikiStickNew\dokuwiki\repo.sqlite'
      */
     function _getPluginsDB() {
         global $conf;
 
         $db = null;
         try {
-            // remember to use dblib:host=your_hostname;dbname=your_db;charset=UTF-8 for MSSQL ???
             $db = new PDO($this->getConf('db_name'), $this->getConf('db_user'), $this->getConf('db_pass'));
             $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            // TODO: mysql_select_db
-            //$db->exec('SET names utf8') only for mySQL
-            // TODO behövs $db->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, 1);  
+            if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {
+                // Running on mysql; do something mysql specific here
+                $db->exec('SET names utf8');
+            }
+
         } catch(PDOException $e) {
             msg("Repository plugin: failed to connect to database (".$e->getMessage().")",-1);
             return null;
@@ -132,7 +141,13 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
 
     /**
      * Return array of plugins with some metadata
-     * available filters: 'plugins','plugintype','plugintag','pluginsort','showissues','showtemplates'
+     * available filters passed as array: 
+     *   'plugins'    (array) returns data of named plugins
+     *   'plugintype' (integer) 
+     *   'plugintag'  (string)
+     *   'pluginsort' (string)
+     *   'showissues' (yes/no) default/unset is 'no' and plugins with security issues are not returned
+     *   'showtemplates' (yes/no) default/unset is 'no' and template data will not be returned  
      */
     function getPlugins($filter=null) {
         $db = $this->_getPluginsDB();
@@ -140,12 +155,13 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
 
         // return named plugins OR with certain tag/type
         $plugins = $filter['plugins'];
+        $type = 0;
         if ($plugins) {
             if (!is_array($plugins)) {
                 $plugins = array($plugins);
             }
             $pluginsql = substr("AND plugin IN (".str_repeat("?,",count($plugins)),0,-1).")";
-            $filter['pluginissues'] = 'show';
+            $filter['showissues'] = 'yes';
         } else {
             $type = (int)$filter['plugintype'];
             $tag  = strtolower(trim($filter['plugintag']));
@@ -163,7 +179,6 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
             $shown .= " AND A.type <> 32";
         }
 
-        // TODO: remove A.
         // TODO: not possible to filter on type AND tag (cloude doesn't work for templates)
         // TODO: this code cant handle template popularity (key='conf_template')
         if ($this->types[$type]) {
@@ -184,7 +199,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                                    GROUP BY A.plugin
                                 $sortsql");
             $stmt->execute(array(':tag' => $tag));
-        
+
         } else {
             $stmt = $db->prepare("SELECT A.*, COUNT(C.value) as cnt
                                     FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value and C.key = 'plugin'
@@ -199,6 +214,9 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         return $plugins;
     }
 
+    /**
+     * Translate sort keyword to sql clause
+     */
     function _getPluginsSortSql($sort) {
         if ($sort == 'a' || $sort == 'author') {
             $sortsql = 'ORDER BY A.author';
@@ -213,9 +231,13 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         }
         return $sortsql;
     }
-    
+
     /**
      * Return array of metadata about plugin
+     *   'conflicts'  array of plugin names
+     *   'similar'    array of plugin names
+     *   'depends'    array of plugin names
+     *   'sameauthor' array of plugin names
      */
     function getPluginRelations($id) {
         $db = $this->_getPluginsDB();
@@ -223,46 +245,41 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
 
         $id = strtolower($id);
         $meta = array();
-// TODO: handle template tags
 
         $stmt = $db->prepare('SELECT plugin FROM plugin_conflicts WHERE other = ?');
         $stmt->execute(array($id));
         foreach ($stmt as $row) {
-            $conflicts .= ','.$row['plugin'];
+            $meta['conflicts'][] = $row['plugin'];
         }
         
         $stmt = $db->prepare('SELECT other FROM plugin_conflicts WHERE plugin = ?');
         $stmt->execute(array($id));
         foreach ($stmt as $row) {
-            $conflicts .= ','.$row['other'];
-        }
-        if ($conflicts) {
-            $meta['conflicts'] = substr($conflicts, 1);
+            $meta['conflicts'][] = $row['other'];
         }
 
         $stmt = $db->prepare('SELECT plugin FROM plugin_similar WHERE other = ?');
         $stmt->execute(array($id));
         foreach ($stmt as $row) {
-            $similar .= ','.$row['plugin'];
+            $meta['similar'][] = $row['plugin'];
         }
 
         $stmt = $db->prepare('SELECT other FROM plugin_similar WHERE plugin = ?');
         $stmt->execute(array($id));
         foreach ($stmt as $row) {
-            $similar .= ','.$row['other'];
-        }
-        if ($similar) {
-            $meta['similar'] = substr($similar, 1);
+            $meta['similar'][] = $row['other'];
         }
 
-        $stmt = $db->prepare('SELECT plugin FROM plugins WHERE author=(SELECT author FROM plugins WHERE plugin = ?)');
+        $stmt = $db->prepare('SELECT other FROM plugin_depends WHERE plugin = ?');
         $stmt->execute(array($id));
         foreach ($stmt as $row) {
-            $sameauthor .= ','.$row['plugin'];
+            $meta['depends'][] = $row['other'];
         }
-        $sameauthor = str_replace(','.$id, '', $sameauthor);
-        if ($sameauthor) {
-            $meta['sameauthor'] = substr($sameauthor, 1);
+
+        $stmt = $db->prepare('SELECT plugin FROM plugins WHERE plugin <> ? AND author=(SELECT author FROM plugins WHERE plugin = ?)');
+        $stmt->execute(array($id,$id));
+        foreach ($stmt as $row) {
+            $meta['sameauthor'][] = $row['plugin'];
         }
 
         return $meta;
@@ -271,22 +288,25 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     /**
      * Return array of tags and their frequency in the repository
      */
-    function getTags($minlimit = 0) {
+    function getTags($minlimit = 0,$showtemplate = false) {
         $db = $this->_getPluginsDB();
         if (!$db) return;
 
+        if ($showtemplate) {
+            $typefilter = 'B.type = 32';
+        } else {
+            $typefilter = 'B.type <> 32';
+        }
         $stmt = $db->prepare("SELECT A.tag, COUNT(A.tag) as cnt
                                 FROM plugin_tags as A, plugins as B
                                WHERE A.plugin = B.plugin
                                  AND B.securityissue = ''
+                                 AND $typefilter
                             GROUP BY tag
                               HAVING cnt >= ?
                             ORDER BY cnt DESC");
         $stmt->execute(array($minlimit));
-        $tags = $stmt->fetchAll(PDO::FETCH_ASSOC);        
-
-        // TODO: handle template & plugin, maybe by args
-
+        $tags = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $tags;
     }
 
@@ -332,10 +352,61 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     }
 
     /**
+     * render internallink to plugin/template, templates identified by having namespace
+     */
+    function internallink(&$R,$plugin,$title=null) {
+        if (!getNS($plugin)) {
+            return $R->internallink(':plugin:'.$plugin,$title,null,true);
+        } else {
+            if (!$title) $title = noNS($plugin);
+            return $R->internallink(':'.$plugin,$title,null,true);
+        }
+    }
+
+    /**
+     * Return array of supported DokuWiki releases
+     * only releases mentioned in config are reported
+     * 'newest' supported release at [0]
+     *
+     * 'devel' should only be used for devel only compat. 
+     */
+    function cleanCompat($compatible,$onlybest = false) {
+        if (!$this->dokuReleases) {
+            $this->dokuReleases = array();
+            $releases = explode(',', $this->getConf('releases'));
+            $releases = array_map('trim',$releases);
+            $releases = array_filter($releases);
+            foreach ($releases as $release) {
+                list($date,$name) = preg_split('/\s+/',$release,2);
+                $rel = array('date' => $date,
+                             'name' => str_replace('"','',$name));
+                $this->dokuReleases[] = $rel;
+            }
+        }
+
+        preg_match_all('/([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]|[a-zA-Z]{4,})/', $compatible, $matches);
+        $retval = array();
+        foreach ($this->dokuReleases as $release) {
+            $key = $release['date'];
+            if ($release['name']) {
+                $key .= ' "'.$release['name'].'"';
+            }
+            if (in_array($release['date'], $matches[0]) || in_array($release['name'], $matches[0])) {
+                $retval[$key] = 'y';
+                if ($onlybest) return $key;
+            } else {
+                $retval[$key] = '';
+            }
+        }
+        if ($onlybest) return '';
+        return $retval;
+    }
+
+    /**
      * Clean comma separated list of plugins, return rendered as internallinks
      */
     // TODO: only used in "entry"
-    function listplugins($string,&$R,$sep=', '){
+    function listplugins($string,&$R,$sep=', ') {
         $plugins = explode(',',$string);
         $plugins = array_map('trim',$plugins);
         $plugins = array_map('strtolower',$plugins);
@@ -344,7 +415,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         sort($plugins);
         $out = array();
         foreach($plugins as $plugin){
-            $out[] = $R->internallink(':plugin:'.$plugin,NULL,NULL,true);
+            $out[] = $this->internallink($R,$plugin);
         }
         return join($sep,$out);
     }
@@ -407,19 +478,15 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     function _initPluginDB($db) {
         msg("Repository plugin: data tables created for plugin repository",-1);
         $db->exec('CREATE TABLE plugin_conflicts (plugin varchar(50) NOT NULL, other varchar(50) NOT NULL);');
-		$db->exec('CREATE TABLE plugin_depends (plugin varchar(50) NOT NULL, other varchar(50) NOT NULL);');
-		$db->exec('CREATE TABLE plugin_similar (plugin varchar(50) NOT NULL, other varchar(50) NOT NULL);');
-		$db->exec('CREATE TABLE plugin_tags (plugin varchar(50) NOT NULL, tag varchar(255) NOT NULL);');
-		$db->exec('CREATE TABLE plugins (plugin varchar(50) PRIMARY KEY NOT NULL, name varchar(255) default NULL, 
-		                        description varchar(255) default NULL, author varchar(255) default NULL, email varchar(255) default NULL, 
-								compatible varchar(255) default NULL, lastupdate date default NULL, downloadurl varchar(255) default NULL,
+        $db->exec('CREATE TABLE plugin_depends (plugin varchar(50) NOT NULL, other varchar(50) NOT NULL);');
+        $db->exec('CREATE TABLE plugin_similar (plugin varchar(50) NOT NULL, other varchar(50) NOT NULL);');
+        $db->exec('CREATE TABLE plugin_tags (plugin varchar(50) NOT NULL, tag varchar(255) NOT NULL);');
+        $db->exec('CREATE TABLE plugins (plugin varchar(50) PRIMARY KEY NOT NULL, name varchar(255) default NULL, 
+                                description varchar(255) default NULL, author varchar(255) default NULL, email varchar(255) default NULL, 
+                                compatible varchar(255) default NULL, lastupdate date default NULL, downloadurl varchar(255) default NULL,
                                 bugtracker varchar(255) default NULL, sourcerepo varchar(255) default NULL, donationurl varchar(255) default NULL, type int(11) NOT NULL default 0, 
-								securityissue varchar(255) NOT NULL);');
-		$db->exec('CREATE TABLE popularity (uid varchar(32) NOT NULL, key varchar(255) NOT NULL, value varchar(255) NOT NULL);');
+                                screenshot varchar(255) default NULL, securityissue varchar(255) NOT NULL);');
+        $db->exec('CREATE TABLE popularity (uid varchar(32) NOT NULL, key varchar(255) NOT NULL, value varchar(255) NOT NULL);');
     }
 }
- 
-
-
-
 

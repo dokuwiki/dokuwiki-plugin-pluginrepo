@@ -2,11 +2,11 @@
 /**
  *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * @author     Andreas Gohr <andi@splitbrain.org>
  * @author     Hakan Sandell <sandell.hakan@gmail.com>
  */
 // must be run within Dokuwiki
 if(!defined('DOKU_INC')) die();
+if (!defined('DOKU_LF')) define('DOKU_LF', "\n");
 
 class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
 
@@ -76,20 +76,23 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
 
         $R->info['cache'] = false;
 
-        // sanitize input
-        $data['select'] = 'plugin '.$data['select'];
-        $fields = preg_split("/[[;,\s]]+/",$data['select']);
+        // sanitize SELECT input (data fields shown in separate columns)
+        $fields = preg_split("/[;,\s]+/",$data['select']);
         $fields = array_filter($fields);
         $fields = array_unique($fields);
-        foreach ($fields as $field) {
-            if (!in_array($field, $this->allowedfields)) {
-                $R->doc .= "<b>Repoquery error - Unknown field:</b> $field<br/>";
+        for ($fieldItr = 0; $fieldItr < count($fields); $fieldItr++) {
+            if (!in_array($fields[$fieldItr], $this->allowedfields)) {
+                $R->doc .= "<b>Repoquery error - Unknown field:</b> ".$fields[$fieldItr]."<br/>";
                 return;
             }
+            if ($fields[$fieldItr] != 'cnt') {
+                $fields[$fieldItr] = 'A.'.$fields[$fieldItr];
+            }
         }
-        $selectsql = 'A.'.join(',A.', $fields);
-        $ordersql = str_replace('A.plugin,', '', $selectsql);
+        // create ORDER BY sql clause for shown fields, ensure 'plugin' field included 
+        $ordersql = join(',', array_merge($fields,array('A.plugin')));
 
+        // sanitize WHERE input
         if (!$data['where']) {
             $R->doc .= "<b>Repoquery error - Missing WHERE clause</b><br/>";
             return;
@@ -97,19 +100,25 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
         $wheresql = $data['where'];
         // TODO: protect advanced where query
 
-        $stmt = $db->prepare("SELECT $selectsql 
-                                FROM plugins A
+        // sanitize HAVING input
+        $havingsql = ($data['having'] ? 'HAVING '.$data['having'] : '');
+        // TODO: protect advanced having query
+        
+        $stmt = $db->prepare("SELECT A.*, COUNT(C.value) as cnt  
+                                FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value and C.key = 'plugin'
                                WHERE $wheresql 
                             GROUP BY plugin
+                             $havingsql
                             ORDER BY $ordersql");
         $stmt->execute(array(''));
+        $datarows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-
-        if (count($fields) == 1) {
+        if (count($fields) == 0) {
             // sort into alpha groups if only displaying plugin links
             $plugingroups = array();
-            foreach ($stmt as $row) {
-                $plugingroups[substr($row['A.plugin'],0,1)][] = $R->internallink(':plugin:'.$row['A.plugin'],null,null,true);
+            foreach ($datarows as $row) {
+                $firstchar = substr($row['A.plugin'],0,1);
+                $plugingroups[$firstchar][] = $row['A.plugin'];
             }
 
             $R->doc .= '<table class="inline">';
@@ -122,50 +131,68 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
                 $R->doc .= '</td><td>';
                 $R->doc .= count($plugins);
                 $R->doc .= '</td><td>';
-                $R->doc .= join(', ', $plugins);
+                $R->doc .= $this->hlp->listplugins($plugins,$R);
                 $R->doc .= '</td>';
 
-                $R->doc .= '</tr>';
+                $R->doc .= '</tr>'.DOKU_LF;
             }
             $R->doc .= '</table>';
 
         } else {
+            // show values for all fields in separate columns
             $plugingroups = array();
-            foreach ($stmt as $row) {
-                $plugingroups[$row['A.'.$fields[count($fields)-1]]][] = $R->internallink(':plugin:'.$row['A.plugin'],null,null,true);
+            foreach ($datarows as $row) {
+                $groupkey = '';
+                foreach ($fields as $field) {
+                    $groupkey .= $row[$field];
+                }
+                $plugingroups[$groupkey][] = $row['A.plugin'];
             }
- 
+
             $R->doc .= '<table class="inline">';
             $R->doc .= '<tr>';
-            for($fieldItr = 1; $fieldItr < count($fields); $fieldItr++) {
-                $R->doc .= '<th>'.$fields[$fieldItr].'</th>';
+            foreach ($fields as $field) {
+                $R->doc .= '<th>'.ucfirst(str_replace('A.','',$field)).'</th>';
             }
             $R->doc .= '<th colspan="2">Plugins WHERE '.$wheresql.'</th></tr>';
-            $prevrow = '';
-            foreach ($stmt as $row) {
-                $thisrow = '';
-                for($fieldItr = 1; $fieldItr < count($fields); $fieldItr++) {
-                    $thisrow .= '<td>';
-                    $thisrow .= $row['A.'.$fields[$fieldItr]];
-                    $thisrow .= '</td>';
+            $prevkey = '';
+            foreach ($datarows as $row) {
+                $groupkey = '';
+                foreach ($fields as $field) {
+                    $groupkey .= $row[$field];
                 }
-         //       if ($thisrow == $prevrow) continue;
+                if ($groupkey == $prevkey) continue;
+                $prevkey = $groupkey;
 
                 $R->doc .= '<tr>';
-                $R->doc .= $thisrow;
-                $prevrow == $thisrow;
-                $plugins = $plugingroups[$row['A.'.$fields[count($fields)-1]]];
+                foreach ($fields as $field) {
+                    $R->doc .= '<td>';
+
+                    if ($field == 'A.type') {
+                        $R->doc .= $this->hlp->listtype($row['A.type']);
+
+                    } elseif ($field == 'A.plugin') {
+                        $R->doc .= $this->hlp->internallink($R,$row['A.plugin']);
+
+                    } elseif ($field == 'A.email' || $field == 'A.author') {
+                        $R->doc .= $R->emaillink($row['A.email'],$row['A.author']);
+
+                    } else {
+                        $R->doc .= $row[$field];
+                    }
+                    $R->doc .= '</td>';
+                }
+                $plugins = $plugingroups[$groupkey];
                 $R->doc .= '<td>';
                 $R->doc .= count($plugins);
                 $R->doc .= '</td>';
                 $R->doc .= '<td>';
-                $R->doc .= join(', ', $plugins);
+                $R->doc .= $this->hlp->listplugins($plugins,$R);
                 $R->doc .= '</td>';
-                $R->doc .= '</tr>';
+                $R->doc .= '</tr>'.DOKU_LF;
             }
             $R->doc .= '</table>';
         }
-
 
         return true;
     }

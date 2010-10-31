@@ -230,7 +230,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
             $cloudmin = (int)$data['cloudmin'];
         }
 
-        $tagData =$this->hlp->getTags($cloudmin);
+        $tagData =$this->hlp->getTags($cloudmin,$data['plugintype'] == 32);
         // $tagData will be sorted by cnt (descending)
         foreach($tagData as $tag) {
             $tags[$tag['A.tag']] = $tag['cnt'];
@@ -312,7 +312,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= '<div class="clearer"></div>';
 
         if ($this->getConf('new_table_layout')) {
-            $this->_newTable($plugins,$popmax,$R);
+            $this->_newTable($plugins,$popmax,$R,$data);
         } else {
             $this->_classicTable($plugins,$popmax,$R);
         }
@@ -325,66 +325,70 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
     /**
      * TODO
      */
-    function _newTable($plugins,$popmax,$R) {
+    function _newTable($plugins,$popmax,$R,$data) {
 // TODO: adv. sorting with arrows '<span>&darr;</span> ''<span>&uarr;</span> ' $ckey = '^'.$ckey;
         $R->doc .= '<table class="inline">';
-        $R->doc .= '<tr><th><a href="'.wl($this->getConf('main'),$linkopt.'pluginsort=p').'" title="Sort by name">Plugin</a>
-                            <div class="repo_authorsort"><a href="'.wl($this->getConf('main'),$linkopt.'pluginsort=a').'" title="Sort by author">Author</a></div></th>
-                        <th><a href="'.wl($this->getConf('main'),$linkopt.'pluginsort=d').'" title="Sort by date">Last Update</a></th>
-                        <th>Compatible</th>
-                        <th><a href="'.wl($this->getConf('main'),$linkopt.'pluginsort=c').'" title="Sort by popularity">Popularity</a></th>
-                    </tr>';
+        $R->doc .= '<tr><th><a href="'.wl($this->getConf('main'),$linkopt.'pluginsort=p').'" title="Sort by name">Plugin</a>';
+        $R->doc .= '        <div class="repo_authorsort"><a href="'.wl($this->getConf('main'),$linkopt.'pluginsort=a').'" title="Sort by author">Author</a></div></th>';
+        $R->doc .= '  <th><a href="'.wl($this->getConf('main'),$linkopt.'pluginsort=d').'" title="Sort by date">Last Update</a></th>';
+        $R->doc .= '  <th>Compatible</th>';
+        if ($data['screenshot']) $R->doc .= '<th>Screenshot</th>';
+        $R->doc .= '  <th><a href="'.wl($this->getConf('main'),$linkopt.'pluginsort=c').'" title="Sort by popularity">Popularity</a></th>';
+        $R->doc .= '</tr>';
 
-        foreach($plugins as $row) {
-            if ($row['A.type'] == 32) {
-                $link = $R->internallink(':template:'.$row['A.plugin'], ucfirst($row['A.plugin']).' template',null,true);
-            } else {
-                $link = $R->internallink(':plugin:'.$row['A.plugin'], ucfirst($row['A.plugin']).' plugin',null,true);
-            }
+        foreach($plugins as $plugin) {
+            $link = $this->hlp->internallink($R, $plugin['A.plugin'], ucfirst(noNS($plugin['A.plugin'])).($plugin['A.type']==32?' template':' plugin'));
             if(strpos($link,'class="wikilink2"')){
-                $this->_delete($row['A.plugin']);
+                $this->_delete($plugin['A.plugin']);
                 continue;
             }
 
             $R->doc .= '<tr>';
             $R->doc .= '<td>';
-            $R->doc .= '<a name="'.substr($row['A.plugin'],0,1).'"></a>';
+            $R->doc .= '<a name="'.substr($plugin['A.plugin'],0,1).'"></a>';
 
             $R->doc .= '<div class="repo_plugintitle">';
             $R->doc .= $link;
             $R->doc .= '</div>';
-            if($row['A.downloadurl']){
+            if($plugin['A.downloadurl']){
                 $R->doc .= '<div class="repo_download">';
-                $R->doc .= $R->externallink($row['A.downloadurl'], 'Download', null, true);
+                $R->doc .= $R->externallink($plugin['A.downloadurl'], 'Download', null, true);
                 $R->doc .= '</div>';
             }
             $R->doc .= '<div class="clearer"></div>';
-            $R->doc .= hsc($row['A.description']).'<br />';
+            $R->doc .= hsc($plugin['A.description']).'<br />';
 
             $R->doc .= '<div class="repo_provides">';
-            $R->doc .= 'Provides: '.$this->hlp->listtype($row['A.type']) .' Tags:  ';
+            $R->doc .= 'Provides: '.$this->hlp->listtype($plugin['A.type']) .' Tags:  ';
 // TODO: add tags
             $R->doc .= '</div>';
 
             $R->doc .= '<div class="repo_mail">Author: ';
-            $R->emaillink($row['A.email'],$row['A.author']);
+            $R->emaillink($plugin['A.email'],$plugin['A.author']);
             $R->doc .= '</div>';
             $R->doc .= '</td>';
 
-            $R->doc .= '<td>';
-            $R->doc .= hsc($row['A.lastupdate']);
-            $R->doc .= '<br/>cnt = '.hsc($row['cnt']); // TODO: remove debug
-            $R->doc .= '</td>';
-// TODO: add template img
-
-            // TODO: convert comp to something small
-            $R->doc .= '<td>';
-            $R->doc .= hsc($row['A.compatible']);
+            $R->doc .= '<td class="center">';
+            $R->doc .= hsc(str_replace("'",'',$plugin['A.lastupdate']));
+            $R->doc .= '<br/>cnt = '.hsc($plugin['cnt']); // TODO: remove debug
             $R->doc .= '</td>';
 
+            $R->doc .= '<td class="center">';
+            $R->doc .= $this->hlp->cleanCompat($plugin['A.compatible'],true);
+            $R->doc .= '</td>';
+
+            if ($data['screenshot']) {
+                $R->doc .= '<td>';
+                $val = $plugin['A.screenshot'];
+                $title = 'screenshot: '.basename(str_replace(':','/',$val));
+                $R->doc .= '<a href="'.ml($val).'" class="media" rel="lightbox">';
+                $R->doc .= '<img src="'.ml($val,"w=80").'" alt="'.hsc($title).'" title="'.hsc($title).'" width="80"/>';
+                $R->doc .= '</a></td>';
+            }
+
             $R->doc .= '<td>';
-            if(strpos($this->getConf('bundled'),$row['A.plugin']) === false){
-                $R->doc .= '<div class="prog-border" title="'.$row['cnt'].'/'.$allcnt.'"><div class="prog-bar" style="width: '.sprintf(100*$row['cnt']/$popmax).'%;"></div></div>';
+            if(strpos($this->getConf('bundled'),$plugin['A.plugin']) === false){
+                $R->doc .= '<div class="prog-border" title="'.$plugin['cnt'].'/'.$allcnt.'"><div class="prog-bar" style="width: '.sprintf(100*$plugin['cnt']/$popmax).'%;"></div></div>';
             }else{
                 $R->doc .= '<i>bundled</i>';
             }
@@ -409,7 +413,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
                     </tr>';
 
         foreach($plugins as $row) {
-            $link = $R->internallink(':plugin:'.$row['A.plugin'],null,null,true);
+            $link = $this->hlp->internallink($R, $row['A.plugin']);
             if(strpos($link,'class="wikilink2"')){
                 $this->_delete($row['A.plugin']);
                 continue;

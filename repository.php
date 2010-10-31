@@ -71,9 +71,21 @@ function getRepository($opt) {
             $feed .= join(', ', $types);
         }
         $feed .= "</type>\n";
+
         // TODO: add tags, similar, conflicts        
-        $feed .= "    <lastupdate>".hsc($plugin['A.lastupdate'])."</lastupdate>\n";
-        $feed .= "    <compatible>".hsc($plugin['A.compatible'])."</compatible>\n";
+
+        $feed .= "    <lastupdate>".hsc(str_replace("'",'',$plugin['A.lastupdate']))."</lastupdate>\n";
+        if (strpos($plugin['A.compatible'],'devel') !== false) {
+            $feed .= "<develonly>true</develonly>";
+        }
+        $feed .= "    <compatible>";
+        $compatibility = $hlp->cleanCompat($plugin['A.compatible']);
+        foreach ($compatibility as $release => $value) {
+            if ($value) {
+                $feed .= "    <release>".$release."</release>\n";
+            }
+        }
+        $feed .= "    </compatible>\n";
         $feed .= "    <securityissue>".hsc($plugin['A.securityissue'])."</securityissue>\n";
         $feed .= "    <author>".hsc($plugin['A.author'])."</author>\n"; // mail not exposed as an anti-spam measure
         $feed .= "    <downloadurl>".hsc($plugin['A.downloadurl'])."</downloadurl>\n";

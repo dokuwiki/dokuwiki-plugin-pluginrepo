@@ -7,11 +7,12 @@
  */
 
 // Plugin entry
-$lang['by_same_author']      = 'By same author';
+$lang['by_same_author']      = 'Other contributions by same author';
 $lang['last_updated_on']     = 'Last updated on';
 $lang['provides']            = 'Provides';
-$lang['compatible_with']     = 'Compatible with';
+$lang['compatible_with']     = 'Compatible with DokuWiki';
 $lang['no_compatibility']    = 'No compatibility info given!';
+$lang['develonly']           = 'Devel only';
 $lang['conflicts_with']      = 'Conflicts with';
 $lang['requires']            = 'Requires';
 $lang['similar_to']          = 'Similar to';

@@ -2,8 +2,12 @@ div#pluginrepo__plugin {
     background-color: #fff;
     border: 1px solid __border__;
     padding: 0.7em 1em 0.2em 1em;
-    width: 500px;
+    width: 600px;
     font-size: 90%;
+}
+
+div.pluginrepo__pluginsmall {
+    width: 500px;
 }
 
 div#pluginrepo__plugin div {
@@ -16,7 +20,6 @@ div#pluginrepo__plugin div {
     font-size: 105%;
 }
 
-
 div#pluginrepo__plugin p.security {
     background-color: #fcc;
     color: #000;
@@ -24,20 +27,32 @@ div#pluginrepo__plugin p.security {
     padding: 0.3em;
 }
 
+div#pluginrepo__plugin table.compatible {
+    font-size: 80%;
+    text-align: center;
+}
+
 div#pluginrepo__pluginauthorpush {
     background-color: #fff;
     border: 1px solid __border__;
     padding: 0.7em 1em 0.2em 1em;
-    width: 200px;
+    width: 170px;
     float: right;
     font-size: 90%;
 }
 
-div#pluginrepo__table div.repo_alphabet {
+div#pluginrepo__plugin div#pluginrepo__pluginscreenshot {
+    background: #fff;
+    padding: 0em 0em 0em 1em;
+    float: right;
+}
+
+div#pluginrepo__table div#repo_alphabet {
  /*   border: 2px solid green;*/
     width: 70%;
     float: left;
 }
+
 div#pluginrepo__table div.repo_resetfilter {
  /*   border: 2px solid blue;*/
     float: right;
@@ -53,6 +68,10 @@ div#pluginrepo__table table th a:active,
 div#pluginrepo__table table th a:hover,
 div#pluginrepo__table table th a:visited {
     color: #000;
+}
+
+div#pluginrepo__table table .center {
+    text-align: center;
 }
 
 div#pluginrepo__table div.repo_authorsort {

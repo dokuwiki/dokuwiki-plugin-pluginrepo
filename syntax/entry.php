@@ -45,7 +45,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * Connect pattern to lexer
+     * Connect pattern to lexer (actual pattern used doesn't matter, namespace controls plugin type)
      */
     function connectTo($mode) {
         $this->Lexer->addSpecialPattern('----+ *plugin *-+\n.*?\n----+',$mode,'plugin_pluginrepo_entry');
@@ -59,7 +59,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         global $ID;
 
         $data = $this->hlp->parseData($match);
-        if (getNS($ID) == 'template') {
+        if (curNS($ID) == 'template') {
             $data['type'] = 'template';
         }
         return $data;
@@ -70,19 +70,22 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
      */
     function render($format, &$renderer, $data) {
         global $ID;
+
+        if (curNS($ID) == 'plugin') {
+            $id = noNS($ID);
+        } else {
+            $id = curNS($ID).':'.noNS($ID);
+        }
+
         switch ($format){
             case 'xhtml':
-                $this->_showData($data,$renderer);
+                $this->_showData($data,$id,$renderer);
                 return true;
             case 'metadata':
                 // only save if in first level namespace to ignore translated namespaces
                 if(substr_count($ID,':') == 1){
-                    $this->_saveData($data,noNS($ID),$renderer->meta['title']);
+                    $this->_saveData($data,$id,$renderer->meta['title']);
                 }
-                return true;
-            case 'plugin_data_edit':
-            // TODO: add edit form functionality
-//                $this->_editData($data, $renderer);
                 return true;
             default:
                 return false;
@@ -99,35 +102,38 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
     /**
      * Output the data in a table
      */
-    function _showData($data,&$R){
+    function _showData($data,$id,&$R){
         global $ID;
-        $id = noNS($ID);
         $lang = split(":",getNS($ID),2);
         $lang =(count($lang) == 2 ? $lang[0] : 'en');
 
         $rel = $this->hlp->getPluginRelations($id);
         $type = $this->hlp->parsetype($data['type']);
 
-        // TODO: better CSS for same author
-        // TODO: different for 3 and more, limit when 50
         if ($rel['sameauthor']) {
-            $R->doc .= '<div id="pluginrepo__pluginauthorpush">';
+            $R->doc .= '<div id="pluginrepo__pluginauthorpush"><p>';
             $R->doc .= $this->getLang($lang,'by_same_author');
-            $R->doc .= '<ul><li>';
-            $R->doc .= $this->hlp->listplugins($rel['sameauthor'],$R,'</li><li>');
-            $R->doc .= '</li></ul></div>';
+            $R->doc .= '</p><ul>';
+            $itr = 0;
+            while ($itr < count($rel['sameauthor']) && $itr < 10) {
+                $R->doc .= '<li>'.$this->hlp->internallink($R,$rel['sameauthor'][$itr++]).'</li>';
+            }
+            $R->doc .= '</ul></div>';
         }
 
-        $R->doc .= '<div id="pluginrepo__plugin"><div>';
+        $R->doc .= '<div id="pluginrepo__plugin">';
 
         if ($data['screenshot_img']) {
-// TODO: working img for plugin/template entry
             $val = $data['screenshot_img'];
             $title = 'screenshot: '.basename(str_replace(':','/',$val));
-//            $R->doc .= '<a href="'.ml($val).'" class="media" rel="lightbox"><img src="'.ml($val,"w=40").'" alt="'.hsc($title).'" title="'.hsc($title).'" width="40" /></a>';
+            $R->doc .= '<div id="pluginrepo__pluginscreenshot">'; 
+            $R->doc .= '<a href="'.ml($val).'" class="media" rel="lightbox">';
+            $R->doc .= '<img src="'.ml($val,"w=190").'" alt="'.hsc($title).'" title="'.hsc($title).'" width="190"/>';
+            $R->doc .= '</a></div>';
         }
 
-        $R->doc .= '<p><strong>'.$id.' ';
+        $R->doc .= '<div>';
+        $R->doc .= '<p><strong>'.noNS($id).' ';
         $R->doc .= ($type == 32 ? 'template':'plugin');
         $R->doc .= '</strong> by ';
         $R->emaillink($data['email'],$data['author']);
@@ -146,25 +152,38 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         }
 
         $R->doc .= '<br />';
-        if($data['compatible']){
-            $R->doc .= '<span class="compatible">';
-            $R->doc .= $this->getLang($lang,'compatible_with');
-            $R->doc .= ' <em>DokuWiki '.hsc($data['compatible']).'</em>.</span>';
-            
-            $R->doc .= '<table class="inline">';
-            $R->doc .= '<tr><th>2009-02-14</th><th>2009-12-25<br/>"Lemming"</th><th>2009-02-25<br/>"Anteater"</th></th>';
-            $R->doc .= '<tr><td>y</td><td>y</td><td></td></tr>';
-            $R->doc .= '</table>';
-        }else{
+        if (!$data['compatible']) {
             $R->doc .= '<span class="compatible">';
             $R->doc .= $this->getLang($lang,'no_compatibility');
             $R->doc .= '</span>';
+
+        } else {
+            $compatibility = $this->hlp->cleanCompat($data['compatible']);
+            $R->doc .= '<span class="compatible">';
+            $R->doc .= $this->getLang($lang,'compatible_with');
+            $R->doc .= '</span>';
+            $R->doc .= '<table class="inline compatible">';
+            $cols = 0;
+            foreach ($compatibility as $release => $value) {
+                if (++$cols > $this->getConf('showcompat')) break;
+                $rowth = "<th>".str_replace(' "','<br/>"',$release)."</th>".$rowth;
+                $rowtd = "<td>".$value."</td>".$rowtd;
+            }
+            $R->doc .= '<tr>'.$rowth.'</tr>';
+            if (strpos($data['compatible'],'devel') === false) {
+                $R->doc .= '<tr>'.$rowtd.'</tr>';
+            } else {
+                $R->doc .= '<tr><td colspan="'.$this->getConf('showcompat').'">';
+                $R->internallink('devel:develonly',$this->getLang($lang,'develonly'));
+                $R->doc .= '</td></tr>';
+            }
+            $R->doc .= '</table>';
         }
         $R->doc .= '</p></div>';
 
         $R->doc .= '<p>';
         if ($rel['conflicts']) {
-            $data['conflicts'] .= ','.$rel['conflicts'];
+            $data['conflicts'] .= ','.join(',',$rel['conflicts']);
         }
         if($data['conflicts']){
             $R->doc .= '<span class="conflicts">';
@@ -182,7 +201,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         }
 
         if ($rel['similar']) {
-            $data['similar'] .= ','.$rel['similar'];
+            $data['similar'] .= ','.join(',',$rel['similar']);
         }
         if($data['similar']){
             $R->doc .= '<span class="similar">';
@@ -203,7 +222,8 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         }
         $R->doc .= '</p>';
 
-// TODO: new security warning function ?
+// TODO: new security _warning_ function
+
         if($data['securityissue']){
             $R->doc .= '<p class="security">';
             $R->doc .= '<b>'.$this->getLang($lang,'securityissue').'</b><br /><br />';
@@ -214,6 +234,8 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         }
         $R->doc .= '</div>';
 
+// TODO: add warning about faulty names containing underscore
+        
         // add tabs
         $R->doc .= '<ul id="pluginrepo__foldout">';
         if($data['downloadurl']) $R->doc .= '<li><a class="download" href="'.hsc($data['downloadurl']).'">'.$this->getLang($lang,'downloadurl').'</a></li>';
@@ -230,61 +252,44 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $db = $this->hlp->_getPluginsDB();
         if (!$db) return;
 
-        if(!$name) $name = $id;
-        if(!preg_match('/^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/',$data['lastupdate'])){
+        if (!$name) $name = $id;
+        if (!preg_match('/^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/',$data['lastupdate'])) {
             $data['lastupdate'] = 'NULL';
-        }else{
+        } else {
             $data['lastupdate'] = "'".$data['lastupdate']."'";
         }
 
         $type = $this->hlp->parsetype($data['type']);
 
-        $sql = "REPLACE INTO plugins
-                    SET plugin      = '$id',
-                        name        = '$name',
-                        description = '".$data['description']."',
-                        author      = '".$data['author']."',
-                        email       = LOWER('".$data['email']."'),
-                        compatible  = '".$data['compatible']."',
-                        lastupdate  = ".$data['lastupdate'].",
-                        securityissue = '".$data['securityissue']."',
-                        downloadurl = '".$data['downloadurl']."',
-                        bugtracker  = '".$data['bugtracker']."',
-                        sourcerepo  = '".$data['sourcerepo']."',
-                        donationurl = '".$data['donationurl']."',
-                        type        = $type";
-    // TODO: REPLACE INTO SET doesn't work in sqlite ?
-        $sql = "REPLACE INTO plugins
-                    (plugin, name, description, author, email, compatible, lastupdate, securityissue, downloadurl, bugtracker, sourcerepo, donationurl, type)
-                VALUES
-                    ('$id', '$name', '".$data['description']."', '".$data['author']."', LOWER('".$data['email']."'), 
-					 '".$data['compatible']."', ".$data['lastupdate'].", '".$data['securityissue']."', '".$data['downloadurl']."', '".$data['bugtracker']."', '".$data['sourcerepo']."', '".$data['donationurl']."', $type)";
-        $db->exec($sql);
-        // $stmt = $db->prepare('REPLACE INTO plugins 
-                               // (plugin, name, description, 
-                                // author, email, 
-                                // compatible, lastupdate, securityissue, 
-                                // downloadurl, bugtracker, sourcerepo, donationurl, 
-                                // type)
-                              // VALUES
-                               // (:plugin, :name, :description, 
-                                // :author, LOWER(:email), 
-                                // :compatible, :lastupdate, :securityissue, 
-                                // :downloadurl, :bugtracker, :sourcerepo, :donationurl, 
-                                // :type) ');
-        // $stmt->execute(array(':plugin' => $id, 
-                             // ':name' => $name, 
-                             // ':description' => $data['description'], 
-                             // ':author' => $data['author'], 
-                             // ':email' => $data['email'], 
-                             // ':compatible' => $data['compatible'], 
-                             // ':lastupdate' => $data['lastupdate'], 
-                             // ':securityissue' => $data['securityissue'], 
-                             // ':downloadurl' => $data['downloadurl'], 
-                             // ':bugtracker' => $data['bugtracker'], 
-                             // ':sourcerepo' => $data['sourcerepo'], 
-                             // ':donationurl' => $data['donationurl'], 
-                             // ':type' => $type));
+        // handle securityissue field NOT NULL
+        if (!$data['securityissue']) $data['securityissue'] = "";
+
+        $stmt = $db->prepare('REPLACE INTO plugins 
+                               (plugin, name, description, 
+                                author, email, 
+                                compatible, lastupdate, securityissue,
+                                downloadurl, bugtracker, sourcerepo, donationurl, 
+                                screenshot, type)
+                              VALUES
+                               (:plugin, :name, :description, 
+                                :author, LOWER(:email), 
+                                :compatible, :lastupdate, :securityissue,
+                                :downloadurl, :bugtracker, :sourcerepo, :donationurl, 
+                                :screenshot, :type) ');
+        $stmt->execute(array(':plugin' =>  $id, 
+                             ':name' => $name, 
+                             ':description' => $data['description'], 
+                             ':author' => $data['author'], 
+                             ':email' => $data['email'], 
+                             ':compatible' => $data['compatible'], 
+                             ':lastupdate' => $data['lastupdate'], 
+                             ':securityissue' => $data['securityissue'],
+                             ':downloadurl' => $data['downloadurl'], 
+                             ':bugtracker' => $data['bugtracker'], 
+                             ':sourcerepo' => $data['sourcerepo'], 
+                             ':donationurl' => $data['donationurl'], 
+                             ':screenshot' => $data['screenshot_img'], 
+                             ':type' => $type));
 
         $tags = $this->hlp->parsetags($data['tags']);
         $stmt = $db->prepare('DELETE FROM plugin_tags WHERE plugin = ?');
