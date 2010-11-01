@@ -197,7 +197,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
                         $R->doc .= $R->emaillink($row['A.email'],$row['A.author']);
 
                     } else {
-                        $R->doc .= $row[$field];
+                        $R->doc .= hsc($row[$field]);
                     }
                     $R->doc .= '</td>';
                 }
