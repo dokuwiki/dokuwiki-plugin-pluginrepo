@@ -147,13 +147,26 @@ div#pluginrepo__repo div.repo_info3 {
     float: right;
 }
 
+div#pluginrepo__repo div.repo_infos h3 {
+    margin-left: 0em;
+}
+
+div#pluginrepo__repo div.repo_cloud h3 {
+    margin-left: 0em;
+}
+
+div#pluginrepo__repo div#repo_searchform  {
+    float: right;
+}
+
 div#pluginrepo__repo div.repo_cloud {
-    width: 75%;
+    border: 2px solid green;
+    background-color: #eef;
+    width: 40%;
     float: right;
     overflow: auto;
-    height: inherit;
+    height: 15em;
     padding-right: 0.5em;
-    margin: 0 auto;
 }
 
 div#pluginrepo__repo div.repo_cloud a.cl0 { font-size: 0.7em }

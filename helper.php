@@ -218,16 +218,20 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      * Translate sort keyword to sql clause
      */
     function _getPluginsSortSql($sort) {
+        if ($sort{0} == '^') {
+            $sortsql = ' DESC';
+            $sort = substr($sort, 1);
+        }
         if ($sort == 'a' || $sort == 'author') {
-            $sortsql = 'ORDER BY A.author';
+            $sortsql = 'ORDER BY A.author'.$sortsql;
         } elseif ($sort == 'd' || $sort == 'lastupdate') {
-            $sortsql = 'ORDER BY A.lastupdate DESC';
+            $sortsql = 'ORDER BY A.lastupdate'.$sortsql;
         } elseif ($sort == 't' || $sort == 'type') {
-            $sortsql = 'ORDER BY A.type';
+            $sortsql = 'ORDER BY A.type'.$sortsql;
         } elseif ($sort == 'c' || $sort == 'popularity') {
-            $sortsql = 'ORDER BY cnt DESC';
+            $sortsql = 'ORDER BY cnt'.$sortsql;
         } else {
-            $sortsql = 'ORDER BY A.plugin';
+            $sortsql = 'ORDER BY A.plugin'.$sortsql;
         }
         return $sortsql;
     }
@@ -334,7 +338,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         
         $popmax = $res[0]['cnt'];
         if(!$popmax) $popmax = 1;
-// TODO: bug with popularity
+
         return $popmax;
 
         // TODO: return $allcnt
@@ -349,6 +353,30 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         // $allcnt = $row['cnt'];
         // if(!$allcnt) $allcnt = 1;
         // mysql_free_result($res);
+    }
+
+    /**
+     * Delete all information about plugin from repository database
+     * (popularity data is left intact)
+     */
+    function deletePlugin($plugin){
+        $db = $this->_getPluginsDB();
+        if (!$db) return;
+
+        $stmt = $db->prepare('DELETE FROM plugins          WHERE plugin = ?');
+        $stmt->execute(array($plugin));
+
+        $stmt = $db->prepare('DELETE FROM plugin_tags      WHERE plugin = ?');
+        $stmt->execute(array($plugin));
+
+        $stmt = $db->prepare('DELETE FROM plugin_similar   WHERE plugin = ? OR other = ?');
+        $stmt->execute(array($plugin,$plugin));
+
+        $stmt = $db->prepare('DELETE FROM plugin_conflicts WHERE plugin = ? OR other = ?');
+        $stmt->execute(array($plugin,$plugin));
+
+        $stmt = $db->prepare('DELETE FROM plugin_depends   WHERE plugin = ? OR other = ?');
+        $stmt->execute(array($plugin,$plugin));
     }
 
     /**
@@ -427,8 +455,8 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $tags = $this->parsetags($string);
         $out = array();
         foreach($tags as $tag){
-            $out[] = '<a href="'.wl($this->getConf('main'),array('plugintag'=>$tag)).
-                     '" class="wikilink1" title="List all plugins with this tag">'.hsc($tag).'</a>';
+            $out[] = '<a href="'.wl($this->getConf('main'),array('plugintag'=>$tag)).'#repotable"
+                         class="wikilink1" title="List all plugins with this tag">'.hsc($tag).'</a>';
         }
         return join(', ',$out);
     }
@@ -452,8 +480,8 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $types = array();
         foreach($this->types as $k => $v){
             if($type & $k){
-                $types[] = '<a href="'.wl($this->getConf('main'),array('plugintype'=>$k)).
-                           '" class="wikilink1" title="List all '.$v.' plugins">'.$v.'</a>';
+                $types[] = '<a href="'.wl($this->getConf('main'),array('plugintype'=>$k)).'#repotable"
+                               class="wikilink1" title="List all '.$v.' plugins">'.$v.'</a>';
             }
         }
         sort($types);
