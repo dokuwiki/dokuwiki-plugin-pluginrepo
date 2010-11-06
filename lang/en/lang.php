@@ -27,10 +27,24 @@ $lang['sourcerepo']          = 'Source Repository';
 $lang['donationurl']         = 'Thank the Author';
 
 // Plugin table
+$lang['t_searchplugins']     = 'Search Plugins';
+
+$lang['t_name']              = 'Plugin';
+$lang['t_sortname']          = 'Sort by name';
+$lang['t_description']       = 'Description';
+$lang['t_author']            = 'Author';
+$lang['t_sortauthor']        = 'Sort by author';
+$lang['t_type']              = 'Type';
+$lang['t_sorttype']          = 'Sort by type';
+$lang['t_screenshot']        = 'Screenshot';
+$lang['t_date']              = 'Last Update';
+$lang['t_sortdate']          = 'Sort by date';
+$lang['t_popularity']        = 'Popularity';
+$lang['t_sortpopularity']    = 'Sort by date';
+
 $lang['t_download']          = 'Download';
 $lang['t_provides']          = 'Provides';
 $lang['t_tags']              = 'Tags';
-$lang['t_author']            = 'Author';
 $lang['t_bundled']           = 'bundled';
 
 

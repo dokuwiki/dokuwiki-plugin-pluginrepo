@@ -91,7 +91,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
         $R->info['cache'] = false;
 
-        $R->header('Search for plugins', 2, null);
+        $R->header($this->getLang($lang,'t_searchplugins'), 2, null);
         $R->section_open(2);
 
         $R->doc .= '<div id="pluginrepo__repo">';
@@ -100,13 +100,13 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $this->_showMainSearch(&$R, $lang, $data);
         $R->doc .= '    </div>'.DOKU_LF;
 
-        $R->doc .= '    <div class="repo_info2">';
+        $R->doc .= '    <div class="repo_info22">';
         $this->_showPluginTypeFilter(&$R, $lang, $data);
         $R->doc .= '    </div>'.DOKU_LF;
 
-        $R->doc .= '    <div class="repo_info3">';
-        $this->_showPluginNews(&$R, $lang, $data);
-        $R->doc .= '    </div>'.DOKU_LF;
+        // $R->doc .= '    <div class="repo_info3">';
+        // $this->_showPluginNews(&$R, $lang, $data);
+        // $R->doc .= '    </div>'.DOKU_LF;
         $R->doc .= '  </div>';
 
         $R->doc .= '  <div class="repo_cloud">';
@@ -292,13 +292,14 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         }
         $header .= ' ('.count($plugins).')';
 
-        $R->doc .= '<a name="repotable">';
-        $R->header($header, 3, null);
-        $R->section_open(3);
+        $R->doc .= '<a name="repotable" />';
+        $R->doc .= '<h3>'.$header.'</h3>';
+//   TODO:     $R->header($header, 3, null);
+        $R->section_open(2);
         $R->doc .= '<div id="pluginrepo__table">';
 
         if(!trim($_REQUEST['pluginsort'])) {
-            $R->doc .= '<div class="repo_alphabet">Jump to plugins starting with: ';
+            $R->doc .= '<div class="repo__alphabet">Jump to plugins starting with: ';
             foreach (range('A', 'Z') as $char) {
                 $R->doc .= '<a href="#'.strtolower($char).'">'.$char.'</a> ';
             }
@@ -306,7 +307,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         }
 
         if($type != 0 || $tag) {
-            $R->doc .= '<div class="repo_resetfilter">';
+            $R->doc .= '<div class="repo__resetfilter">';
             $R->doc .= $R->internallink($this->getConf('main'),'Show all plugins (remove filter)');
             $R->doc .= '</div>';
         }
@@ -315,7 +316,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         if ($this->getConf('new_table_layout')) {
             $this->_newTable($plugins,$header,$linkopt,$popmax,$data,$lang,$R);
         } else {
-            $this->_classicTable($plugins,$linkopt,$popmax,$lang,$R);
+            $this->_classicTable($plugins,$linkopt,$popmax,$data,$lang,$R);
         }
 
         $R->doc .= '</div>';
@@ -347,6 +348,9 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= '  <th>  <a href="'.wl($this->getConf('main'),$linkopt.'pluginsort='.($sort='^c'?'c':'^c').'#repotable').'" title="Sort by popularity">'.($sort=='c'?$sortdir:'').'Popularity</a></th>';
         $R->doc .= '</tr>';
 
+        $lang_provides = $this->getLang($lang,'t_provides');
+        $lang_tags = $this->getLang($lang,'t_tags');
+        $lang_author = $this->getLang($lang,'t_author');
         foreach($plugins as $row) {
             $link = $this->hlp->internallink($R, $row['A.plugin'], ucfirst(noNS($row['A.plugin'])).($row['A.type']==32?' template':' plugin'));
             if(strpos($link,'class="wikilink2"')){
@@ -369,19 +373,13 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
             $R->doc .= '<div class="clearer"></div>';
             $R->doc .= hsc($row['A.description']).'<br />';
 
-            $R->doc .= '<div class="repo_provides">';
-            $R->doc .= $this->getLang($lang,'t_provides');
-            $R->doc .= ': ';
+            $R->doc .= '<div class="repo_provides">'.$lang_provides.': ';
             $R->doc .= $this->hlp->listtype($row['A.type']);
-            $R->doc .= ' ';
-            $R->doc .= $this->getLang($lang,'t_tags');
-            $R->doc .= ': ';
+            $R->doc .= ' '.$lang_tags.': ';
             $R->doc .= $this->hlp->listtags($row['A.tags']);
             $R->doc .= '</div>';
 
-            $R->doc .= '<div class="repo_mail">';
-            $R->doc .= $this->getLang($lang,'t_author');
-            $R->doc .= ': ';
+            $R->doc .= '<div class="repo_mail">'.$lang_author.': ';
             $R->emaillink($row['A.email'],$row['A.author']);
             $R->doc .= '</div>';
             $R->doc .= '</td>';
@@ -420,18 +418,19 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
     /**
      * Output classic repository table with only one database field/cell
      */
-    function _classicTable($plugins,$linkopt,$popmax,$lang,$R) {
+    function _classicTable($plugins,$linkopt,$popmax,$data,$lang,$R) {
         $R->doc .= '<table class="inline">';
-        $R->doc .= '<tr><th><a href="'.wl($this->getConf('main'),$linkopt.'pluginsort=p').'" title="Sort by name">Plugin</a></th>
-                        <th>Description</th>
-                        <th><a href="'.wl($this->getConf('main'),$linkopt.'pluginsort=a').'" title="Sort by author">Author</a></th>
-                        <th><a href="'.wl($this->getConf('main'),$linkopt.'pluginsort=t').'" title="Sort by type">Type</a></th>';
+        $R->doc .= '<tr><th><a href="'.wl($this->getConf('main'),$linkopt.'pluginsort=p').'" title="'.$this->getLang($lang,'t_sortname').'">'.$this->getLang($lang,'t_name').'</a></th>';
+
+        $R->doc .= '<th>'.$this->getLang($lang,'t_description').'</th>';
+        $R->doc .= '<th><a href="'.wl($this->getConf('main'),$linkopt.'pluginsort=a').'" title="'.$this->getLang($lang,'t_sortauthor').'">'.$this->getLang($lang,'t_author').'</a></th>';
+        $R->doc .= '<th><a href="'.wl($this->getConf('main'),$linkopt.'pluginsort=t').'" title="'.$this->getLang($lang,'t_sorttype').  '">'.$this->getLang($lang,'t_type').'</a></th>';
         if ($data['screenshot']) {
-            $R->doc .= '<th>Screenshot</th>';
+            $R->doc .= '<th>'.$this->getLang($lang,'t_screenshot').'</th>';
         }
-        $R->doc .= '    <th><a href="'.wl($this->getConf('main'),$linkopt.'pluginsort=^d').'" title="Sort by date">Last Update</a></th>
-                        <th><a href="'.wl($this->getConf('main'),$linkopt.'pluginsort=^c').'" title="Sort by popularity">Popularity</a></th>
-                    </tr>';
+        $R->doc .= '<th><a href="'.wl($this->getConf('main'),$linkopt.'pluginsort=^d').'" title="'.$this->getLang($lang,'t_sortdate'). '">'.$this->getLang($lang,'t_date').'</a></th>';
+        $R->doc .= '<th><a href="'.wl($this->getConf('main'),$linkopt.'pluginsort=^c').'" title="'.$this->getLang($lang,'t_sortpopularity').'">'.$this->getLang($lang,'t_popularity').'</a></th>';
+        $R->doc .= '</tr>';
 
         foreach($plugins as $row) {
             $link = $this->hlp->internallink($R, $row['A.plugin']);
@@ -474,7 +473,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
             if(strpos($this->getConf('bundled'),$row['A.plugin']) === false){
                 $R->doc .= '<div class="prog-border" title="'.$row['cnt'].'/'.$allcnt.'"><div class="prog-bar" style="width: '.sprintf(100*$row['cnt']/$popmax).'%;"></div></div>';
             }else{
-                $R->doc .= '<i>bundled</i>';
+                $R->doc .= '<i>'.$this->getLang($lang,'t_bundled').'</i>';
             }
             $R->doc .= '</td>';
 

@@ -52,20 +52,19 @@ div.pluginrepo__query div.pluginrepo__querytotal {
     margin-bottom: 1em;
 }
 
-div#pluginrepo__table div#repo_alphabet {
- /*   border: 2px solid green;*/
+div#pluginrepo__table div.repo__alphabet {
+    border: 1px solid green;
     width: 70%;
     float: left;
 }
 
-div#pluginrepo__table div.repo_resetfilter {
- /*   border: 2px solid blue;*/
+div#pluginrepo__table div.repo__resetfilter {
+    border: 1px solid blue;
     float: right;
 }
 
 div#pluginrepo__table table {
     width: 100%;
-    margin-top: 2em;
 }
 
 div#pluginrepo__table table th a:link,
@@ -133,7 +132,7 @@ div#pluginrepo__table .prog-bar {
 
 div#pluginrepo__repo div.repo_infos {
   /*  border: 2px solid red;*/
-    width: 57%;
+    width: 54%;
     float: left;
 }
 
@@ -153,11 +152,8 @@ div#pluginrepo__repo div.repo_info3 {
     float: right;
 }
 
-div#pluginrepo__repo div.repo_infos h3 {
-    margin-left: 0em;
-}
-
-div#pluginrepo__repo div.repo_cloud h3 {
+div#pluginrepo__table h3,
+div#pluginrepo__repo  h3 {
     margin-left: 0em;
 }
 
@@ -166,12 +162,14 @@ div#pluginrepo__repo div#repo_searchform  {
 }
 
 div#pluginrepo__repo div.repo_cloud {
-    border: 2px solid green;
+/*    border: 1px solid green; */
+    border-left: 2px solid __border__;
     background-color: #eef;
-    width: 40%;
+    padding: 0em 2% 1.5em 2%;
+    width: 41%;
     float: right;
     overflow: auto;
-    height: 15em;
+/*    height: 15em;*/
     padding-right: 0.5em;
 }
 
