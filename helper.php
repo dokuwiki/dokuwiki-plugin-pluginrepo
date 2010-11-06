@@ -280,6 +280,12 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
             $meta['depends'][] = $row['other'];
         }
 
+        $stmt = $db->prepare('SELECT tag FROM plugin_tags WHERE plugin = ?');
+        $stmt->execute(array($id));
+        foreach ($stmt as $row) {
+            $meta['tags'][] = $row['tag'];
+        }
+
         $stmt = $db->prepare('SELECT plugin FROM plugins WHERE plugin <> ? AND author=(SELECT author FROM plugins WHERE plugin = ?)');
         $stmt->execute(array($id,$id));
         foreach ($stmt as $row) {

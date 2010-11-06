@@ -42,24 +42,28 @@ function parseOptions() {
     return  $_REQUEST;
 }
 
+/**
+ * Return XML string with repository data, plugin relations (tags, similar, depends)
+ * are only returned if $opt['plugins'] is used to return named plugins
+ */
 function getRepository($opt) {
     $hlp = new helper_plugin_pluginrepo();
     $plugins = $hlp->getPlugins($opt);
 
-    $feed = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
-    $feed .= "<repository>\n";
+    $feed = '<?xml version="1.0" encoding="utf-8"?>';
+    $feed .= '<repository>';
     foreach($plugins as $plugin) {
-        $feed .= "  <plugin>\n";
+        $feed .= '<plugin>';
         $id = hsc($plugin['A.plugin']);
-        $feed .= "    <id>$id</id>\n";
+        $feed .= '<id>'.$id.'</id>';
         if ($plugin['A.type'] == 32) {
-            $feed .= "    <link><a href=\"".DOKU_URL."doku.php?id=template:$id\" title=\"template:$id\">$id</a></link>\n";
+            $feed .= '<link><a href="'.DOKU_URL.'doku.php?id=template:'.$id.'" title="template:'.$id.'">'.$id.'</a></link>';
         } else {
-            $feed .= "    <link><a href=\"".DOKU_URL."doku.php?id=plugin:$id\" title=\"plugin:$id\">$id</a></link>\n";
+            $feed .= '<link><a href="'.DOKU_URL.'doku.php?id=plugin:'.$id.'" title="plugin:'.$id.'">'.$id.'</a></link>';
         }
-        $feed .= "    <name>".hsc($plugin['A.name'])."</name>\n";
-        $feed .= "    <description>".hsc($plugin['A.description'])."</description>\n";
-        $feed .= "    <type>";
+        $feed .= '<name>'.hsc($plugin['A.name']).'</name>';
+        $feed .= '<description>'.hsc($plugin['A.description']).'</description>';
+        $feed .= '<type>';
         if ($plugin['A.type']) {
             $types = array();
             foreach($hlp->types as $k => $v){
@@ -70,30 +74,68 @@ function getRepository($opt) {
             sort($types);
             $feed .= join(', ', $types);
         }
-        $feed .= "</type>\n";
+        $feed .= '</type>';
 
-        // TODO: add tags, similar, conflicts        
-
-        $feed .= "    <lastupdate>".hsc(str_replace("'",'',$plugin['A.lastupdate']))."</lastupdate>\n";
+        $feed .= '<lastupdate>'.hsc(str_replace("'",'',$plugin['A.lastupdate'])).'</lastupdate>';
         if (strpos($plugin['A.compatible'],'devel') !== false) {
-            $feed .= "<develonly>true</develonly>";
+            $feed .= '<develonly>true</develonly>';
         }
-        $feed .= "    <compatible>";
+        $feed .= '<compatible>';
         $compatibility = $hlp->cleanCompat($plugin['A.compatible']);
         foreach ($compatibility as $release => $value) {
             if ($value) {
-                $feed .= "    <release>".$release."</release>\n";
+                $feed .= '<release>'.$release.'</release>';
             }
         }
-        $feed .= "    </compatible>\n";
-        $feed .= "    <securityissue>".hsc($plugin['A.securityissue'])."</securityissue>\n";
-        $feed .= "    <author>".hsc($plugin['A.author'])."</author>\n"; // mail not exposed as an anti-spam measure
-        $feed .= "    <downloadurl>".hsc($plugin['A.downloadurl'])."</downloadurl>\n";
-        $feed .= "    <bugtracker>".hsc($plugin['A.bugtracker'])."</bugtracker>\n";
-        $feed .= "    <donationurl>".hsc($plugin['A.donationurl'])."</donationurl>\n";
-        $feed .= "  </plugin>\n";
+        $feed .= '</compatible>';
+        $feed .= '<securityissue>'.hsc($plugin['A.securityissue']).'</securityissue>';
+        $feed .= '<author>'.hsc($plugin['A.author']).'</author>'; // mail not exposed as an anti-spam measure
+        $feed .= '<downloadurl>'.hsc($plugin['A.downloadurl']).'</downloadurl>';
+        $feed .= '<bugtracker>'.hsc($plugin['A.bugtracker']).'</bugtracker>';
+        $feed .= '<donationurl>'.hsc($plugin['A.donationurl']).'</donationurl>';
+
+        if ($opt['plugins']) {
+            $rel = $hlp->getPluginRelations($id);
+            $feed .= '<relations>';
+
+            $feed .= '<similar>';
+            if ($rel['similar']) {
+                foreach ($rel['similar'] as $link) {
+                    $feed .= '<id>'.hsc($link).'</id>';
+                }
+            }
+            $feed .= '</similar>';
+
+            $feed .= '<conflicts>';
+            if ($rel['conflicts']) {
+                foreach ($rel['conflicts'] as $link) {
+                    $feed .= '<id>'.hsc($link).'</id>';
+                }
+            }
+            $feed .= '</conflicts>';
+
+            $feed .= '<depends>';
+            if ($rel['depends']) {
+                foreach ($rel['depends'] as $link) {
+                    $feed .= '<id>'.hsc($link).'</id>';
+                }
+            }
+            $feed .= '</depends>';
+
+            $feed .= '<tags>';
+            if ($rel['tags']) {
+                foreach ($rel['tags'] as $link) {
+                    $feed .= '<tag>'.hsc($link).'</tag>';
+                }
+            }
+            $feed .= '</tags>';
+
+            $feed .= '</relations>';
+        }
+
+        $feed .= '</plugin>';
     }
-    $feed .= "</repository>\n";
+    $feed .= '</repository>';
     return $feed;
 }
 
