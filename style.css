@@ -6,9 +6,6 @@ div#pluginrepo__plugin {
     font-size: 90%;
 }
 
-div.pluginrepo__query div.pluginrepo__querytotal {
-}
-
 div#pluginrepo__plugin div {
     background: #fff url(images/dwplugin.png) 5px 5px no-repeat;
     height: auto !important;
@@ -27,6 +24,7 @@ div#pluginrepo__plugin p.security {
 }
 
 div#pluginrepo__plugin table.compatible {
+    margin-bottom: 0em;
     font-size: 80%;
     text-align: center;
 }
@@ -44,6 +42,14 @@ div#pluginrepo__plugin div#pluginrepo__pluginscreenshot {
     background: #fff;
     padding: 0em 0em 0em 1em;
     float: right;
+}
+
+div.pluginrepo__query table.inline {
+    margin-bottom: 0em;
+}
+
+div.pluginrepo__query div.pluginrepo__querytotal {
+    margin-bottom: 1em;
 }
 
 div#pluginrepo__table div#repo_alphabet {

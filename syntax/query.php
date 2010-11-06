@@ -96,7 +96,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
         if (!$data['where']) {
             $R->doc .= '<b>Repoquery error - Missing WHERE clause</b><br/>';
             return;
-        } elseif (strpos($data['where'],'cnt')) {
+        } elseif (strpos($data['where'],'cnt') !== false) {
             $R->doc .= '<b>Repoquery error - "cnt" could not be used with WHERE, use HAVING instead.</b><br/>';
             return;
         }
@@ -131,6 +131,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
         $values = preg_split("/,/",$data['values']);
         $values = array_map('trim',$values);
         $values = array_filter($values);
+        if (!$values) $values = array('');
         $stmt->execute($values);
         $datarows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -219,7 +220,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
             }
             $R->doc .= '</table>';
         }
-        $R->doc .= '<div class="pluginrepo__querytotal">'.count($datarows).' plugins matching query</div>';
+        $R->doc .= '<div class="pluginrepo__querytotal">=> '.count($datarows).' plugins matching query</div>';
         $R->doc .= '</div>';
         return true;
     }
