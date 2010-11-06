@@ -130,14 +130,14 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         }
         // TODO: quicksearch doesn't work
         global $lang;
-    	$R->doc .= '<div id="repo_searchform">';
-		$R->doc .= '<form action="'.wl().'" accept-charset="utf-8" class="search" id="dw__search2" method="get"><div class="no">';
-		$R->doc .= '<input type="hidden" name="do" value="search" />';
-		$R->doc .= '<input type="text" id="qsearch__in2" accesskey="f" name="id" class="edit" title="[ALT+F]" />';
-		$R->doc .= '<input type="submit" value="'.$lang['btn_search'].'" class="button" title="'.$lang['btn_search'].'" />';
-		$R->doc .= '<div id="qsearch__out2" class="ajax_qsearch JSpopup"></div>';
-		$R->doc .= '</div></form>';
-		$R->doc .= '</div>'.DOKU_LF;
+        $R->doc .= '<div id="repo_searchform">';
+        $R->doc .= '<form action="'.wl().'" accept-charset="utf-8" class="search" id="dw__search2" method="get"><div class="no">';
+        $R->doc .= '<input type="hidden" name="do" value="search" />';
+        $R->doc .= '<input type="text" id="qsearch__in2" accesskey="f" name="id" class="edit" title="[ALT+F]" />';
+        $R->doc .= '<input type="submit" value="'.$lang['btn_search'].'" class="button" title="'.$lang['btn_search'].'" />';
+        $R->doc .= '<div id="qsearch__out2" class="ajax_qsearch JSpopup"></div>';
+        $R->doc .= '</div></form>';
+        $R->doc .= '</div>'.DOKU_LF;
         $R->doc .= '<div class="clearer"></div>';
     }
 
@@ -177,40 +177,40 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= '<h3>Most popular</h3>';
         return;
 //        $R->doc .= $this->_listplugins($mostpopular,$R);
-		// dummy
-		$sql2 = "SELECT plugin, description
+        // dummy
+        $sql2 = "SELECT plugin, description
                   FROM plugins 
               ORDER BY author 
-			 LIMIT 3";
+               LIMIT 3";
         $res2 = sqlite_query($sql2,$this->db);
         $R->doc .= '<ul>';
         while ($row = sqlite_fetch_array($res2, SQLITE_ASSOC)) {
             $R->doc .= '    <li><div class="li">';
             $R->doc .= '<div class="repo_infoplugintitle">';
-			$R->internallink(':plugin:'.$row['plugin'], ucfirst($row['plugin']). ' plugin');
-			$R->doc .= '</div> '. hsc($row['description']);
+            $R->internallink(':plugin:'.$row['plugin'], ucfirst($row['plugin']). ' plugin');
+            $R->doc .= '</div> '. hsc($row['description']);
             $R->doc .= '    </div></li>';
             $latest .= $row['plugin'].',';
-		}
+        }
         $R->doc .= '</ul>';
 
 
         $R->doc .= '<h3>Recently updated</h3>';
-		// latest
-		$sql2 = "SELECT plugin, description
+        // latest
+        $sql2 = "SELECT plugin, description
                   FROM plugins 
               ORDER BY lastupdate 
-			DESC LIMIT 2";
+            DESC LIMIT 2";
         $res2 = sqlite_query($sql2,$this->db);
         $R->doc .= '<ul>';
         while ($row = sqlite_fetch_array($res2, SQLITE_ASSOC)) {
             $R->doc .= '    <li><div class="li">';
             $R->doc .= '<div class="repo_infoplugintitle">';
-			$R->internallink(':plugin:'.$row['plugin'], ucfirst($row['plugin']). ' plugin');
-			$R->doc .= '</div> '. hsc($row['description']);
+            $R->internallink(':plugin:'.$row['plugin'], ucfirst($row['plugin']). ' plugin');
+            $R->doc .= '</div> '. hsc($row['description']);
             $R->doc .= '    </div></li>';
             $latest .= $row['plugin'].',';
-		}
+        }
         $R->doc .= '</ul>';
     }
 
