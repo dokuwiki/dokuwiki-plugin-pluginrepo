@@ -274,15 +274,15 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $stmt = $db->prepare('REPLACE INTO plugins 
                                (plugin, name, description, 
                                 author, email, 
-                                compatible, lastupdate, securityissue,
+                                compatible, lastupdate, securityissue, securitywarning,
                                 downloadurl, bugtracker, sourcerepo, donationurl, 
-                                screenshot, type)
+                                screenshot, tags, type)
                               VALUES
                                (:plugin, :name, :description, 
                                 :author, LOWER(:email), 
-                                :compatible, :lastupdate, :securityissue,
+                                :compatible, :lastupdate, :securityissue, :securitywarning,
                                 :downloadurl, :bugtracker, :sourcerepo, :donationurl, 
-                                :screenshot, :type) ');
+                                :screenshot, :tags, :type) ');
         $stmt->execute(array(':plugin' =>  $id, 
                              ':name' => $name, 
                              ':description' => $data['description'], 
@@ -291,11 +291,13 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
                              ':compatible' => $data['compatible'], 
                              ':lastupdate' => $data['lastupdate'], 
                              ':securityissue' => $data['securityissue'],
+                             ':securitywarning' => $data['securitywarning'],
                              ':downloadurl' => $data['downloadurl'], 
                              ':bugtracker' => $data['bugtracker'], 
                              ':sourcerepo' => $data['sourcerepo'], 
                              ':donationurl' => $data['donationurl'], 
                              ':screenshot' => $data['screenshot_img'], 
+                             ':tags' => $data['tags'], 
                              ':type' => $type));
 
         $tags = $this->hlp->parsetags($data['tags']);

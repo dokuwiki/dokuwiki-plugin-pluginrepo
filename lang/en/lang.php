@@ -27,6 +27,11 @@ $lang['sourcerepo']          = 'Source Repository';
 $lang['donationurl']         = 'Thank the Author';
 
 // Plugin table
+$lang['t_download']          = 'Download';
+$lang['t_provides']          = 'Provides';
+$lang['t_tags']              = 'Tags';
+$lang['t_author']            = 'Author';
+$lang['t_bundled']           = 'bundled';
 
 
 //Setup VIM: ex: et ts=2 enc=utf-8 :

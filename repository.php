@@ -38,6 +38,9 @@ print $feed;
 
 // ---------------------------------------------------------------- //
 
+/**
+ * TODO
+ */
 function parseOptions() {
     return  $_REQUEST;
 }

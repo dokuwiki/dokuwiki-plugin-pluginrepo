@@ -85,6 +85,10 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
      * Output table of plugins with filter and navigation
      */
     function _showData(&$R, $data){
+        global $ID;
+        $lang = split(":",getNS($ID),2);
+        $lang =(count($lang) == 2 ? $lang[0] : 'en');
+
         $R->info['cache'] = false;
 
         $R->header('Search for plugins', 2, null);
@@ -93,15 +97,15 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= '<div id="pluginrepo__repo">';
         $R->doc .= '  <div class="repo_infos">';
         $R->doc .= '    <div class="repo_info">';
-        $this->_showMainSearch(&$R, $data);
+        $this->_showMainSearch(&$R, $lang, $data);
         $R->doc .= '    </div>'.DOKU_LF;
 
         $R->doc .= '    <div class="repo_info2">';
-        $this->_showPluginTypeFilter(&$R, $data);
+        $this->_showPluginTypeFilter(&$R, $lang, $data);
         $R->doc .= '    </div>'.DOKU_LF;
 
         $R->doc .= '    <div class="repo_info3">';
-        $this->_showPluginNews(&$R, $data);
+        $this->_showPluginNews(&$R, $lang, $data);
         $R->doc .= '    </div>'.DOKU_LF;
         $R->doc .= '  </div>';
 
@@ -114,13 +118,13 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= '<div class="clearer"></div>';
         $R->section_close();
 
-        $this->_showPluginTable(&$R, $data);
+        $this->_showPluginTable(&$R, $lang, $data);
     }
 
     /**
      * Output repo table overview/intro and search form 
      */
-    function _showMainSearch(&$R, $data){
+    function _showMainSearch(&$R, $lang, $data){
         if ($data['textsearch']) {
             $R->doc .= '<p>'.hsc($data['textsearch']).'</p>';
         } else {
@@ -129,7 +133,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
                         by type. Of cause you can also use the search box.</p>';
         }
         // TODO: quicksearch doesn't work
-        global $lang;
+        global $lang; // TODO: hides local lang (and should be local)
         $R->doc .= '<div id="repo_searchform">';
         $R->doc .= '<form action="'.wl().'" accept-charset="utf-8" class="search" id="dw__search2" method="get"><div class="no">';
         $R->doc .= '<input type="hidden" name="do" value="search" />';
@@ -144,7 +148,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
     /**
      * Output plugin TYPE filter selection
      */
-    function _showPluginTypeFilter(&$R, $data){
+    function _showPluginTypeFilter(&$R, $lang, $data){
         $R->doc .= '<h3>Filter plugins by type</h3>';
       //  $R->doc .= 'DokuWiki features different plugin types.';
 
@@ -173,7 +177,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
     /**
      * Output plugin news
      */
-    function _showPluginNews(&$R, $data){
+    function _showPluginNews(&$R, $lang, $data){
         $R->doc .= '<h3>Most popular</h3>';
         return;
 //        $R->doc .= $this->_listplugins($mostpopular,$R);
@@ -238,9 +242,9 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
         ksort($tags);
         foreach($tags as $tag => $size){
-            $R->doc .= '<a href="'.wl($this->getConf('main'),array('plugintag'=>$tag)).'#repotable"
-                        class="wikilink1 cl'.$size.'"
-                        title="List all plugins with this tag">'.hsc($tag).'</a> ';
+            $R->doc .= '<a href="'.wl($this->getConf('main'),array('plugintag'=>$tag)).'#repotable" '.
+                       'class="wikilink1 cl'.$size.'"'.
+                       'title="List all plugins with this tag">'.hsc($tag).'</a> ';
         }
     }
 
@@ -269,7 +273,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
     /**
      * Output plugin table and "jump to A B C.." navigation
      */
-    function _showPluginTable(&$R, $data){
+    function _showPluginTable(&$R, $lang, $data){
         $plugins = $this->hlp->getPlugins(array_merge($_REQUEST,$data));
         $popmax = $this->hlp->getMaxPopularity();
         if(!$allcnt) $allcnt = 1;
@@ -309,9 +313,9 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= '<div class="clearer"></div>';
 
         if ($this->getConf('new_table_layout')) {
-            $this->_newTable($plugins,$header,$linkopt,$popmax,$data,$R);
+            $this->_newTable($plugins,$header,$linkopt,$popmax,$data,$lang,$R);
         } else {
-            $this->_classicTable($plugins,$linkopt,$popmax,$R);
+            $this->_classicTable($plugins,$linkopt,$popmax,$lang,$R);
         }
 
         $R->doc .= '</div>';
@@ -322,7 +326,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
     /**
      * Output new table with more dense layout
      */
-    function _newTable($plugins,$header,$linkopt,$popmax,$data,$R) {
+    function _newTable($plugins,$header,$linkopt,$popmax,$data,$lang,$R) {
         $sort = $_REQUEST['pluginsort'];
         if ($sort{0} == '^') {
             $sort = substr($sort, 1);
@@ -359,18 +363,25 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
             $R->doc .= '</div>';
             if($row['A.downloadurl']){
                 $R->doc .= '<div class="repo_download">';
-                $R->doc .= $R->externallink($row['A.downloadurl'], 'Download', null, true);
+                $R->doc .= $R->externallink($row['A.downloadurl'], $this->getLang($lang,'t_download'), null, true);
                 $R->doc .= '</div>';
             }
             $R->doc .= '<div class="clearer"></div>';
             $R->doc .= hsc($row['A.description']).'<br />';
 
             $R->doc .= '<div class="repo_provides">';
-            $R->doc .= 'Provides: '.$this->hlp->listtype($row['A.type']) .' Tags:  ';
-// TODO: add tags and call to $this->hlp->listtags()
+            $R->doc .= $this->getLang($lang,'t_provides');
+            $R->doc .= ': ';
+            $R->doc .= $this->hlp->listtype($row['A.type']);
+            $R->doc .= ' ';
+            $R->doc .= $this->getLang($lang,'t_tags');
+            $R->doc .= ': ';
+            $R->doc .= $this->hlp->listtags($row['A.tags']);
             $R->doc .= '</div>';
 
-            $R->doc .= '<div class="repo_mail">Author: ';
+            $R->doc .= '<div class="repo_mail">';
+            $R->doc .= $this->getLang($lang,'t_author');
+            $R->doc .= ': ';
             $R->emaillink($row['A.email'],$row['A.author']);
             $R->doc .= '</div>';
             $R->doc .= '</td>';
@@ -397,7 +408,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
             if(strpos($this->getConf('bundled'),$row['A.plugin']) === false){
                 $R->doc .= '<div class="prog-border" title="'.$row['cnt'].'/'.$allcnt.'"><div class="prog-bar" style="width: '.sprintf(100*$row['cnt']/$popmax).'%;"></div></div>';
             }else{
-                $R->doc .= '<i>bundled</i>';
+                $R->doc .= '<i>'.$this->getLang($lang,'t_bundled').'</i>';
             }
             $R->doc .= '</td>';
 
@@ -409,7 +420,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
     /**
      * Output classic repository table with only one database field/cell
      */
-    function _classicTable($plugins,$linkopt,$popmax,$R) {
+    function _classicTable($plugins,$linkopt,$popmax,$lang,$R) {
         $R->doc .= '<table class="inline">';
         $R->doc .= '<tr><th><a href="'.wl($this->getConf('main'),$linkopt.'pluginsort=p').'" title="Sort by name">Plugin</a></th>
                         <th>Description</th>

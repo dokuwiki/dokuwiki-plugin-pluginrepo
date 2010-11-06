@@ -461,8 +461,8 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $tags = $this->parsetags($string);
         $out = array();
         foreach($tags as $tag){
-            $out[] = '<a href="'.wl($this->getConf('main'),array('plugintag'=>$tag)).'#repotable"
-                         class="wikilink1" title="List all plugins with this tag">'.hsc($tag).'</a>';
+            $out[] = '<a href="'.wl($this->getConf('main'),array('plugintag'=>$tag)).'#repotable" '.
+                        'class="wikilink1" title="List all plugins with this tag">'.hsc($tag).'</a>';
         }
         return join(', ',$out);
     }
@@ -486,8 +486,8 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $types = array();
         foreach($this->types as $k => $v){
             if($type & $k){
-                $types[] = '<a href="'.wl($this->getConf('main'),array('plugintype'=>$k)).'#repotable"
-                               class="wikilink1" title="List all '.$v.' plugins">'.$v.'</a>';
+                $types[] = '<a href="'.wl($this->getConf('main'),array('plugintype'=>$k)).'#repotable" '.
+                              'class="wikilink1" title="List all '.$v.' plugins">'.$v.'</a>';
             }
         }
         sort($types);
@@ -518,7 +518,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                                 description varchar(255) default NULL, author varchar(255) default NULL, email varchar(255) default NULL, 
                                 compatible varchar(255) default NULL, lastupdate date default NULL, downloadurl varchar(255) default NULL,
                                 bugtracker varchar(255) default NULL, sourcerepo varchar(255) default NULL, donationurl varchar(255) default NULL, type int(11) NOT NULL default 0, 
-                                screenshot varchar(255) default NULL, securityissue varchar(255) NOT NULL);');
+                                screenshot varchar(255) default NULL, tags varchar(255) default NULL, securitywarning varchar(255) default NULL, securityissue varchar(255) NOT NULL);');
         $db->exec('CREATE TABLE popularity (uid varchar(32) NOT NULL, key varchar(255) NOT NULL, value varchar(255) NOT NULL);');
     }
 }

@@ -14,9 +14,9 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
      * will hold the data helper plugin
      */
     var $hlp = null;
-    var $allowedfields = array('plugin','name','description','author','email',
-                               'compatible','lastupdate','type','securityissue','screenshot',
-                               'downloadurl','bugtracker','sourcerepo','donationurl','cnt');
+    var $allowedfields = array('plugin','name','description','author','email','compatible',
+                               'lastupdate','type','securityissue','securitywarning','screenshot',
+                               'downloadurl','bugtracker','sourcerepo','donationurl','tags','cnt');
     
     /**
      * Constructor. Load helper plugin
