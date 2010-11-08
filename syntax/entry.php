@@ -139,7 +139,6 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $R->emaillink($data['email'],$data['author']);
         $R->doc .= '<br />'.hsc($data['description']).'</p>';
 
-        $R->doc .= '<p>';
         if(preg_match('/^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/',$data['lastupdate'])){
             $R->doc .= '<span class="lastupd">';
             $R->doc .= $this->getLang($lang,'last_updated_on');
@@ -150,38 +149,43 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             $R->doc .= $this->getLang($lang,'provides');
             $R->doc .= ' <em>'.$this->hlp->listtype($type).'</em>.</span>';
         }
-        $R->doc .= '</p>';
 
-        $R->doc .= '<p>';
+        $R->doc .= '<table class="inline compatible">';
+        $R->doc .= '<tr><th colspan="'.$this->getConf('showcompat').'">';
+        $R->doc .= $this->getLang($lang,'compatible_with');
+        $R->doc .= '</th></tr>';
+
         if (!$data['compatible']) {
-            $R->doc .= '<span class="compatible">';
+            $R->doc .= '<tr><td class="compatible__msg" colspan="'.$this->getConf('showcompat').'">';
             $R->doc .= $this->getLang($lang,'no_compatibility');
-            $R->doc .= '</span>';
+            $R->doc .= '</td></tr>';
 
         } else {
             $compatibility = $this->hlp->cleanCompat($data['compatible']);
-            $R->doc .= '<span class="compatible">';
-            $R->doc .= $this->getLang($lang,'compatible_with');
-            $R->doc .= '</span>';
-            $R->doc .= '<table class="inline compatible">';
             $cols = 0;
+            $norecentcompat = true;
             foreach ($compatibility as $release => $value) {
                 if (++$cols > $this->getConf('showcompat')) break;
-                $rowth = "<th>".str_replace(' "','<br/>"',$release)."</th>".$rowth;
-                $rowtd = "<td>".$value."</td>".$rowtd;
+                $compatrow = '<td class="'.$value.'">'.str_replace(' "','<br/>"',$release).'</td>'.$compatrow;
+                if ($value == 'compatible') {
+                    $norecentcompat = false;
+                }
             }
-            $R->doc .= '<tr>'.$rowth.'</tr>';
-// TODO: better handling of plugins with old compat (not the latest 4)
-            if (strpos($data['compatible'],'devel') === false) {
-                $R->doc .= '<tr>'.$rowtd.'</tr>';
-            } else {
-                $R->doc .= '<tr><td colspan="'.$this->getConf('showcompat').'">';
+            if (strpos($data['compatible'],'devel') !== false) {
+                $R->doc .= '<tr><td class="compatible__msg" colspan="'.$this->getConf('showcompat').'">';
                 $R->internallink('devel:develonly',$this->getLang($lang,'develonly'));
                 $R->doc .= '</td></tr>';
+
+            } elseif ($norecentcompat) {
+                $R->doc .= '<tr><td class="compatible__msg" colspan="'.$this->getConf('showcompat').'">';
+                $R->doc .= $data['compatible'].'<br />';
+                $R->doc .= '</td></tr>';
+            } else {
+                $R->doc .= '<tr>'.$compatrow.'</tr>';
             }
-            $R->doc .= '</table>';
         }
-        $R->doc .= '</p></div>';
+        $R->doc .= '</table>'; // end of compatibility table
+        $R->doc .= '</div>';
 
         $R->doc .= '<p>';
         if ($rel['conflicts']) {

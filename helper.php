@@ -426,10 +426,10 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                 $key .= ' "'.$release['name'].'"';
             }
             if (in_array($release['date'], $matches[0]) || in_array($release['name'], $matches[0])) {
-                $retval[$key] = 'y';
+                $retval[$key] = 'compatible';
                 if ($onlybest) return $key;
             } else {
-                $retval[$key] = '';
+                $retval[$key] = 'not_compatible';
             }
         }
         if ($onlybest) return '';

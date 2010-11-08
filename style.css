@@ -2,7 +2,7 @@ div#pluginrepo__plugin {
     background-color: #fff;
     border: 1px solid __border__;
     padding: 0.7em 1em 0.2em 1em;
-    width: 600px;
+    width: 500px;
     font-size: 90%;
 }
 
@@ -24,9 +24,24 @@ div#pluginrepo__plugin p.security {
 }
 
 div#pluginrepo__plugin table.compatible {
+    margin-top: 0.5em;
     margin-bottom: 0em;
     font-size: 80%;
     text-align: center;
+    min-width: 330px;
+}
+
+div#pluginrepo__plugin td {
+    font-style: italic;
+}
+
+div#pluginrepo__plugin td.compatible {
+    background: #fff url(../../images/success.png) no-repeat right;
+    padding-right: 2em;
+}
+
+div#pluginrepo__plugin td.not_compatible {
+    color: __border__;
 }
 
 div#pluginrepo__pluginauthorpush {
