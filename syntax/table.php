@@ -7,7 +7,6 @@
  */
 // must be run within Dokuwiki
 if(!defined('DOKU_INC')) die();
-if (!defined('DOKU_LF')) define('DOKU_LF', "\n");
 
 class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
@@ -100,13 +99,12 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $this->_showMainSearch(&$R, $lang, $data);
         $R->doc .= '    </div>'.DOKU_LF;
 
-        $R->doc .= '    <div class="repo_info22">';
-        $this->_showPluginTypeFilter(&$R, $lang, $data);
-        $R->doc .= '    </div>'.DOKU_LF;
+        if (!$data['plugintype']) {
+            $R->doc .= '    <div class="repo_info22">';
+            $this->_showPluginTypeFilter(&$R, $lang, $data);
+            $R->doc .= '    </div>'.DOKU_LF;
+        }
 
-        // $R->doc .= '    <div class="repo_info3">';
-        // $this->_showPluginNews(&$R, $lang, $data);
-        // $R->doc .= '    </div>'.DOKU_LF;
         $R->doc .= '  </div>';
 
         $R->doc .= '  <div class="repo_cloud">';
@@ -125,13 +123,10 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
      * Output repo table overview/intro and search form 
      */
     function _showMainSearch(&$R, $lang, $data){
-        if ($data['textsearch']) {
-            $R->doc .= '<p>'.hsc($data['textsearch']).'</p>';
-        } else {
-            $R->doc .= '<p>There are many ways to search among available DokuWiki plugins.
-                        You may filter the list by tags from the cloud to the left or
-                        by type. Of cause you can also use the search box.</p>';
-        }
+        $R->doc .= '<p>There are many ways to search among available DokuWiki plugins.
+                    You may filter the list by tags from the cloud to the left or
+                    by type. Of cause you can also use the search box.</p>';
+
         // TODO: quicksearch doesn't work
         global $lang; // TODO: hides local lang (and should be local)
         $R->doc .= '<div id="repo_searchform">';
@@ -175,53 +170,11 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * Output plugin news
-     */
-    function _showPluginNews(&$R, $lang, $data){
-        $R->doc .= '<h3>Most popular</h3>';
-        return;
-//        $R->doc .= $this->_listplugins($mostpopular,$R);
-        // dummy
-        $sql2 = "SELECT plugin, description
-                  FROM plugins 
-              ORDER BY author 
-               LIMIT 3";
-        $res2 = sqlite_query($sql2,$this->db);
-        $R->doc .= '<ul>';
-        while ($row = sqlite_fetch_array($res2, SQLITE_ASSOC)) {
-            $R->doc .= '    <li><div class="li">';
-            $R->doc .= '<div class="repo_infoplugintitle">';
-            $R->internallink(':plugin:'.$row['plugin'], ucfirst($row['plugin']). ' plugin');
-            $R->doc .= '</div> '. hsc($row['description']);
-            $R->doc .= '    </div></li>';
-            $latest .= $row['plugin'].',';
-        }
-        $R->doc .= '</ul>';
-
-
-        $R->doc .= '<h3>Recently updated</h3>';
-        // latest
-        $sql2 = "SELECT plugin, description
-                  FROM plugins 
-              ORDER BY lastupdate 
-            DESC LIMIT 2";
-        $res2 = sqlite_query($sql2,$this->db);
-        $R->doc .= '<ul>';
-        while ($row = sqlite_fetch_array($res2, SQLITE_ASSOC)) {
-            $R->doc .= '    <li><div class="li">';
-            $R->doc .= '<div class="repo_infoplugintitle">';
-            $R->internallink(':plugin:'.$row['plugin'], ucfirst($row['plugin']). ' plugin');
-            $R->doc .= '</div> '. hsc($row['description']);
-            $R->doc .= '    </div></li>';
-            $latest .= $row['plugin'].',';
-        }
-        $R->doc .= '</ul>';
-    }
-
-    /**
      * TODO
      */
     function _tagcloud(&$R, $data){
+        global $ID;
+        
         $min  = 0;
         $max  = 0;
         $tags = array();
@@ -242,7 +195,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
         ksort($tags);
         foreach($tags as $tag => $size){
-            $R->doc .= '<a href="'.wl($this->getConf('main'),array('plugintag'=>$tag)).'#repotable" '.
+            $R->doc .= '<a href="'.wl($ID,array('plugintag'=>$tag)).'#repotable" '.
                        'class="wikilink1 cl'.$size.'"'.
                        'title="List all plugins with this tag">'.hsc($tag).'</a> ';
         }
@@ -390,13 +343,13 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
             $R->doc .= '</td>';
 
             $R->doc .= '<td class="center">';
-            $R->doc .= $this->hlp->cleanCompat($row['A.compatible'],true);
+            $R->doc .= str_replace(' "','<br />"',$this->hlp->cleanCompat($row['A.compatible'],true));
             $R->doc .= '</td>';
 
             if ($data['screenshot']) {
                 $R->doc .= '<td>';
                 $val = $row['A.screenshot'];
-                $title = 'screenshot: '.basename(str_replace(':','/',$val));
+                $title = ''; //'screenshot: '.basename(str_replace(':','/',$val));
                 $R->doc .= '<a href="'.ml($val).'" class="media" rel="lightbox">';
                 $R->doc .= '<img src="'.ml($val,"w=80").'" alt="'.hsc($title).'" title="'.hsc($title).'" width="80"/>';
                 $R->doc .= '</a></td>';

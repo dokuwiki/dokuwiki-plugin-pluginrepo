@@ -68,13 +68,13 @@ div.pluginrepo__query div.pluginrepo__querytotal {
 }
 
 div#pluginrepo__table div.repo__alphabet {
-    border: 1px solid green;
+  /*  border: 1px solid green; */
     width: 70%;
     float: left;
 }
 
 div#pluginrepo__table div.repo__resetfilter {
-    border: 1px solid blue;
+  /*  border: 1px solid blue; */
     float: right;
 }
 

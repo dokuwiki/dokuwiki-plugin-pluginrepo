@@ -6,7 +6,6 @@
  */
 // must be run within Dokuwiki
 if(!defined('DOKU_INC')) die();
-if (!defined('DOKU_LF')) define('DOKU_LF', "\n");
 
 class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
 
