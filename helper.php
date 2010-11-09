@@ -457,14 +457,14 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     /**
      * Convert comma separated list of tags to filterlinks
      */
-    function listtags($string){
+    function listtags($string,$target,$sep=', ') {
         $tags = $this->parsetags($string);
         $out = array();
         foreach($tags as $tag){
-            $out[] = '<a href="'.wl($this->getConf('main'),array('plugintag'=>$tag)).'#repotable" '.
+            $out[] = '<a href="'.wl($target,array('plugintag'=>$tag)).'#repotable" '.
                         'class="wikilink1" title="List all plugins with this tag">'.hsc($tag).'</a>';
         }
-        return join(', ',$out);
+        return join($sep,$out);
     }
 
     /**
@@ -482,11 +482,11 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     /**
      * Convert $type (int) to list of filterlinks
      */
-    function listtype($type,$sep=', '){
+    function listtype($type,$target,$sep=', '){
         $types = array();
         foreach($this->types as $k => $v){
             if($type & $k){
-                $types[] = '<a href="'.wl($this->getConf('main'),array('plugintype'=>$k)).'#repotable" '.
+                $types[] = '<a href="'.wl($target,array('plugintype'=>$k)).'#repotable" '.
                               'class="wikilink1" title="List all '.$v.' plugins">'.$v.'</a>';
             }
         }

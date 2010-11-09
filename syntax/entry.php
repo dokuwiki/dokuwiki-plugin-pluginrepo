@@ -147,7 +147,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         if($type && $type != 32){
             $R->doc .= '<span class="type">';
             $R->doc .= $this->getLang($lang,'provides');
-            $R->doc .= ' <em>'.$this->hlp->listtype($type).'</em>.</span>';
+            $R->doc .= ' <em>'.$this->hlp->listtype($type,$this->getConf('main')).'</em>.</span>';
         }
 
         $R->doc .= '<table class="inline compatible">';
@@ -223,7 +223,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             $R->doc .= '<span class="tags">';
             $R->doc .= $this->getLang($lang,'tagged_with');
             $R->doc .= ' <em>';
-            $R->doc .= $this->hlp->listtags($data['tags']);
+            $R->doc .= $this->hlp->listtags($data['tags'],$this->getConf('main'));
             $R->doc .= '</em>.</span><br />';
         }
         $R->doc .= '</p>';
