@@ -298,20 +298,21 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     /**
      * Return array of tags and their frequency in the repository
      */
-    function getTags($minlimit = 0,$showtemplate = false) {
+    function getTags($minlimit = 0,$filter) {
         $db = $this->_getPluginsDB();
         if (!$db) return;
 
-        if ($showtemplate) {
-            $typefilter = 'B.type = 32';
-        } else {
-            $typefilter = 'B.type <> 32';
+        $typefilter = '';
+        if ($filter['plugintype'] == 32) {
+            $typefilter = 'AND B.type = 32';
+        } elseif (!$filter['showtemplates']) {
+            $typefilter = 'AND B.type <> 32';
         }
         $stmt = $db->prepare("SELECT A.tag, COUNT(A.tag) as cnt
                                 FROM plugin_tags as A, plugins as B
                                WHERE A.plugin = B.plugin
                                  AND B.securityissue = ''
-                                 AND $typefilter
+                                     $typefilter
                             GROUP BY tag
                               HAVING cnt >= ?
                             ORDER BY cnt DESC");

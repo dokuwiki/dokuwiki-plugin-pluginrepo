@@ -165,14 +165,16 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= '    <li><div class="li">';
         $R->doc .=          $this->hlp->listtype(8,$ID)." plugins allow to create new export modes and to replace the standard DokuWiki xhtml renderer";
         $R->doc .= '    </div></li>';
-        $R->doc .= '    <li><div class="li">';
-        $R->doc .=          $this->hlp->listtype(32,$ID)." ...";
-        $R->doc .= '    </div></li>';
+        if ($data['showtemplates']) {
+            $R->doc .= '    <li><div class="li">';
+            $R->doc .=          $this->hlp->listtype(32,$ID)." ...";
+            $R->doc .= '    </div></li>';
+        }
         $R->doc .= '</ul>'.DOKU_LF;
     }
 
     /**
-     * TODO
+     * Output plugin tag filter selection (cloud)
      */
     function _tagcloud(&$R, $data){
         global $ID;
@@ -185,7 +187,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
             $cloudmin = (int)$data['cloudmin'];
         }
 
-        $tagData =$this->hlp->getTags($cloudmin,$data['plugintype'] == 32);
+        $tagData =$this->hlp->getTags($cloudmin,$data);
         // $tagData will be sorted by cnt (descending)
         foreach($tagData as $tag) {
             $tags[$tag['A.tag']] = $tag['cnt'];
