@@ -321,6 +321,10 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         return $tags;
     }
 
+    /**
+     * Return number of installations for most popular plugin
+     * besides the bundled ones
+     */
     function getMaxPopularity() {
         $db = $this->_getPluginsDB();
         if (!$db) return;
@@ -343,23 +347,28 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $stmt->execute($bundled);
         $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
-        $popmax = $res[0]['cnt'];
-        if(!$popmax) $popmax = 1;
+        $retval = $res[0]['cnt'];
+        if(!$retval) $retval = 1;
+        return $retval;
+    }
 
-        return $popmax;
+    /**
+     * Return number of installations that has submitted popularity data
+     */
+    function getPopularitySubmitters() {
+        $db = $this->_getPluginsDB();
+        if (!$db) return;
 
-        // TODO: return $allcnt
-
-        // get maximum pop
-        // $sql = "SELECT COUNT(DISTINCT uid) as cnt
-                  // FROM popularity
-                 // WHERE `popularity.key` = 'plugin'
-                   // AND `popularity.value` = 'popularity'";
-        // $res = mysql_query($sql,$this->db);
-        // $row = mysql_fetch_assoc($res);
-        // $allcnt = $row['cnt'];
-        // if(!$allcnt) $allcnt = 1;
-        // mysql_free_result($res);
+        $stmt = $db->prepare("SELECT COUNT(p.uid) as cnt
+                                FROM popularity p
+                               WHERE p.key = 'plugin'
+                                 AND p.value = 'popularity'"); 
+        $stmt->execute(array(''));
+        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $retval = $res[0]['cnt'];
+        if(!$retval) $retval = 1;
+        return $retval;
     }
 
     /**

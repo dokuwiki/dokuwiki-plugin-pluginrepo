@@ -234,11 +234,9 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         global $ID;
 
         $plugins = $this->hlp->getPlugins(array_merge($_REQUEST,$data));
-        $popmax = $this->hlp->getMaxPopularity();
-        if(!$allcnt) $allcnt = 1;
-
         $type = (int) $_REQUEST['plugintype'];
         $tag  = trim($_REQUEST['plugintag']);
+
         if ($this->types[$type]) {
             $header = 'Available '.$this->types[$type].' Plugins';
             $linkopt = "plugintype=$type,";
@@ -272,9 +270,9 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= '<div class="clearer"></div>';
 
         if ($this->getConf('new_table_layout')) {
-            $this->_newTable($plugins,$linkopt,$popmax,$data,$lang,$R);
+            $this->_newTable($plugins,$linkopt,$data,$lang,$R);
         } else {
-            $this->_classicTable($plugins,$linkopt,$popmax,$data,$lang,$R);
+            $this->_classicTable($plugins,$linkopt,$data,$lang,$R);
         }
 
         $R->doc .= '</div>';
@@ -285,8 +283,11 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
     /**
      * Output new table with more dense layout
      */
-    function _newTable($plugins,$linkopt,$popmax,$data,$lang,$R) {
+    function _newTable($plugins,$linkopt,$data,$lang,$R) {
         global $ID;
+
+        $popmax = $this->hlp->getMaxPopularity();
+        $allcnt = $this->hlp->getPopularitySubmitters();
 
         $sort = $_REQUEST['pluginsort'];
         if ($sort{0} == '^') {
@@ -349,7 +350,6 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
             $R->doc .= '<td class="center">';
             $R->doc .= hsc(str_replace("'",'',$row['A.lastupdate']));
-            $R->doc .= '<br/>cnt = '.hsc($row['cnt']); // TODO: remove debug
             $R->doc .= '</td>';
 
             if ($data['compatible']) {
@@ -383,8 +383,11 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
     /**
      * Output classic repository table with only one database field/cell
      */
-    function _classicTable($plugins,$linkopt,$popmax,$data,$lang,$R) {
+    function _classicTable($plugins,$linkopt,$data,$lang,$R) {
         global $ID;
+
+        $popmax = $this->hlp->getMaxPopularity();
+        $allcnt = $this->hlp->getPopularitySubmitters();
 
         $R->doc .= '<table class="inline">';
         $R->doc .= '<tr><th><a href="'.wl($ID,$linkopt.'pluginsort=p').'" title="'.$this->getLang($lang,'t_sortname').'">'.$this->getLang($lang,'t_name').'</a></th>';

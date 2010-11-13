@@ -346,9 +346,10 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $stmt = $db->prepare('DELETE FROM popularity WHERE popularity.value = ?');
         $stmt->execute(array($id));
         $users = rand(0,20);
+        $uidstart = rand(0,20);
         for ($i = 0; $i < $users; $i++) {
             $stmt = $db->prepare('INSERT OR IGNORE INTO popularity (uid, key, value) VALUES (?,?,?)');
-            $stmt->execute(array("U".$i,'plugin',$id));
+            $stmt->execute(array("U".($uidstart+$i),'plugin',$id));
         }
     }
 }
