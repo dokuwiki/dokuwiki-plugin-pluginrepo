@@ -411,8 +411,6 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      * Return array of supported DokuWiki releases
      * only releases mentioned in config are reported
      * 'newest' supported release at [0]
-     *
-     * 'devel' should only be used for devel only compat. 
      */
     function cleanCompat($compatible,$onlybest = false) {
         if (!$this->dokuReleases) {
@@ -423,17 +421,18 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
             foreach ($releases as $release) {
                 list($date,$name) = preg_split('/\s+/',$release,2);
                 $rel = array('date' => $date,
-                             'name' => str_replace('"','',$name));
+                             'name' => strtolower(str_replace('"','',$name)));
                 $this->dokuReleases[] = $rel;
             }
         }
 
         preg_match_all('/([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]|[a-zA-Z]{4,})/', $compatible, $matches);
+        array_map('strtolower',$matches[0]);
         $retval = array();
         foreach ($this->dokuReleases as $release) {
             $key = $release['date'];
             if ($release['name']) {
-                $key .= ' "'.$release['name'].'"';
+                $key .= ' "'.ucfirst($release['name']).'"';
             }
             if (in_array($release['date'], $matches[0]) || in_array($release['name'], $matches[0])) {
                 $retval[$key] = 'compatible';
