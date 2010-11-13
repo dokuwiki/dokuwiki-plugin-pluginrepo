@@ -430,7 +430,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                 $retval[$key] = 'compatible';
                 if ($onlybest) return $key;
             } else {
-                $retval[$key] = 'not_compatible';
+                $retval[$key] = 'unkown_compatible';
             }
         }
         if ($onlybest) return '';

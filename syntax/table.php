@@ -100,17 +100,16 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= '    </div>'.DOKU_LF;
 
         if (!$data['plugintype']) {
-            $R->doc .= '    <div class="repo_info22">';
+            $R->doc .= '<div class="repo_info22">';
             $this->_showPluginTypeFilter(&$R, $lang, $data);
-            $R->doc .= '    </div>'.DOKU_LF;
+            $R->doc .= '</div>'.DOKU_LF;
         }
 
         $R->doc .= '  </div>';
 
-        $R->doc .= '  <div class="repo_cloud">';
-        $R->doc .= '    <h3>Filter plugins by tag</h3>';
-        $this->_tagcloud($R, $data);
-        $R->doc .= '  </div>'.DOKU_LF;
+        $R->doc .= '<div class="repo_cloud">';
+        $this->_tagcloud($R, $lang, $data);
+        $R->doc .= '</div>'.DOKU_LF;
 
         $R->doc .= '</div>';
         $R->doc .= '<div class="clearer"></div>';
@@ -176,9 +175,10 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
     /**
      * Output plugin tag filter selection (cloud)
      */
-    function _tagcloud(&$R, $data){
+    function _tagcloud(&$R, $lang, $data){
         global $ID;
         
+        $R->doc .= '    <h3>Filter plugins by tag</h3>';
         $min  = 0;
         $max  = 0;
         $tags = array();
@@ -206,7 +206,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * TODO
+     * Assign weight group to each tag in supplied array, use $levels groups
      */
     function _cloud_weight(&$tags,$min,$max,$levels){
         // calculate tresholds
@@ -272,7 +272,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= '<div class="clearer"></div>';
 
         if ($this->getConf('new_table_layout')) {
-            $this->_newTable($plugins,$header,$linkopt,$popmax,$data,$lang,$R);
+            $this->_newTable($plugins,$linkopt,$popmax,$data,$lang,$R);
         } else {
             $this->_classicTable($plugins,$linkopt,$popmax,$data,$lang,$R);
         }
@@ -285,27 +285,30 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
     /**
      * Output new table with more dense layout
      */
-    function _newTable($plugins,$header,$linkopt,$popmax,$data,$lang,$R) {
+    function _newTable($plugins,$linkopt,$popmax,$data,$lang,$R) {
         global $ID;
 
         $sort = $_REQUEST['pluginsort'];
         if ($sort{0} == '^') {
-            $sort = substr($sort, 1);
-            $sortdir = '<span>&uarr;</span>';
+            $sortcol = substr($sort, 1);
+            $sortarr = '<span>&uarr;</span>';
         } else {
-            $sortdir = '<span>&darr;</span>';
+            $sortcol = $sort;
+            $sortarr = '<span>&darr;</span>';
         }
-// TODO: table sorting is somewhat broken
+
         $R->doc .= '<table class="inline">';
-        $R->doc .= '<tr><th><a href="'.wl($ID,$linkopt.'pluginsort='.($sort='p'?'^p':'p'). '#repotable').'" title="Sort by name">'.  ($sort=='p'?$sortdir:'').'Plugin</a>';
+        $R->doc .= '<tr><th><a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='p'?'^p':'p'). '#repotable').'" title="Sort by name">'.  ($sortcol=='p'?$sortarr:'').'Plugin</a>';
         $R->doc .= '        <div class="repo_authorsort">
-                            <a href="'.wl($ID,$linkopt.'pluginsort='.($sort='a'?'^a':'a'). '#repotable').'" title="Sort by author">'.($sort=='a'?$sortdir:'').'Author</a></div></th>';
-        $R->doc .= '  <th>  <a href="'.wl($ID,$linkopt.'pluginsort='.($sort='^d'?'d':'^d').'#repotable').'" title="Sort by date">'.  ($sort=='d'?$sortdir:'').'Last Update</a></th>';
-        $R->doc .= '  <th>Compatible</th>';
+                            <a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='a'?'^a':'a'). '#repotable').'" title="Sort by author">'.($sortcol=='a'?$sortarr:'').'Author</a></div></th>';
+        $R->doc .= '  <th>  <a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='^d'?'d':'^d').'#repotable').'" title="Sort by date">'.  ($sortcol=='d'?$sortarr:'').'Last Update</a></th>';
+        if ($data['compatible']) {
+            $R->doc .= '<th>Compatible</th>';
+        }
         if ($data['screenshot']) {
             $R->doc .= '<th>Screenshot</th>';
         }
-        $R->doc .= '  <th>  <a href="'.wl($ID,$linkopt.'pluginsort='.($sort='^c'?'c':'^c').'#repotable').'" title="Sort by popularity">'.($sort=='c'?$sortdir:'').'Popularity</a></th>';
+        $R->doc .= '  <th>  <a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='^c'?'c':'^c').'#repotable').'" title="Sort by popularity">'.($sortcol=='c'?$sortarr:'').'Popularity</a></th>';
         $R->doc .= '</tr>';
 
         $lang_provides = $this->getLang($lang,'t_provides');
@@ -349,9 +352,11 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
             $R->doc .= '<br/>cnt = '.hsc($row['cnt']); // TODO: remove debug
             $R->doc .= '</td>';
 
-            $R->doc .= '<td class="center">';
-            $R->doc .= str_replace(' "','<br />"',$this->hlp->cleanCompat($row['A.compatible'],true));
-            $R->doc .= '</td>';
+            if ($data['compatible']) {
+                $R->doc .= '<td class="center">';
+                $R->doc .= str_replace(' "','<br />"',$this->hlp->cleanCompat($row['A.compatible'],true));
+                $R->doc .= '</td>';
+            }
 
             if ($data['screenshot']) {
                 $R->doc .= '<td>';

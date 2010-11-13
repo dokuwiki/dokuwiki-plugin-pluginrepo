@@ -166,7 +166,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             $norecentcompat = true;
             foreach ($compatibility as $release => $value) {
                 if (++$cols > $this->getConf('showcompat')) break;
-                $compatrow = '<td class="'.$value.'">'.str_replace(' "','<br/>"',$release).'</td>'.$compatrow;
+                $compatrow = '<td><div class="'.$value.'">'.str_replace(' "','<br/>"',$release).'</div></td>'.$compatrow;
                 if ($value == 'compatible') {
                     $norecentcompat = false;
                 }
