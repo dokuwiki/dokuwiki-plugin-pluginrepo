@@ -126,14 +126,13 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
                     You may filter the list by tags from the cloud to the left or
                     by type. Of cause you can also use the search box.</p>';
 
-        // TODO: quicksearch doesn't work
         global $lang; // TODO: hides local lang (and should be local)
         $R->doc .= '<div id="repo_searchform">';
         $R->doc .= '<form action="'.wl().'" accept-charset="utf-8" class="search" id="dw__search2" method="get"><div class="no">';
         $R->doc .= '<input type="hidden" name="do" value="search" />';
-        $R->doc .= '<input type="text" id="qsearch__in2" accesskey="f" name="id" class="edit" title="[ALT+F]" />';
+        $R->doc .= '<input type="text" id="qsearch2__in" accesskey="f" name="id" class="edit" />';
         $R->doc .= '<input type="submit" value="'.$lang['btn_search'].'" class="button" title="'.$lang['btn_search'].'" />';
-        $R->doc .= '<div id="qsearch__out2" class="ajax_qsearch JSpopup"></div>';
+        $R->doc .= '<div id="qsearch2__out" class="ajax_qsearch JSpopup"></div>';
         $R->doc .= '</div></form>';
         $R->doc .= '</div>'.DOKU_LF;
         $R->doc .= '<div class="clearer"></div>';
@@ -237,8 +236,8 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $type = (int) $_REQUEST['plugintype'];
         $tag  = trim($_REQUEST['plugintag']);
 
-        if ($this->types[$type]) {
-            $header = 'Available '.$this->types[$type].' Plugins';
+        if ($this->hlp->types[$type]) {
+            $header = 'Available '.$this->hlp->types[$type].' Plugins';
             $linkopt = "plugintype=$type,";
         } elseif ($tag) {
             $header = 'Available Plugins tagged with "'.hsc($tag).'"';
@@ -361,9 +360,10 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
             if ($data['screenshot']) {
                 $R->doc .= '<td>';
                 $val = $row['A.screenshot'];
-                $title = ''; //'screenshot: '.basename(str_replace(':','/',$val));
+                $title = 'screenshot: '.basename(str_replace(':','/',$val));
                 $R->doc .= '<a href="'.ml($val).'" class="media" rel="lightbox">';
-                $R->doc .= '<img src="'.ml($val,"w=80").'" alt="'.hsc($title).'" title="'.hsc($title).'" width="80"/>';
+                $R->doc .= '<img src="'.ml($val,"w=80").'" alt="'.hsc($title).'" width="80"/>';
+//                $R->doc .= '<img src="'.ml($val,"w=80").'" alt="'.hsc($title).'" title="'.hsc($title).'" width="80"/>';
                 $R->doc .= '</a></td>';
             }
 
