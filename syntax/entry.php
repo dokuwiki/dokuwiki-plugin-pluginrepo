@@ -118,7 +118,8 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             while ($itr < count($rel['sameauthor']) && $itr < 10) {
                 $R->doc .= '<li>'.$this->hlp->internallink($R,$rel['sameauthor'][$itr++]).'</li>';
             }
-            $R->doc .= '</ul></div>';
+            $R->doc .= '</ul>';
+            $R->doc .= '<div class="clearer"></div></div>';
         }
 
         $R->doc .= '<div id="pluginrepo__plugin">';

@@ -51,13 +51,46 @@ div#pluginrepo__plugin table td div.unkown_compatible {
     color: __border__;
 }
 
-div#pluginrepo__pluginauthorpush {
+div#pluginrepo__pluginauthorpush2 {
     background-color: #fff;
     border: 1px solid __border__;
     padding: 0.7em 1em 0.2em 1em;
-    width: 170px;
-    float: right;
+    width: 20px;
+    position: relative;
+    left: 530px;
+    float: left;
     font-size: 90%;
+}
+
+div#pluginrepo__pluginauthorpush {
+    background: #fff url(../../images/success.png) no-repeat;
+    border-top: 1px solid __border__;
+    border-bottom: 1px solid __border__;
+    border-right: 1px solid __border__;
+    padding: 0.7em 1em 0.2em 1em;
+    width: 15px;
+    height: 100px;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    top: 5px;
+    left: 525px;
+    float: left;
+    font-size: 90%;
+    
+    -moz-border-radius-topright: 3px;
+    -webkit-border-top-right-radius: 3px;
+    -moz-border-radius-bottomright: 3px;
+    -webkit-border-bottom-right-radius: 3px;
+
+}
+/*    display: block;
+    height: 300px;
+    text-indent: -9000px;
+*/
+div#pluginrepo__pluginauthorpush :hover  {
+    width: 120px;
+
 }
 
 div#pluginrepo__plugin div#pluginrepo__pluginscreenshot {
