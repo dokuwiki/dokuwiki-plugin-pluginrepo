@@ -28,6 +28,22 @@ $lang['donationurl']         = 'Thank the Author';
 
 // Plugin table
 $lang['t_searchplugins']     = 'Search Plugins';
+$lang['t_searchintro']       = 'Filter available plugins by type or by using the tag cloud. You could also search within the plugin namespace using the search box.';
+$lang['t_btn_search']        = 'Search';
+$lang['t_btn_searchtip']     = 'Search within plugin namespace';
+$lang['t_filterbytype']      = 'Filter plugins by type';
+$lang['t_typesyntax']        = '%s plugins extend DokuWiki\'s basic syntax.';
+$lang['t_typeaction']        = '%s plugins replaces or extend DokuWiki\'s core functionality';
+$lang['t_typeadmin']         = '%s plugins provide extra administration tools';
+$lang['t_typerender']        = '%s plugins adds new export modes or replaces the standard XHTML renderer';
+$lang['t_typehelper']        = '%s plugins provides functionality shared by other plugins';
+$lang['t_typetemplate']      = '%s changes the look and feel of DokuWiki';
+$lang['t_filterbytag']       = 'Filter plugins by tag';
+$lang['t_availabletype']     = 'Available %s Plugins';
+$lang['t_availabletagged']   = 'Available Plugins Tagged With %s';
+$lang['t_availableplugins']  = 'Available Plugins';
+$lang['t_jumptoplugins']     = 'Jump to plugins starting with:';
+$lang['t_resetfilter']       = 'Show all plugins (remove filter)';
 
 $lang['t_name']              = 'Plugin';
 $lang['t_sortname']          = 'Sort by name';

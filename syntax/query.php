@@ -195,7 +195,11 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
                     $R->doc .= '<td>';
 
                     if ($field == 'A.type') {
-                        $R->doc .= $this->hlp->listtype($row['A.type'],$this->getConf('main'));
+                        foreach($this->hlp->types as $k => $v){
+                            if($row['A.type'] & $k){
+                                $R->doc .= $v.' ';
+                            }
+                        }
 
                     } elseif ($field == 'A.plugin') {
                         $R->doc .= $this->hlp->internallink($R,$row['A.plugin']);
