@@ -179,9 +179,22 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
             $shown .= " AND A.type <> 32";
         }
 
-        // TODO: not possible to filter on type AND tag (cloude doesn't work for templates)
         // TODO: this code cant handle template popularity (key='conf_template')
-        if ($this->types[$type]) {
+        if ($tag) {
+            if (!$this->types[$type]) {
+                $type = 255;
+            }
+            $stmt = $db->prepare("SELECT A.*, COUNT(C.value) as cnt
+                                    FROM plugin_tags B, plugins A LEFT JOIN popularity C ON A.plugin = C.value and C.key = 'plugin'
+                                   WHERE $shown
+                                     AND (A.type & :type)
+                                     AND A.plugin = B.plugin
+                                     AND B.tag = :tag
+                                   GROUP BY A.plugin
+                                $sortsql");
+            $stmt->execute(array(':tag' => $tag, ':type' => $type));
+
+        } elseif($this->types[$type]) {
             $stmt = $db->prepare("SELECT A.*, COUNT(C.value) as cnt
                                     FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value and C.key = 'plugin'
                                    WHERE $shown
@@ -189,16 +202,6 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                                    GROUP BY A.plugin
                                 $sortsql");
             $stmt->execute(array(':type' => $type));
-
-        } elseif($tag) {
-            $stmt = $db->prepare("SELECT A.*, COUNT(C.value) as cnt
-                                    FROM plugin_tags B, plugins A LEFT JOIN popularity C ON A.plugin = C.value and C.key = 'plugin'
-                                   WHERE $shown
-                                     AND A.plugin = B.plugin
-                                     AND B.tag = :tag
-                                   GROUP BY A.plugin
-                                $sortsql");
-            $stmt->execute(array(':tag' => $tag));
 
         } else {
             $stmt = $db->prepare("SELECT A.*, COUNT(C.value) as cnt

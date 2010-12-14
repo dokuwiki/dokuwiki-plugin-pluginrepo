@@ -131,6 +131,10 @@ div#pluginrepo__table table .center {
     text-align: center;
 }
 
+div#pluginrepo__table table div.details {
+    margin-left: 1em;
+}
+
 div#pluginrepo__table div.repo_authorsort {
     float: right;
 }
