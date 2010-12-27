@@ -21,6 +21,9 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                     16 => 'Helper',
                     32 => 'Template');
 
+    var $obsoleteTag = '!obsolete';
+    var $securitywarning = array('informationleak','allowsscript','requirespatch','partlyhidden');
+
     /**
      * Parse syntax data block, return keyed array of values
      *
@@ -146,8 +149,8 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      *   'plugintype' (integer) 
      *   'plugintag'  (string)
      *   'pluginsort' (string)
-     *   'showissues' (yes/no) default/unset is 'no' and plugins with security issues are not returned
-     *   'showtemplates' (yes/no) default/unset is 'no' and template data will not be returned  
+     *   'showall'    (yes/no) default/unset is 'no' and obsolete plugins and security issues are not returned
+     *   'includetemplates' (yes/no) default/unset is 'no' and template data will not be returned  
      */
     function getPlugins($filter=null) {
         $db = $this->_getPluginsDB();
@@ -170,12 +173,12 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $sort = strtolower(trim($filter['pluginsort']));
         $sortsql = $this->_getPluginsSortSql($sort);
         
-        if ($filter['showissues'] == 'yes') {
+        if ($filter['showall'] == 'yes') {
             $shown = "1";
         } else {
-            $shown = "A.securityissue = ''";
+            $shown = "A.tags <> '".$this->obsoleteTag."' AND A.securityissue = ''";
         }
-        if ($filter['showtemplates'] != 'yes') {
+        if ($filter['includetemplates'] != 'yes') {
             $shown .= " AND A.type <> 32";
         }
 
@@ -283,12 +286,6 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
             $meta['depends'][] = $row['other'];
         }
 
-        $stmt = $db->prepare('SELECT tag FROM plugin_tags WHERE plugin = ?');
-        $stmt->execute(array($id));
-        foreach ($stmt as $row) {
-            $meta['tags'][] = $row['tag'];
-        }
-
         $stmt = $db->prepare('SELECT plugin FROM plugins WHERE plugin <> ? AND author=(SELECT author FROM plugins WHERE plugin = ?)');
         $stmt->execute(array($id,$id));
         foreach ($stmt as $row) {
@@ -305,17 +302,21 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $db = $this->_getPluginsDB();
         if (!$db) return;
 
-        $typefilter = '';
-        if ($filter['plugintype'] == 32) {
-            $typefilter = 'AND B.type = 32';
-        } elseif (!$filter['showtemplates']) {
-            $typefilter = 'AND B.type <> 32';
+        if ($filter['showall'] == 'yes') {
+            $shown = "1";
+        } else {
+            $shown = "B.tags <> '".$this->obsoleteTag."' AND B.securityissue = ''";
         }
+        if ($filter['plugintype'] == 32) {
+            $shown .= ' AND B.type = 32';
+        } elseif (!$filter['includetemplates']) {
+            $shown .= ' AND B.type <> 32';
+        }
+
         $stmt = $db->prepare("SELECT A.tag, COUNT(A.tag) as cnt
                                 FROM plugin_tags as A, plugins as B
                                WHERE A.plugin = B.plugin
-                                 AND B.securityissue = ''
-                                     $typefilter
+                                 AND $shown
                             GROUP BY tag
                               HAVING cnt >= ?
                             ORDER BY cnt DESC");

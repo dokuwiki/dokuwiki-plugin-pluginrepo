@@ -158,7 +158,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= sprintf($this->getLang($lang,'t_typerender'),$this->hlp->listtype(8,$ID));
         $R->doc .= '</div></li>';
 
-        if ($data['showtemplates']) {
+        if ($data['includetemplates']) {
             $R->doc .= '<li><div class="li">';
             $R->doc .= sprintf($this->getLang($lang,'t_typetemplate'),$this->hlp->listtype(32,$ID));
             $R->doc .= '</div></li>';
@@ -186,11 +186,11 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $tagData =$this->hlp->getTags($cloudmin,$data);
         // $tagData will be sorted by cnt (descending)
         foreach($tagData as $tag) {
+            if ($tag['A.tag'] == $this->hlp->obsoleteTag) continue;
             $tags[$tag['A.tag']] = $tag['cnt'];
             if(!$max) $max = $tag['cnt'];
             $min = $tag['cnt'];
         }
-
         $this->_cloud_weight($tags,$min,$max,5);
 
         ksort($tags);
@@ -298,14 +298,14 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= '<tr><th><a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='p'?'^p':'p'). '#repotable').'" title="'.$this->getLang($lang,'t_sortname').'">'.  ($sortcol=='p'?$sortarr:'').$this->getLang($lang,'t_name').'</a>';
         $R->doc .= '        <div class="repo_authorsort">
                             <a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='a'?'^a':'a'). '#repotable').'" title="'.$this->getLang($lang,'t_sortauthor').'">'.($sortcol=='a'?$sortarr:'').$this->getLang($lang,'t_author').'</a></div></th>';
-        if ($data['compatible']) {
-            $R->doc .= '<th>Compatible</th>';
-        }
         if ($data['screenshot']) {
-            $R->doc .= '<th>Screenshot</th>';
+            $R->doc .= '<th>'.$this->getLang($lang,'t_screenshot').'</th>';
         }
         $R->doc .= '  <th>  <a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='^d'?'d':'^d').'#repotable').'" title="'.$this->getLang($lang,'t_sortdate').  '">'.  ($sortcol=='d'?$sortarr:'').$this->getLang($lang,'t_date').'</a></th>';
         $R->doc .= '  <th>  <a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='^c'?'c':'^c').'#repotable').'" title="'.$this->getLang($lang,'t_sortpopularity').'">'.($sortcol=='c'?$sortarr:'').$this->getLang($lang,'t_popularity').'</a></th>';
+        if ($data['compatible']) {
+            $R->doc .= '<th>'.$this->getLang($lang,'t_compatible').'</th>';
+        }
         $R->doc .= '</tr>';
 
         foreach($plugins as $row) {
@@ -322,7 +322,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
             $R->doc .= '<div class="repo_plugintitle">';
             $R->doc .= $link;
             $R->doc .= '</div>';
-            if($row['A.downloadurl']){
+            if($row['A.downloadurl'] && !$row['A.securityissue'] && !$row['A.securitywarning']){
                 $R->doc .= '<div class="repo_download">';
                 $R->doc .= $R->externallink($row['A.downloadurl'], $this->getLang($lang,'t_download'), null, true);
                 $R->doc .= '</div>';
@@ -340,12 +340,6 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
             $R->emaillink($row['A.email'],$row['A.author']);
             $R->doc .= '</div>';
             $R->doc .= '</td>';
-
-            if ($data['compatible']) {
-                $R->doc .= '<td class="center">';
-                $R->doc .= str_replace(' "','<br />"',$this->hlp->cleanCompat($row['A.compatible'],true));
-                $R->doc .= '</td>';
-            }
 
             if ($data['screenshot']) {
                 $R->doc .= '<td>';
@@ -366,6 +360,12 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
                 $R->doc .= '</td>';
             }else{
                 $R->doc .= '<td></td><td><i>'.$this->getLang($lang,'t_bundled').'</i></td>';
+            }
+
+            if ($data['compatible']) {
+                $R->doc .= '<td class="center">';
+                $R->doc .= str_replace(' "','<br />"',$this->hlp->cleanCompat($row['A.compatible'],true));
+                $R->doc .= '</td>';
             }
 
             $R->doc .= '</tr>';

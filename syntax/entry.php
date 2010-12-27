@@ -231,7 +231,17 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         }
         $R->doc .= '</p>';
 
-// TODO: new security _warning_ function
+        if($data['securitywarning']){
+            $R->doc .= '<p class="securitywarning">';
+            $securitylink = $R->internallink('devel:security',$this->getLang($lang,'securitylink'),NULL,true);
+            $R->doc .= '<b>'.sprintf($this->getLang($lang,'securitywarning'),$securitylink).'</b><br /><br />';
+            if(in_array($data['securitywarning'],$this->hlp->securitywarning)){
+                $R->doc .= '<i>'.$this->getLang($lang,'security_'.$data['securitywarning']).'</i>';
+            }else{
+                $R->doc .= '<i>'.hsc($data['securitywarning']).'</i>';
+            }
+            $R->doc .= '</p>';
+        }
 
         if($data['securityissue']){
             $R->doc .= '<p class="security">';

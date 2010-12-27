@@ -16,11 +16,16 @@ div#pluginrepo__plugin div {
     font-size: 105%;
 }
 
-div#pluginrepo__plugin p.security {
+div#pluginrepo__plugin p.security,
+div#pluginrepo__plugin p.securitywarning {
     background-color: #fcc;
     color: #000;
     border: 1px solid #faa;
     padding: 0.3em;
+}
+
+div#pluginrepo__plugin p.securitywarning {
+    background-color: #ffc;
 }
 
 div#pluginrepo__plugin table.compatible {

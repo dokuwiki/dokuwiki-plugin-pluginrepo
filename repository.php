@@ -66,6 +66,7 @@ function getRepository($opt) {
         }
         $feed .= '<name>'.hsc($plugin['A.name']).'</name>';
         $feed .= '<description>'.hsc($plugin['A.description']).'</description>';
+        $feed .= '<author>'.hsc($plugin['A.author']).'</author>'; // mail not exposed as an anti-spam measure
         $feed .= '<type>';
         if ($plugin['A.type']) {
             $types = array();
@@ -92,7 +93,21 @@ function getRepository($opt) {
         }
         $feed .= '</compatible>';
         $feed .= '<securityissue>'.hsc($plugin['A.securityissue']).'</securityissue>';
-        $feed .= '<author>'.hsc($plugin['A.author']).'</author>'; // mail not exposed as an anti-spam measure
+        $feed .= '<securitywarning>';
+        if (in_array($plugin['A.securitywarning'],$hlp->securitywarning)) {
+            $feed .= $hlp->getLang($lang,'security_'.$plugin['A.securitywarning']);
+        } else {
+            $feed .= hsc($plugin['A.securitywarning']);
+        }
+        $feed .= '</securitywarning>';
+
+        $feed .= '<tags>';
+        $tags = $hlp->parsetags($plugin['A.tags']);
+        foreach ($tags as $link) {
+            $feed .= '<tag>'.hsc($link).'</tag>';
+        }
+        $feed .= '</tags>';
+
         $feed .= '<downloadurl>'.hsc($plugin['A.downloadurl']).'</downloadurl>';
         $feed .= '<bugtracker>'.hsc($plugin['A.bugtracker']).'</bugtracker>';
         $feed .= '<donationurl>'.hsc($plugin['A.donationurl']).'</donationurl>';
@@ -124,14 +139,6 @@ function getRepository($opt) {
                 }
             }
             $feed .= '</depends>';
-
-            $feed .= '<tags>';
-            if ($rel['tags']) {
-                foreach ($rel['tags'] as $link) {
-                    $feed .= '<tag>'.hsc($link).'</tag>';
-                }
-            }
-            $feed .= '</tags>';
 
             $feed .= '</relations>';
         }
