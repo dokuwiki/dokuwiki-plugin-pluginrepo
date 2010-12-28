@@ -318,7 +318,11 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
             if (!$data['compatible'] && !$sort && $row['A.bestcompatible'] !== $compatgroup) {
                 $R->doc .= '</table>';
-                $R->doc .= $this->getLang($lang,'compatible_with').' <b>'.($row['A.bestcompatible']?$row['A.bestcompatible']:'older versions').'</b>';
+                if ($row['A.bestcompatible']) {
+                    $R->doc .= $this->getLang($lang,'compatible_with').' <b>'.$row['A.bestcompatible'].'</b>';
+                } else {
+                    $R->doc .= $this->getLang($lang,'t_oldercompatibility');
+                }
                 $R->doc .= '<table class="inline">';
                 $compatgroup = $row['A.bestcompatible'];
             }

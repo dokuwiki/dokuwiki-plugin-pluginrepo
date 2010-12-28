@@ -50,6 +50,7 @@ $lang['t_availabletagged']   = 'Available Plugins Tagged With %s';
 $lang['t_availableplugins']  = 'Available Plugins';
 $lang['t_jumptoplugins']     = 'Jump to first plugin starting with:';
 $lang['t_resetfilter']       = 'Show all plugins (remove filter)';
+$lang['t_oldercompatibility'] = 'Compatible with older DokuWiki versions';
 
 $lang['t_name']              = 'Plugin';
 $lang['t_sortname']          = 'Sort by name';
