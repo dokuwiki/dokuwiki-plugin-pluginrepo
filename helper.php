@@ -182,7 +182,6 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
             $shown .= " AND A.type <> 32";
         }
 
-        // TODO: this code cant handle template popularity (key='conf_template')
         if ($tag) {
             if (!$this->types[$type]) {
                 $type = 255;
