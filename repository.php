@@ -86,10 +86,8 @@ function getRepository($opt) {
         }
         $feed .= '<compatible>';
         $compatibility = $hlp->cleanCompat($plugin['A.compatible']);
-        foreach ($compatibility as $release => $value) {
-            if ($value) {
-                $feed .= '<release>'.$release.'</release>';
-            }
+        foreach ($compatibility as $date => $name) {
+            $feed .= '<release>'.$date.'</release>';
         }
         $feed .= '</compatible>';
         $feed .= '<securityissue>'.hsc($plugin['A.securityissue']).'</securityissue>';

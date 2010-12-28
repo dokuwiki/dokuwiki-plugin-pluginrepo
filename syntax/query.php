@@ -202,7 +202,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
                         }
 
                     } elseif ($field == 'A.plugin') {
-                        $R->doc .= $this->hlp->internallink($R,$row['A.plugin']);
+                        $R->doc .= $this->hlp->pluginlink($R,$row['A.plugin']);
 
                     } elseif ($field == 'A.email' || $field == 'A.author') {
                         $R->doc .= $R->emaillink($row['A.email'],$row['A.author']);

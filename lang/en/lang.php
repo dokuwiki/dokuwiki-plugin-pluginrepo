@@ -47,7 +47,7 @@ $lang['t_filterbytag']       = 'Filter by tag';
 $lang['t_availabletype']     = 'Available %s Plugins';
 $lang['t_availabletagged']   = 'Available Plugins Tagged With %s';
 $lang['t_availableplugins']  = 'Available Plugins';
-$lang['t_jumptoplugins']     = 'Jump to plugins starting with:';
+$lang['t_jumptoplugins']     = 'Jump to first plugin starting with:';
 $lang['t_resetfilter']       = 'Show all plugins (remove filter)';
 
 $lang['t_name']              = 'Plugin';
@@ -63,6 +63,7 @@ $lang['t_sortdate']          = 'Sort by date';
 $lang['t_popularity']        = 'Popularity';
 $lang['t_sortpopularity']    = 'Sort by popularity';
 $lang['t_compatible']        = 'Last Compatible';
+$lang['t_sortcompatible']    = 'Sort by compatibility';
 $lang['t_screenshot']        = 'Screenshot';
 
 $lang['t_download']          = 'Download';

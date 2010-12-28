@@ -233,11 +233,15 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         } elseif ($sort == 'd' || $sort == 'lastupdate') {
             $sortsql = 'ORDER BY A.lastupdate'.$sortsql;
         } elseif ($sort == 't' || $sort == 'type') {
-            $sortsql = 'ORDER BY A.type'.$sortsql;
+            $sortsql = 'ORDER BY A.type'.$sortsql.', A.plugin';
+        } elseif ($sort == 'v' || $sort == 'compatibility') {
+            $sortsql = 'ORDER BY A.bestcompatible'.$sortsql.', A.plugin';
         } elseif ($sort == 'c' || $sort == 'popularity') {
             $sortsql = 'ORDER BY cnt'.$sortsql;
-        } else {
+        } elseif ($sort == 'p' || $sort == 'plugin') {
             $sortsql = 'ORDER BY A.plugin'.$sortsql;
+        } else {
+            $sortsql = 'ORDER BY A.bestcompatible DESC, A.plugin'.$sortsql;
         }
         return $sortsql;
     }
@@ -402,7 +406,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     /**
      * render internallink to plugin/template, templates identified by having namespace
      */
-    function internallink(&$R,$plugin,$title=null) {
+    function pluginlink(&$R,$plugin,$title=null) {
         if (!getNS($plugin)) {
             return $R->internallink(':plugin:'.$plugin,$title,null,true);
         } else {
@@ -416,36 +420,30 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      * only releases mentioned in config are reported
      * 'newest' supported release at [0]
      */
-    function cleanCompat($compatible,$onlybest = false) {
+    function cleanCompat($compatible) {
         if (!$this->dokuReleases) {
             $this->dokuReleases = array();
             $releases = explode(',', $this->getConf('releases'));
             $releases = array_map('trim',$releases);
             $releases = array_filter($releases);
             foreach ($releases as $release) {
-                list($date,$name) = preg_split('/\s+/',$release,2);
+                list($date,$name) = preg_split('/(\s+"\s*|")/',$release);
+                $name = strtolower($name);
                 $rel = array('date' => $date,
-                             'name' => strtolower(str_replace('"','',$name)));
-                $this->dokuReleases[] = $rel;
+                             'name' => $name);
+                $rel['label'] = ($name ? '"'.ucfirst($name).'"' : '');
+                $this->dokuReleases[$date] = $rel;
             }
         }
 
         preg_match_all('/([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]|[a-zA-Z]{4,})/', $compatible, $matches);
-        array_map('strtolower',$matches[0]);
+        $matches[0] = array_map('strtolower',$matches[0]);
         $retval = array();
         foreach ($this->dokuReleases as $release) {
-            $key = $release['date'];
-            if ($release['name']) {
-                $key .= ' "'.ucfirst($release['name']).'"';
-            }
             if (in_array($release['date'], $matches[0]) || in_array($release['name'], $matches[0])) {
-                $retval[$key] = 'compatible';
-                if ($onlybest) return $key;
-            } else {
-                $retval[$key] = 'unkown_compatible';
+                $retval[$release['date']] = $release['label'];
             }
         }
-        if ($onlybest) return '';
         return $retval;
     }
 
@@ -462,7 +460,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         sort($plugins);
         $out = array();
         foreach($plugins as $plugin){
-            $out[] = $this->internallink($R,$plugin);
+            $out[] = $this->pluginlink($R,$plugin);
         }
         return join($sep,$out);
     }
@@ -531,7 +529,8 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                                 description varchar(255) default NULL, author varchar(255) default NULL, email varchar(255) default NULL, 
                                 compatible varchar(255) default NULL, lastupdate date default NULL, downloadurl varchar(255) default NULL,
                                 bugtracker varchar(255) default NULL, sourcerepo varchar(255) default NULL, donationurl varchar(255) default NULL, type int(11) NOT NULL default 0, 
-                                screenshot varchar(255) default NULL, tags varchar(255) default NULL, securitywarning varchar(255) default NULL, securityissue varchar(255) NOT NULL);');
+                                screenshot varchar(255) default NULL, tags varchar(255) default NULL, securitywarning varchar(255) default NULL, securityissue varchar(255) NOT NULL,
+                                bestcompatible varchar(50) default NULL);');
         $db->exec('CREATE TABLE popularity (uid varchar(32) NOT NULL, key varchar(255) NOT NULL, value varchar(255) NOT NULL);');
     }
 }

@@ -116,7 +116,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             $R->doc .= '</p><ul>';
             $itr = 0;
             while ($itr < count($rel['sameauthor']) && $itr < 10) {
-                $R->doc .= '<li>'.$this->hlp->internallink($R,$rel['sameauthor'][$itr++]).'</li>';
+                $R->doc .= '<li>'.$this->hlp->pluginlink($R,$rel['sameauthor'][$itr++]).'</li>';
             }
             $R->doc .= '</ul>';
             $R->doc .= '<div class="clearer"></div></div>';
@@ -154,7 +154,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         }
 
         $R->doc .= '<table class="inline compatible">';
-        $R->doc .= '<tr><th colspan="'.$this->getConf('showcompat').'">';
+        $R->doc .= '<tr><th colspan="4">';
         $R->doc .= $this->getLang($lang,'compatible_with');
         $R->doc .= '</th></tr>';
 
@@ -167,13 +167,16 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             $compatibility = $this->hlp->cleanCompat($data['compatible']);
             $cols = 0;
             $norecentcompat = true;
-            foreach ($compatibility as $release => $value) {
-                if (++$cols > $this->getConf('showcompat')) break;
-                $compatrow = '<td><div class="'.$value.'">'.str_replace(' "','<br/>"',$release).'</div></td>'.$compatrow;
-                if ($value == 'compatible') {
+            foreach ($this->hlp->dokuReleases as $release) {
+                if (++$cols > 4) break;
+                $value = 'unkown_compatible';
+                if (array_key_exists($release['date'], $compatibility)) {
+                    $value = 'compatible';
                     $norecentcompat = false;
                 }
+                $compatrow = '<td><div class="'.$value.'">'.$release['date'].'<br />'.$release['label'].'</div></td>'.$compatrow;
             }
+
             if (strpos($data['compatible'],'devel') !== false) {
                 $R->doc .= '<tr><td class="compatible__msg" colspan="'.$this->getConf('showcompat').'">';
                 $R->internallink('devel:develonly',$this->getLang($lang,'develonly'));
@@ -278,11 +281,17 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
         if (!$name) $name = $id;
         if (!preg_match('/^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/',$data['lastupdate'])) {
-            $data['lastupdate'] = 'NULL';
+            $data['lastupdate'] = null;
         } else {
-            $data['lastupdate'] = "'".$data['lastupdate']."'";
+            $data['lastupdate'] = $data['lastupdate'];
         }
 
+        if (strpos($this->getConf('bundled'),$id) === false) {
+            $compatible = array_shift(array_keys($this->hlp->cleanCompat($data['compatible'])));
+        } else {
+            $compatible = '9999-99-99';
+        }
+        
         $type = $this->hlp->parsetype($data['type']);
 
         // handle securityissue field NOT NULL
@@ -291,13 +300,13 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $stmt = $db->prepare('REPLACE INTO plugins 
                                (plugin, name, description, 
                                 author, email, 
-                                compatible, lastupdate, securityissue, securitywarning,
+                                compatible, bestcompatible, lastupdate, securityissue, securitywarning,
                                 downloadurl, bugtracker, sourcerepo, donationurl, 
                                 screenshot, tags, type)
                               VALUES
                                (:plugin, :name, :description, 
                                 :author, LOWER(:email), 
-                                :compatible, :lastupdate, :securityissue, :securitywarning,
+                                :compatible, :bestcompatible, :lastupdate, :securityissue, :securitywarning,
                                 :downloadurl, :bugtracker, :sourcerepo, :donationurl, 
                                 :screenshot, :tags, :type) ');
         $stmt->execute(array(':plugin' =>  $id, 
@@ -305,7 +314,8 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
                              ':description' => $data['description'], 
                              ':author' => $data['author'], 
                              ':email' => $data['email'], 
-                             ':compatible' => $data['compatible'], 
+                             ':compatible' => $data['compatible'],
+                             ':bestcompatible' => $compatible,
                              ':lastupdate' => $data['lastupdate'], 
                              ':securityissue' => $data['securityissue'],
                              ':securitywarning' => $data['securitywarning'],

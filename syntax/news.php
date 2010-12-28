@@ -67,53 +67,40 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
     function render($format, &$R, $data) {
         if($format != 'xhtml') return false;
 
-        $db = $this->hlp->_getPluginsDB();
-        if (!$db) return;
+        $limit = (is_numeric($data['entries']) ? $data['entries']: 1);
+        $plugins = $this->hlp->getPlugins($data);
+        if ($data['random'] == 'no') {
+            $start = 0;
+        } else {
+            $start = rand(0,count($plugins)-1-$limit);
+        }
+        $R->doc .= '<div class="repo__news">';
+        $R->doc .= '<div class="repo__newsheader">'.hsc($data['headline']).'</div>';
+        
+        for ($i = 0; $i < $limit; $i++) {
+            $row = $plugins[$start+$i];
+            $R->doc .= '<br />';
+            $R->doc .= $this->hlp->pluginlink($R, $row['A.plugin'], ucfirst(noNS($row['A.plugin'])).($row['A.type']==32?' template':' plugin'));
+            $R->doc .= '<p>'.$row['A.description'].'</p>';
 
-        $R->info['cache'] = false;
+            $val = $row['A.screenshot'];
+            if ($val && $data['screenshot'] == 'yes') {
+                $title = 'screenshot: '.basename(str_replace(':','/',$val));
+                $R->doc .= '<a href="'.ml($val).'" class="media" rel="lightbox">';
+                $R->doc .= '<img src="'.ml($val,"w=200").'" alt="'.hsc($title).'" width="200"/></a>';
+            }
 
-        return true;
+            $R->doc .= 'Author: ';
+            $R->emaillink($row['A.email'],$row['A.author']);
+            $R->doc .= '<br />';
+        }
+        if ($data['link']) {
+            $R->doc .= '<div class="repo_newslink">';
+            $R->internallink($data['link'],$data['linktext']);        
+            $R->doc .= '</div>';
+        }
+        $R->doc .= '</div>';
     }
 
-    function showNews() {
-        $R->doc .= '<h3>Most popular</h3>';
-        return;
-//        $R->doc .= $this->_listplugins($mostpopular,$R);
-        // dummy
-        $sql2 = "SELECT plugin, description
-                  FROM plugins 
-              ORDER BY author 
-               LIMIT 3";
-        $res2 = sqlite_query($sql2,$this->db);
-        $R->doc .= '<ul>';
-        while ($row = sqlite_fetch_array($res2, SQLITE_ASSOC)) {
-            $R->doc .= '    <li><div class="li">';
-            $R->doc .= '<div class="repo_infoplugintitle">';
-            $R->internallink(':plugin:'.$row['plugin'], ucfirst($row['plugin']). ' plugin');
-            $R->doc .= '</div> '. hsc($row['description']);
-            $R->doc .= '    </div></li>';
-            $latest .= $row['plugin'].',';
-        }
-        $R->doc .= '</ul>';
-
-
-        $R->doc .= '<h3>Recently updated</h3>';
-        // latest
-        $sql2 = "SELECT plugin, description
-                  FROM plugins 
-              ORDER BY lastupdate 
-            DESC LIMIT 2";
-        $res2 = sqlite_query($sql2,$this->db);
-        $R->doc .= '<ul>';
-        while ($row = sqlite_fetch_array($res2, SQLITE_ASSOC)) {
-            $R->doc .= '    <li><div class="li">';
-            $R->doc .= '<div class="repo_infoplugintitle">';
-            $R->internallink(':plugin:'.$row['plugin'], ucfirst($row['plugin']). ' plugin');
-            $R->doc .= '</div> '. hsc($row['description']);
-            $R->doc .= '    </div></li>';
-            $latest .= $row['plugin'].',';
-        }
-        $R->doc .= '</ul>';
-    }
 }
 

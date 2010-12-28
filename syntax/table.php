@@ -250,7 +250,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= '<a name="repotable" />';
         $R->doc .= '<h3>'.$header.'</h3>';
 
-        if(!trim($_REQUEST['pluginsort'])) {
+        if($_REQUEST['pluginsort'] == 'p' || $_REQUEST['pluginsort'] == '^p') {
             $R->doc .= '<div class="repo__alphabet">'.$this->getLang($lang,'t_jumptoplugins').' ';
             foreach (range('A', 'Z') as $char) {
                 $R->doc .= '<a href="#'.strtolower($char).'">'.$char.'</a> ';
@@ -265,7 +265,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         }
         $R->doc .= '<div class="clearer"></div>';
 
-        if ($this->getConf('new_table_layout')) {
+        if ($data['tablelayout'] != 'old') {
             $this->_newTable($plugins,$linkopt,$data,$lang,$R);
         } else {
             $this->_classicTable($plugins,$linkopt,$data,$lang,$R);
@@ -298,21 +298,29 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= '<tr><th><a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='p'?'^p':'p'). '#repotable').'" title="'.$this->getLang($lang,'t_sortname').'">'.  ($sortcol=='p'?$sortarr:'').$this->getLang($lang,'t_name').'</a>';
         $R->doc .= '        <div class="repo_authorsort">
                             <a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='a'?'^a':'a'). '#repotable').'" title="'.$this->getLang($lang,'t_sortauthor').'">'.($sortcol=='a'?$sortarr:'').$this->getLang($lang,'t_author').'</a></div></th>';
-        if ($data['screenshot']) {
-            $R->doc .= '<th>'.$this->getLang($lang,'t_screenshot').'</th>';
+        if ($data['screenshot'] == 'yes') {
+            $R->doc .= '<th class="screenshot">'.$this->getLang($lang,'t_screenshot').'</th>';
         }
-        $R->doc .= '  <th>  <a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='^d'?'d':'^d').'#repotable').'" title="'.$this->getLang($lang,'t_sortdate').  '">'.  ($sortcol=='d'?$sortarr:'').$this->getLang($lang,'t_date').'</a></th>';
-        $R->doc .= '  <th>  <a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='^c'?'c':'^c').'#repotable').'" title="'.$this->getLang($lang,'t_sortpopularity').'">'.($sortcol=='c'?$sortarr:'').$this->getLang($lang,'t_popularity').'</a></th>';
-        if ($data['compatible']) {
-            $R->doc .= '<th>'.$this->getLang($lang,'t_compatible').'</th>';
+        $R->doc .= '  <th class="lastupdate">  <a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='^d'?'d':'^d').'#repotable').'" title="'.$this->getLang($lang,'t_sortdate').  '">'.  ($sortcol=='d'?$sortarr:'').$this->getLang($lang,'t_date').'</a></th>';
+        $R->doc .= '  <th class="popularity">  <a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='^c'?'c':'^c').'#repotable').'" title="'.$this->getLang($lang,'t_sortpopularity').'">'.($sortcol=='c'?$sortarr:'').$this->getLang($lang,'t_popularity').'</a></th>';
+        if ($data['compatible'] == 'yes') {
+            $R->doc .= '<th><a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='^v'?'v':'^v').'#repotable').'" title="'.$this->getLang($lang,'t_sortcompatible').'">'.  ($sortcol=='v'?$sortarr:'').$this->getLang($lang,'t_compatible').'</a></th>';
         }
         $R->doc .= '</tr>';
 
+        $compatgroup = '9999-99-99';
         foreach($plugins as $row) {
-            $link = $this->hlp->internallink($R, $row['A.plugin'], ucfirst(noNS($row['A.plugin'])).($row['A.type']==32?' template':' plugin'));
+            $link = $this->hlp->pluginlink($R, $row['A.plugin'], ucfirst(noNS($row['A.plugin'])).($row['A.type']==32?' template':' plugin'));
             if(strpos($link,'class="wikilink2"')){
                 $this->hlp->deletePlugin($row['A.plugin']);
                 continue;
+            }
+
+            if (!$data['compatible'] && !$sort && $row['A.bestcompatible'] !== $compatgroup) {
+                $R->doc .= '</table>';
+                $R->doc .= $this->getLang($lang,'compatible_with').' <b>'.($row['A.bestcompatible']?$row['A.bestcompatible']:'older versions').'</b>';
+                $R->doc .= '<table class="inline">';
+                $compatgroup = $row['A.bestcompatible'];
             }
 
             $R->doc .= '<tr>';
@@ -341,8 +349,8 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
             $R->doc .= '</div>';
             $R->doc .= '</td>';
 
-            if ($data['screenshot']) {
-                $R->doc .= '<td>';
+            if ($data['screenshot'] == 'yes') {
+                $R->doc .= '<td class="screenshot">';
                 $val = $row['A.screenshot'];
                 if ($val) {
                     $title = 'screenshot: '.basename(str_replace(':','/',$val));
@@ -353,18 +361,21 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
             }
 
             if(strpos($this->getConf('bundled'),$row['A.plugin']) === false){
-                $R->doc .= '<td class="center">';
+                $R->doc .= '<td class="lastupdate">';
                 $R->doc .= hsc($row['A.lastupdate']);
-                $R->doc .= '</td><td>';
+                $R->doc .= '</td><td class="popularity">';
                 $R->doc .= '<div class="prog-border" title="'.$row['cnt'].'/'.$allcnt.'"><div class="prog-bar" style="width: '.sprintf(100*$row['cnt']/$popmax).'%;"></div></div>';
                 $R->doc .= '</td>';
             }else{
-                $R->doc .= '<td></td><td><i>'.$this->getLang($lang,'t_bundled').'</i></td>';
+                $R->doc .= '<td colspan="2" class="center"><i>';
+                $R->internallink(':bundled',$this->getLang($lang,'t_bundled'));
+                $R->doc .= '</i></td>';
             }
 
-            if ($data['compatible']) {
+            if ($data['compatible'] == 'yes') {
                 $R->doc .= '<td class="center">';
-                $R->doc .= str_replace(' "','<br />"',$this->hlp->cleanCompat($row['A.compatible'],true));
+                $R->doc .= $row['A.bestcompatible'].'<br />';
+                $R->doc .= $this->hlp->dokuReleases[$row['A.bestcompatible']]['label'];
                 $R->doc .= '</td>';
             }
 
@@ -388,7 +399,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= '<th>'.$this->getLang($lang,'t_description').'</th>';
         $R->doc .= '<th><a href="'.wl($ID,$linkopt.'pluginsort=a#repotable').'" title="'.$this->getLang($lang,'t_sortauthor').'">'.$this->getLang($lang,'t_author').'</a></th>';
         $R->doc .= '<th><a href="'.wl($ID,$linkopt.'pluginsort=t#repotable').'" title="'.$this->getLang($lang,'t_sorttype').  '">'.$this->getLang($lang,'t_type').'</a></th>';
-        if ($data['screenshot']) {
+        if ($data['screenshot'] == 'yes') {
             $R->doc .= '<th>'.$this->getLang($lang,'t_screenshot').'</th>';
         }
         $R->doc .= '<th><a href="'.wl($ID,$linkopt.'pluginsort=^d#repotable').'" title="'.$this->getLang($lang,'t_sortdate'). '">'.$this->getLang($lang,'t_date').'</a></th>';
@@ -396,7 +407,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= '</tr>';
 
         foreach($plugins as $row) {
-            $link = $this->hlp->internallink($R, $row['A.plugin']);
+            $link = $this->hlp->pluginlink($R, $row['A.plugin']);
             if(strpos($link,'class="wikilink2"')){
                 $this->hlp->deletePlugin($row['A.plugin']);
                 continue;
@@ -419,13 +430,15 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
             $R->doc .= $this->hlp->listtype($row['A.type'],$ID);
             $R->doc .= '</td>';
 
-            if ($data['screenshot']) {
+            if ($data['screenshot'] == 'yes') {
                 $R->doc .= '<td>';
-                $val = $plugin['A.screenshot'];
-                $title = 'screenshot: '.basename(str_replace(':','/',$val));
-                $R->doc .= '<a href="'.ml($val).'" class="media" rel="lightbox">';
-                $R->doc .= '<img src="'.ml($val,"w=80").'" alt="'.hsc($title).'" title="'.hsc($title).'" width="80"/>';
-                $R->doc .= '</a></td>';
+                $val = $row['A.screenshot'];
+                if ($val) {
+                    $title = 'screenshot: '.basename(str_replace(':','/',$val));
+                    $R->doc .= '<a href="'.ml($val).'" class="media" rel="lightbox">';
+                    $R->doc .= '<img src="'.ml($val,"w=80").'" alt="'.hsc($title).'" width="80"/></a>';
+                }
+                $R->doc .= '</td>';
             }
 
             if(strpos($this->getConf('bundled'),$row['A.plugin']) === false){

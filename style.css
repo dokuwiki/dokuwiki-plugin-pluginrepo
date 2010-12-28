@@ -136,6 +136,17 @@ div#pluginrepo__table table .center {
     text-align: center;
 }
 
+div#pluginrepo__table table .popularity,
+div#pluginrepo__table table .lastupdate {
+    width: 7em;
+    text-align: center;
+}
+
+div#pluginrepo__table table .screenshot {
+    width: 95px;
+    text-align: center;
+}
+
 div#pluginrepo__table table div.details {
     margin-left: 1em;
 }
@@ -292,3 +303,27 @@ ul#pluginrepo__foldout a.download {
     text-indent: 0px;
 }
 
+div.repo__news {
+    border: 1px solid __border__;
+    padding: 6px;
+    width: 220px;
+    float: right;
+}
+
+div.repo__news div.repo__newsheader {
+    margin: -6px;
+    height: 1.6em;
+    text-align: center;
+    font-weight: bold;
+    background-color: __border__;
+    color: __background__;
+}
+div.repo__news a {
+    font-weight: bold;
+}
+div.repo__news div.repo_newslink {
+    text-align: right;
+}
+div.repo__news div a{
+    font-weight: normal;
+}
