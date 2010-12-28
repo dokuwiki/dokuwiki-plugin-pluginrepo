@@ -136,7 +136,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $R->doc .= '<div>';
         $R->doc .= '<p><strong>'.noNS($id).' ';
         $R->doc .= ($type == 32 ? 'template':'plugin');
-        $R->doc .= '</strong> by ';
+        $R->doc .= '</strong> '.$this->getLang($lang,'by').' ';
         $R->emaillink($data['email'],$data['author']);
         $R->doc .= '<br />'.hsc($data['description']).'</p>';
 
