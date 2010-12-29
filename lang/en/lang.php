@@ -7,7 +7,6 @@
  */
 
 // Plugin entry
-$lang['by_same_author']      = 'Other contributions by same author';
 $lang['by']                  = 'by';
 $lang['last_updated_on']     = 'Last updated on';
 $lang['provides']            = 'Provides';

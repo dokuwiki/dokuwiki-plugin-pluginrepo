@@ -110,21 +110,12 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $rel = $this->hlp->getPluginRelations($id);
         $type = $this->hlp->parsetype($data['type']);
 
-        if ($rel['sameauthor']) {
-            $R->doc .= '<div id="pluginrepo__pluginauthorpush"><p>';
-            $R->doc .= $this->getLang($lang,'by_same_author');
-            $R->doc .= '</p><ul>';
-            $itr = 0;
-            while ($itr < count($rel['sameauthor']) && $itr < 10) {
-                $R->doc .= '<li>'.$this->hlp->pluginlink($R,$rel['sameauthor'][$itr++]).'</li>';
-            }
-            $R->doc .= '</ul>';
-            $R->doc .= '<div class="clearer"></div></div>';
-        }
+        if (!$data['screenshot_img']) {
+            $R->doc .= '<div id="pluginrepo__plugin" class="pluginrepo__box">';
 
-        $R->doc .= '<div id="pluginrepo__plugin">';
+        } else {
+            $R->doc .= '<div id="pluginrepo__plugin" class="pluginrepo__screenshotbox">';
 
-        if ($data['screenshot_img']) {
             $val = $data['screenshot_img'];
             $title = 'screenshot: '.basename(str_replace(':','/',$val));
             $R->doc .= '<div id="pluginrepo__pluginscreenshot">'; 

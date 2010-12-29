@@ -67,6 +67,50 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
     function render($format, &$R, $data) {
         if($format != 'xhtml') return false;
 
+        $R->doc .= '<div class="repo__news">';
+        $R->doc .= '<div class="repo__newsheader">'.hsc($data['headline']).'</div>';
+        
+        switch ($data['style']) {
+            case 'sameauthor':
+                $this->showSameAuthor($R,$data);
+                break;
+            default:
+                $this->showDefault($R,$data);
+        }
+
+        if ($data['link']) {
+            $R->doc .= '<div class="repo_newslink">';
+            $R->internallink($data['link'],$data['linktext']);        
+            $R->doc .= '</div>';
+        }
+        $R->doc .= '</div>';
+    }
+
+    function showSameAuthor(&$R, $data) {
+        global $ID;
+
+        if (curNS($ID) == 'plugin') {
+            $id = noNS($ID);
+        } else {
+            $id = curNS($ID).':'.noNS($ID);
+        }
+        $R->doc .= '<br />';
+
+        $rel = $this->hlp->getPluginRelations($id);
+        if (count($rel) == 0) {
+            $R->doc .= "Can't find any other plugins";
+            return;
+        }
+
+        $itr = 0;
+        $R->doc .= '<ul>';
+        while ($itr < count($rel['sameauthor']) && $itr < 10) {
+            $R->doc .= '<li>'.$this->hlp->pluginlink($R,$rel['sameauthor'][$itr++]).'</li>';
+        }
+        $R->doc .= '</ul>';
+    }
+
+    function showDefault(&$R, $data) {
         $limit = (is_numeric($data['entries']) ? $data['entries']: 1);
         $plugins = $this->hlp->getPlugins($data);
         if ($data['random'] == 'no') {
@@ -74,9 +118,6 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
         } else {
             $start = rand(0,count($plugins)-1-$limit);
         }
-        $R->doc .= '<div class="repo__news">';
-        $R->doc .= '<div class="repo__newsheader">'.hsc($data['headline']).'</div>';
-        
         for ($i = 0; $i < $limit; $i++) {
             $row = $plugins[$start+$i];
             $R->doc .= '<br />';
@@ -94,12 +135,6 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
             $R->emaillink($row['A.email'],$row['A.author']);
             $R->doc .= '<br />';
         }
-        if ($data['link']) {
-            $R->doc .= '<div class="repo_newslink">';
-            $R->internallink($data['link'],$data['linktext']);        
-            $R->doc .= '</div>';
-        }
-        $R->doc .= '</div>';
     }
 
 }

@@ -2,8 +2,14 @@ div#pluginrepo__plugin {
     background-color: #fff;
     border: 1px solid __border__;
     padding: 0.7em 1em 0.2em 1em;
-    width: 500px;
     font-size: 90%;
+}
+
+div.pluginrepo__box {
+    width: 450px;
+}
+div.pluginrepo__screenshotbox {
+    width: 615px;
 }
 
 div#pluginrepo__plugin div {
@@ -54,48 +60,6 @@ div#pluginrepo__plugin table td div.compatible {
 div#pluginrepo__plugin table td div.unkown_compatible {
     background: #fff;
     color: __border__;
-}
-
-div#pluginrepo__pluginauthorpush2 {
-    background-color: #fff;
-    border: 1px solid __border__;
-    padding: 0.7em 1em 0.2em 1em;
-    width: 20px;
-    position: relative;
-    left: 530px;
-    float: left;
-    font-size: 90%;
-}
-
-div#pluginrepo__pluginauthorpush {
-    background: #fff url(../../images/success.png) no-repeat;
-    border-top: 1px solid __border__;
-    border-bottom: 1px solid __border__;
-    border-right: 1px solid __border__;
-    padding: 0.7em 1em 0.2em 1em;
-    width: 15px;
-    height: 100px;
-    overflow: hidden;
-    white-space: nowrap;
-    position: relative;
-    top: 5px;
-    left: 525px;
-    float: left;
-    font-size: 90%;
-    
-    -moz-border-radius-topright: 3px;
-    -webkit-border-top-right-radius: 3px;
-    -moz-border-radius-bottomright: 3px;
-    -webkit-border-bottom-right-radius: 3px;
-
-}
-/*    display: block;
-    height: 300px;
-    text-indent: -9000px;
-*/
-div#pluginrepo__pluginauthorpush :hover  {
-    width: 120px;
-
 }
 
 div#pluginrepo__plugin div#pluginrepo__pluginscreenshot {
@@ -267,6 +231,8 @@ ul#pluginrepo__foldout a.donate {
 
 ul#pluginrepo__foldout a.download {
     background: transparent url(images/download.png) top left no-repeat;
+    width: 167px;
+    text-indent: 0px;
 }
 
 ul#pluginrepo__foldout a {
@@ -277,12 +243,12 @@ ul#pluginrepo__foldout a {
     white-space: nowrap;
     padding-left: 30px;
     line-height: 32px;
-    font-size: 17px;
+    font-size: 14px;
     text-decoration: none;
     border-left: 1px solid __border__;
     border-bottom: 1px solid __border__;
     border-right: 1px solid __border__;
-    margin: 0 3px 0px 3px;
+    margin: 0 0px 0px 3px;
 
     -moz-border-radius-bottomleft: 3px;
     -webkit-border-bottom-left-radius: 3px;
@@ -294,12 +260,7 @@ ul#pluginrepo__foldout a {
 
 ul#pluginrepo__foldout a:hover,
 ul#pluginrepo__foldout a:active {
-    width: 200px;
-    text-indent: 0px;
-}
-
-ul#pluginrepo__foldout a.download {
-    width: 200px;
+    width: 167px;
     text-indent: 0px;
 }
 
