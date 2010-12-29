@@ -39,9 +39,10 @@ print $feed;
 // ---------------------------------------------------------------- //
 
 /**
- * TODO
+ * Get URL parameters and config options and return a initialized option array
  */
 function parseOptions() {
+    // no config options right now
     return  $_REQUEST;
 }
 
