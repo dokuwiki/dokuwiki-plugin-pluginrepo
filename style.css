@@ -267,7 +267,7 @@ ul#pluginrepo__foldout a:active {
 div.repo__news {
     border: 1px solid __border__;
     padding: 6px;
-    width: 220px;
+    width: 210px;
     float: right;
 }
 
@@ -281,6 +281,9 @@ div.repo__news div.repo__newsheader {
 }
 div.repo__news a {
     font-weight: bold;
+}
+div.repo__news li a{
+    font-weight: normal;
 }
 div.repo__news div.repo_newslink {
     text-align: right;
