@@ -1,0 +1,19 @@
+====== Arctic Template ======
+---- pluginnews ----
+style: sameauthor
+headline: Michael Klier's Contributions
+----
+
+---- template ----
+Author_mail:    chi@chimeric.de Michael Klier
+Description:    A very customizable sidebar template
+LastUpdate_dt:  2010-10-29
+Compatible:     2010-10-27 "Busy Wednesday" (packages for older versions available)
+similar : template:dokubrick, vshare, wallpaper
+Template_tags:   sidebar, cms
+Screenshot_img: http://www.dokuwiki.org/_media/:template:arctic.png
+----
+
+
+
+Yet Another Sidebar Template. ;-) Features: sidebar (leftright/both/none), definable User-/Group-/Namespace-Sidebars, fully configurable via configuration manager, TOC inside sidebar, user defined sidebar actions.

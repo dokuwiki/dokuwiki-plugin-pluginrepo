@@ -1,0 +1,20 @@
+====== chat plugin ======
+
+---- plugin ----
+description: AJAX-driven Chat plugin
+author     : Pavel Vitis
+email      : pavel.vitis@seznam.cz
+type       : syntax
+lastupdate : 2006-11-22
+compatible : 
+depends    : 
+conflicts  : 
+similar    : 
+tags       : discussion, ajax, im
+
+downloadurl: http://wiki.lupo49.de/~lupo49/plugin-mirror/plugin_chat/dokuwiki-chat-1.1.2.zip
+----
+
+[[http://www.box.net/public/je8m1btjvg|Details and Download]]
+
+Mirror: [[http://svenhoefer.net/downloads/dokuwiki-chat-1.1.2.zip|dokuwiki-chat-1.1.2.zip]]

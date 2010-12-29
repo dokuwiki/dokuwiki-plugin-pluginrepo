@@ -1,0 +1,18 @@
+====== wallpaper Template ======
+
+---- pluginnews ----
+style: sameauthor
+headline: More by Klaus
+----
+
+----  template ----
+Author_mail:    klaus.vormweg@gmx.de Klaus Vormweg
+Description:    offers semi transparent content over background image and a dropdown menu
+LastUpdate_dt:  2010-10-20
+Compatible:     rc2010-10-07 (version for 2009-12-25 also available)
+Template_tags:  cms
+Screenshot_img: http://www.tu-harburg.de/~psvkv/wallpaper/wp_screen.jpg
+----
+
+
+This template offers a semi transparent body over a background image. Its main feature is a static dropdown menu. The menu supports up to three menu levels (that means three levels of namespaces).

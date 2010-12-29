@@ -1,0 +1,21 @@
+====== disqus plugin ======
+
+---- plugin ----
+description: Add Disqus powered comments to your wiki
+author     : Andreas Gohr
+email      : andi@splitbrain.org
+type       : syntax
+lastupdate : 2009-07-26
+compatible : 2009-12-25+
+depends    : 
+conflicts  : 
+similar    : discussion
+tags       : discussion, embed
+
+downloadurl: http://github.com/splitbrain/dokuwiki-plugin-disqus/zipball/master
+sourcerepo : http://github.com/splitbrain/dokuwiki-plugin-disqus/
+bugtracker : http://github.com/splitbrain/dokuwiki-plugin-disqus/issues
+donationurl: http://donate.dokuwiki.org/Disqus
+----
+
+This plugin integrates a threaded comment system provided by the online service [[http://disqus.com|Disqus]]. JavaScript is required to see the comments inline, when no JavaScript is available a link to the Disqus page is provided.

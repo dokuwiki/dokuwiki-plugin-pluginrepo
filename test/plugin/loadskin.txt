@@ -1,0 +1,21 @@
+====== Plugin Loadskin ======
+
+---- plugin ----
+description: Allows to specify different templates for different wiki pages or namespaces.
+author     : Michael Klier
+email      : <chi@chimeric.de>
+type       : action admin
+lastupdate : 2009-05-21
+compatible : > 2009-05-21, 2008-05-05
+depends    : 
+conflicts  : 
+similar    : 
+tags       : template, skin
+downloadurl: http://cloud.github.com/downloads/chimeric/dokuwiki-plugin-loadskin/plugin-loadskin.tgz
+bugtracker : http://github.com/chimeric/dokuwiki-plugin-loadskin/issues
+sourcerepo : http://github.com/chimeric/dokuwiki-plugin-loadskin/
+donationurl: https://www.paypal.com/xclick/business=chi%40chimeric.de&item_name=DokuWiki%2BPlugin%2BDonation&no_shipping=1&no_note=1&tax=0&currency_code=EUR&lc=US
+----
+
+^ Download | [[http://cloud.github.com/downloads/chimeric/dokuwiki-plugin-loadskin/plugin-loadskin.tgz|plugin-loadskin.tgz]] |
+^ Github URL | [[http://github.com/chimeric/dokuwiki-plugin-loadskin]] |

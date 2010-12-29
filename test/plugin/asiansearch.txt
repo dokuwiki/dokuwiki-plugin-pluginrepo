@@ -1,0 +1,25 @@
+====== Asian Search Plugin ======
+
+---- plugin ----
+description: Manipulates a search query for a better search experience in Asian languages
+author     : Kazutaka Miyasaka
+email      : kazmiya@gmail.com
+type       : action
+lastupdate : 2009-09-06
+compatible : 2009-02-14
+depends    : 
+conflicts  : 
+similar    : 
+tags       : language, search
+
+securityissue: Testing - this plugin should not be visible in repo.table
+
+downloadurl: http://cloud.github.com/downloads/kazmiya/dokuwiki-plugin-asiansearch/dokuwiki-plugin-asiansearch.zip
+bugtracker : 
+sourcerepo : http://github.com/kazmiya/dokuwiki-plugin-asiansearch
+donationurl: 
+----
+
+| :!: **This plugin is for DokuWiki 2009-02-14 ONLY!!** A newer release of DokuWiki has better support for searching in Asian languages by default. It is recommended to uninstall this plugin if you upgrade to DokuWiki 2009-12-25 "Lemming". |
+
+This plugin provides a better search experience in Asian languages by manipulating a search query. No re-indexing is required.

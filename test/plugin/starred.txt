@@ -1,0 +1,27 @@
+====== starred plugin ======
+
+[[http://www.cosmocode.de/en/wiki/dokuwiki/plugins|{{ http://www.cosmocode.de/_media/en/wiki/dokuwiki/cosmologo.png?recache|A CosmoCode Plugin}}]]
+
+---- plugin ----
+description: allows users to remember pages
+author     : Andreas Gohr
+email      : andi@splitbrain.org
+type       : action, syntax
+lastupdate : 2010-10-29
+compatible : 2009-12-25+
+depends    : sqlite
+conflicts  : 
+similar    : 
+tags       : favorites, remember
+----
+
+Plugin doku and download is available on [[http://ickewiki.de/dokumentation/starred|ICKEwiki.de]].
+
+
+===== Headline =====
+
+==== Headline2 ====
+==== Headline3 ====
+==== Headline4 ====
+==== Headline5 ====
+k

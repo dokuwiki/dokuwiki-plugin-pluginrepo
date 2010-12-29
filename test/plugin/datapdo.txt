@@ -1,0 +1,15 @@
+====== datapdo plugin ======
+
+---- plugin ----
+description: A PDO_SQLite version of Gohr's Data plugin
+author     : Louwrens van Dellen
+email      : louwrens.van.dellen@gmail.com
+type       : syntax, action, helper
+lastupdate : 2009-07-14
+compatible : devel > 2007-12-21
+depends    : data
+similar    : fields, pagemod
+tags       : sqlite, data, tags, database, !experimental, tables, listing, !obsolete
+----
+
+This plugin will be shown in the plugin table, !obsolete must be only tag when hiding.

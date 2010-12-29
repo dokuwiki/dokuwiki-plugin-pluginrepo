@@ -1,0 +1,38 @@
+====== Amazon Plugin ======
+
+---- pluginnews ----
+style: sameauthor
+headline: More by Andi
+----
+
+
+
+---- plugin ----
+description: Display product information fetched from Amazon for single products or lists
+author     : Andreas Gohr
+email      : andi@splitbrain.org
+type       : syntax
+lastupdate : 2010-08-07
+compatible : 2009-02-14, LeMmings ,,
+depends    : 
+conflicts  : 
+similar    : isbn
+tags       : media, images, music, video, books, listing, embed
+
+downloadurl: http://github.com/splitbrain/dokuwiki-plugin-amazon/zipball/master
+sourcerepo : http://github.com/splitbrain/dokuwiki-plugin-amazon/
+bugtracker : http://github.com/splitbrain/dokuwiki-plugin-amazon/issues
+donationurl: http://donate.dokuwiki.org/Amazon
+----
+
+
+This plugin allows you to include information and cover art form Amazon into a wiki page. This is somewhat similar to the [[plugin:ISBN]] plugin but it uses Amazon's WebService API to fetch the data. You can adjust the plugin's output by changing the format function of the plugin.
+
+
+===== Headline =====
+mm
+==== Headline2 ====
+==== Headline3 ====
+==== Headline4 ====
+==== Headline5 ====
+

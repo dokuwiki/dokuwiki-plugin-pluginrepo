@@ -1,0 +1,15 @@
+====== Info Plugin ======
+
+---- plugin ----
+description: Displays some information about DokuWiki's internals. (bundled with DokuWiki)
+author     : Andreas Gohr
+email      : andi@splitbrain.org
+type       : syntax
+lastupdate : 
+compatible : (bundled)
+depends    : 
+conflicts  : 
+similar    : 
+tags       : listing, plugins, !bundled
+----
+The plugin serves as simple sample [[devel:syntax_plugins|syntax plugin]] and is included in the DokuWiki Distribution. It is able to display some information about DokuWiki's internals, for example a list of installed and enabled [[:plugins]].

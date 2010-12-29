@@ -1,0 +1,17 @@
+====== Explain a Term ======
+
+---- plugin ----
+description: Explains terms and links to two alternative definitions. Terms are defined in a configuration file for the whole wiki. Just like acronyms.
+author     : Marc Wäckerlin
+email      : marc@waeckerlin.org
+type       : syntax
+lastupdate : 2006-01-25
+compatible : 
+depends    : 
+conflicts  : 
+similar    : 
+tags       : terms, definitions
+----
+
+Just like for the acronyms you can define a file containing a table which declares terms, a short explanation and two links to a longer definition. This automatically works for all those terms in the whole wiki.
+n

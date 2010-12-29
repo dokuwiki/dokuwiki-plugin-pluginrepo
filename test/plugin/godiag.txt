@@ -1,0 +1,22 @@
+====== Go Diagram Plugin ======
+
+---- plugin ----
+description: Edit and display Go diagrams (boards) in DokuWiki
+author     : Andreas Gohr
+email      : andi@splitbrain.org
+type       : syntax
+lastupdate : 2010-02-12
+compatible : 2005-05-05+
+depends    : 
+conflicts  : 
+similar    : chessdiagram, weiqi
+tags       : media, images, diagram, game, mediawiki
+
+downloadurl: http://github.com/splitbrain/dokuwiki-plugin-godiag/zipball/master
+sourcerepo : http://github.com/splitbrain/dokuwiki-plugin-godiag/
+bugtracker : http://github.com/splitbrain/dokuwiki-plugin-godiag/issues
+donationurl: http://donate.dokuwiki.org/godiag
+----
+
+This plugin allows to create board setting diagrams for the Asian game Go. The board is displayed as image and can be downloaded in SGF format. Hyperlinks can be added to single stones of the board.
+m

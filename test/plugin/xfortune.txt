@@ -1,0 +1,24 @@
+====== xfortune Plugin ======
+
+---- plugin ----
+description: Display a random quote and update it every few seconds with a new one
+author     : Andreas Gohr
+email      : andi@splitbrain.org
+type       : syntax
+lastupdate : 2008-01-25
+compatible : 2009-12-25
+depends    : 
+conflicts  : 
+similar    : 
+tags       : quotes, ajax, random
+
+downloadurl: http://github.com/splitbrain/dokuwiki-plugin-xfortune/zipball/master
+sourcerepo : http://github.com/splitbrain/dokuwiki-plugin-xfortune
+bugtracker : http://github.com/splitbrain/dokuwiki-plugin-xfortune/issues
+donationurl: http://donate.dokuwiki.org/xfortune
+----
+
+This plugin is able to read datafiles used by the popular Unix tool [[man>fortune]] and to display a random one. It then replaces the displayed one every few seconds with a new one using an AJAX request.
+m
+====== Headline ======
+

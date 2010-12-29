@@ -1,0 +1,18 @@
+====== DokuWiki Plugin: force_preview ======
+
+---- plugin ----
+description: Force users to hit the preview button before saving changes to a wiki page by deactivating the save button first. 
+author     : Pascal Bihler
+email      : bihler@iai.uni-bonn.de
+type       : action
+lastupdate : 2007-08-20
+compatible : 2008-05-05, 2006-11-06, 2007-05-24, 2007-06-26b
+depends    :
+conflicts  : livepreview ? enforcedcomments
+similar    :
+tags       : editing, users
+
+----
+
+
+

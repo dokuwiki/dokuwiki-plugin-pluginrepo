@@ -1,0 +1,22 @@
+====== navi plugin ======
+
+[[http://www.cosmocode.de/en/wiki/dokuwiki/plugins|{{ http://www.cosmocode.de/_media/en/wiki/dokuwiki/cosmologo.png?recache|A CosmoCode Plugin}}]]
+
+---- plugin ----
+description: Build a navigation menu from a list
+author     : Andreas Gohr
+email      : gohr@cosmocode.de
+type       : syntax
+lastupdate : 2009-02-03
+compatible : 2009-12-25+
+depends    : 
+conflicts  : 
+similar    : indexmenu
+tags       : navigation, menu
+
+sourcerepo : http://github.com/cosmocode/navi
+downloadurl: http://github.com/cosmocode/navi/zipball/master
+bugtracker : http://github.com/cosmocode/navi/issues
+----
+
+This plugin allows you to create a nested navigation menu based on a list defined in a Wiki page. Lower navigation levels are shown or hidden dependent on the current page. It is intended for the use in the sidebar of a template supporting one (tested on Arctic). A notable feature is that it allows you to create hierarchical menus without the need of a hierarchical namespace structure.

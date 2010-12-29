@@ -1,0 +1,21 @@
+====== snippets plugin ======
+
+---- plugin ----
+description: Adds a button to the editor toolbar which allows to easily insert templates while editing a page.
+author     : Michael Klier
+email      : chi@chimeric.de
+type       : Action, Syntax
+lastupdate : 2010-01-04
+compatible : 2009-12-25
+depends    : 
+conflicts  : 
+similar    : 
+tags       : editing, template, toolbar
+downloadurl: http://cloud.github.com/downloads/chimeric/dokuwiki-plugin-snippets/plugin-snippets.tgz
+bugtracker : http://github.com/chimeric/dokuwiki-plugin-snippets/issues
+sourcerepo : http://github.com/chimeric/dokuwiki-plugin-snippets/
+donationurl: https://www.paypal.com/xclick/business=chi%40chimeric.de&item_name=DokuWiki%2BPlugin%2BDonation&no_shipping=1&no_note=1&tax=0&currency_code=EUR&lc=US
+----
+
+^ Download | [[http://cloud.github.com/downloads/chimeric/dokuwiki-plugin-snippets/plugin-snippets.tgz|plugin-snippets.tgz]] |
+^ Github URL | [[http://github.com/chimeric/dokuwiki-plugin-snippets]] |

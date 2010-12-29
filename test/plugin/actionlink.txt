@@ -1,0 +1,21 @@
+====== Actionlink plugin ======
+
+---- plugin ----
+description: This plugin lets you use actionlinks in your wiki syntax. It's based on the DokuWiki's core function tpl_actionlink().
+author     : nowotny
+email      : nowotnypl@gmail.com
+type       : syntax
+lastupdate : 
+compatible :
+depends    :
+conflicts  :
+similar    :
+tags       : links
+
+downloadurl: http://mbot.ovh.org/plugin-actionlink-2005-05-26.zip
+bugtracker : 
+sourcerepo : 
+donationurl: 
+----
+
+

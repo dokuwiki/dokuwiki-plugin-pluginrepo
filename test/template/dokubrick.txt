@@ -1,0 +1,11 @@
+====== DoKubrick Template ======
+
+----  template ----
+Author_mail:    chi@chimeric.de Michael Klier
+Description:    port of the famous Kubrick theme
+LastUpdate_dt:  2010-10-29
+Compatible:     2010-10-27 "Busy Wednesday" (packages for older releases available)
+Template_tags:  kubrick, blog, wordpress
+Screenshot_img: http://www.dokuwiki.org/_media/:template:dokubrick.png
+downloadurl: www.hotshot.com
+----

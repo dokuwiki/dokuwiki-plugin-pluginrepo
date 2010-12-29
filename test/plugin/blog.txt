@@ -1,0 +1,19 @@
+====== Blog Plugin ======
+
+
+---- plugin ----
+description: Use DokuWiki as blogging tool. (previous authors: Esther Brunner)
+author     : Gina Häußge, Michael Klier
+email      : dokuwiki@chimeric.de
+type       : syntax, action, helper
+lastupdate : 2009-09-12
+compatible : 2009-02-14, 2008-05-05
+depends    : include, pagelist
+conflicts  : 
+similar    : 
+tags       : blog, news
+
+downloadurl: http://cloud.github.com/downloads/dokufreaks/plugin-blog/plugin-blog.tgz
+bugtracker : http://github.com/dokufreaks/plugin-blog/issues
+sourcerepo : http://github.com/dokufreaks/plugin-blog/
+----

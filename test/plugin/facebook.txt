@@ -1,0 +1,19 @@
+====== facebook plugin ======
+
+---- plugin ----
+description: Add Facebook Fan Boxes to your DokuWiki pages
+author     : Andreas Gohr 
+email      : andi@splitbrain.org 
+type       : syntax, action
+lastupdate : 2010-12-12
+compatible : 2009-12-25+
+depends    : 
+conflicts  : 
+similar    : 
+tags       : facebook, social
+
+downloadurl: http://github.com/splitbrain/dokuwiki-plugin-facebook/zipball/master
+bugtracker : http://github.com/splitbrain/dokuwiki-plugin-facebook/issues
+sourcerepo : http://github.com/splitbrain/dokuwiki-plugin-facebook/
+donationurl: http://donate.dokuwiki.org/Facebook
+----

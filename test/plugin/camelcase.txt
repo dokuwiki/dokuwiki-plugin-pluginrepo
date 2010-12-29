@@ -1,0 +1,23 @@
+====== CamelCase plugin ======
+
+---- plugin ----
+description: A replacement for DokuWiki CamelCase syntax, uses "_" to separate words in pages names
+author     : Christopher Smith
+email      : chris@jalakai.co.uk
+type       : syntax
+lastupdate : 2008-08-13
+compatible : 2005-09-19+ 2005-09-54 2015-09-19 2005-11-19+ 2005-09-29+
+depends    : 
+conflicts  : 
+similar    : 
+tags       : links
+
+downloadurl: http://dokuwiki.jalakai.co.uk/plugin-camelcase.tar.gz
+----
+
+This [[plugin]] replaces the current DokuWiki handlers for %%CamelCase%% markup. It will create a link to a page with underscores between the %%CamelCase%% words.
+
+e.g.
+  CamelCase => camel_case
+
+Standard DokuWiki behaviour is to create a link to a page with the %%CamelCase%% converted to all lower case (e.g. camelcase). This can result in reduced readability for the page names. An alternative is to set the config option ''[[config:useheading]]'' in your ''conf/local.php'' file.

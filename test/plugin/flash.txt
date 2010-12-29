@@ -1,0 +1,21 @@
+====== Flash Embed Plugin ======
+
+---- plugin ----
+description: Embed a Flash SWF file with any number of parameters
+author     : Andreas Gohr
+email      : andi@splitbrain.org
+type       : syntax
+lastupdate : 2009-12-11
+compatible : 2009-02-14+
+depends    : 
+conflicts  : 
+similar    : swfobject
+tags       : media, flash, embed
+
+downloadurl: http://github.com/splitbrain/dokuwiki-plugin-flash/zipball/master
+sourcerepo : http://github.com/splitbrain/dokuwiki-plugin-flash
+bugtracker : http://github.com/splitbrain/dokuwiki-plugin-flash/issues
+donationurl: http://donate.dokuwiki.org/flash
+----
+
+This plugin allows you to embed Flash files. Unlike DokuWiki's built-in syntax, this plugin adds an easy way to add arbitrary parameter or FlashVars. Unlike the similar [[plugin:swfobject]] plugin it does not require any JavaScript but relies on DokuWiki's own function to embed Flash files in a cross-browser compatible way instead.

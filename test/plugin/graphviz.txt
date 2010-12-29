@@ -1,0 +1,29 @@
+====== Graphviz-plugin ======
+
+---- plugin ----
+description: Graph Visualization (from text with links between objects to image)
+author     : Andreas Gohr
+email      : andi@splitbrain.org
+type       : Syntax
+lastupdate : 2010-08-21
+compatible : 2009-12-25+
+depends    : 
+conflicts  : 
+similar    : GNUplot, Ditaa, svgedit
+tags       : media, images, diagram, graphviz
+
+downloadurl: http://github.com/splitbrain/dokuwiki-plugin-graphviz/zipball/master
+bugtracker : http://github.com/splitbrain/dokuwiki-plugin-graphviz/issues
+sourcerepo : http://github.com/splitbrain/dokuwiki-plugin-graphviz/
+donationurl: http://donate.dokuwiki.org/graphviz
+----
+
+This plugin can create directed and non-directed graph images from a textual description language called "dot" using the Graphviz program. It can use a locally installed graphviz or use Google's chart API for rendering.
+
+The plugin supports exporting to OpenOffice through the [[odt|ODT Plugin]] (only with a local graphviz install).
+
+For more information on Graphviz and the dot language refer to the [[http://www.graphviz.org/Documentation.php|Graphviz documentation]]
+
+This plugin was originally written by [[calle@ioslo.net|Carl-Christian Salvesen]]. The current plugin is a nearly complete rewrite and differs on how it works internally and where graphs are stored.
+
+

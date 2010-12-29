@@ -1,0 +1,24 @@
+====== Translation Plugin ======
+
+---- plugin ----
+description: Help with translation efforts in a multilingual wiki
+author     : Andreas Gohr
+email      : andi@splitbrain.org
+type       : syntax, action
+lastupdate : 2009-10-25
+compatible : 2009-12-25+
+depends    : 
+conflicts  : 
+similar    : 
+tags       : language
+
+downloadurl: http://github.com/splitbrain/dokuwiki-plugin-translation/zipball/master
+sourcerepo : http://github.com/splitbrain/dokuwiki-plugin-translation/
+bugtracker : http://github.com/splitbrain/dokuwiki-plugin-translation/issues
+donationurl: http://donate.dokuwiki.org/Translation
+----
+
+This plugin shows a list of available translations for a page. It is very simple and was built with the needs of www.dokuwiki.org in mind and is used for [[translation|documentation translation]] efforts here. There are a few limitations:
+
+  * separate namespaces are used to store translations
+  * translated pages need to have the same [[:pagename]] as the main language page

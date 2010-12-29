@@ -1,0 +1,35 @@
+====== Plugins ====== 
+
+**Plugins** provide a system of extending DokuWiki's features without the need to hack the original code (and so again on each update). Below is a list of ready to use plugins created by DokuWiki users.
+
+A Plugin is installed by putting it into its own folder beyond ''lib/plugins/''.  For many plugins this can be done automatically using the [[plugin:plugin]] manager (there are detailed [[plugin installation instructions]]).  Be sure to read about [[:security#Plugin Security]].
+
+You can also find recommended groups of plugins as [[solutions|solutions]] to common DokuWiki applications. There are also a list of very [[solutions:common_plugins|common plugins]].
+
+-----pluginrepo----
+tablelayout: new
+-----
+
+Popularity values are based on data gathered through the [[plugin:popularity]] plugin - please help to increase accuracy by reporting your data with this plugin.
+
+===== Creating Plugins =====
+
+There are several plugin types which interchange with different parts of DokuWiki. A plugin can consist of multiple types. The links below should help you to get started writing your own DokuWiki plugin.
+
+  * Syntax Plugins ( [[devel:Syntax Plugins|Manual]] )
+  * Admin Plugins ( [[devel:Admin Plugins|Manual]] )
+  * Action Plugins ( [[devel:Action Plugins|Manual]] ) 
+  * Renderer Plugins ( [[devel:Renderer Plugins|Manual]] )
+  * Helper Plugins ( [[devel:Helper Plugins|Manual]] )
+
+If you created a plugin, please share it with the community. Just create a page named after your plugin in the plugin namespace. Eg. if your pluginfolder is named ''sample'' create a page ''plugin:sample'' here in the wiki. Note: uploads are not allowed here, so either paste the code or just use one of the many free file host sites on the net.
+
+===== Requesting Plugin =====
+
+If you are in need of a special feature in DokuWiki but haven't the skills or resources to create your own plugin you might want to suggest the feature for consideration by the community.
+
+To ask for the creation of a new plugin or to discuss plugin ideas, please refer to the [[http://forum.dokuwiki.org/forum/19|Plugin Wishlist Forum]].
+
+Recent Wishes:
+
+{{rss>http://forum.dokuwiki.org/forum.php?req=rss&type=1&forum=19}}

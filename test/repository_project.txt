@@ -1,0 +1,66 @@
+====== Repository Project ======
+
+===== Sample pages =====
+
+----- pluginnews -----
+headline: Random Plugin Of The Day
+link: :plugins
+linktext: More plugins >>
+-----
+
+  * Table component
+    * [[plugins|Plugins]]
+    * [[templates|Templates]]
+
+  * Entry component
+    * [[plugin:amazon|Amazon Plugin]] (news)
+    * [[plugin:starred|starred plugin]] (entry with image + toc)
+    * [[plugin:datapdo|datapdo plugin]] (devel)
+    * [[plugin:asiansearch|Asian Search Plugin]] (security issue)
+    * [[plugin:vshare|Video Share Plugin]] (security issue + warning)
+    * [[plugin:explain|Explain a Term]] (no compat given)
+    * [[template:arctic|Arctic Template]]
+
+----- pluginnews -----
+headline:   Latest Plugin Update
+pluginsort: ^lastupdate
+random:      no
+link:        nolinktext
+-----
+
+  * Repo XML (edit links to fit your installation)
+    * [[http://localhost:8800/lib/plugins/pluginrepo/repository.php]]
+    * [[http://localhost:8800/lib/plugins/pluginrepo/repository.php?plugintype=32&includetemplates=yes]]
+    * [[http://localhost:8800/lib/plugins/pluginrepo/repository.php?plugintag=blog]]
+    * [[http://localhost:8800/lib/plugins/pluginrepo/repository.php?plugintype=1]]
+
+===== Query Component =====
+
+----- pluginnews -----
+headline:     Featured Template
+plugins:       template:arctic
+includetemplates: yes
+screenshot:yes
+random:no
+link: templates
+linktext: More templates >>
+-----
+
+This is all plugins with security issues. Someone should do something....
+---- pluginquery -----
+WHERE: securityissue <> ?
+VALUES: 
+-----
+
+OMG, all these plugins are already at GibHub!
+---- pluginquery -----
+SELECT: type downloadurl 
+WHERE:  downloadurl LIKE ?
+values: %github%
+-----
+
+Still some plugin without proper download links
+---- pluginquery -----
+SELECT: plugin
+WHERE:  downloadurl IS null
+-----

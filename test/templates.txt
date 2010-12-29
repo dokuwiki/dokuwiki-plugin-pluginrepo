@@ -1,0 +1,22 @@
+====== Templates ======
+DokuWiki's layout can be customized through templates (aka. skins or themes).
+
+:!: **IMPORTANT NOTE:** Since some template features are changing with newer DokuWiki releases it's best to stick to templates of which the release dates are equal or newer than the DokuWiki release you're using. It cannot be guaranteed that older templates provide the full set of features. For important changes please check the [[:changes|changelog]]. :!:  
+
+===== Installing Templates =====
+
+Installing templates is simple, just extract the downloaded template archive (usually a .zip or .tgz file) in the ''lib/tpl/'' folder((If the zip file does not contain a folder itself, you have to create ''lib/tpl/<templatename>'' and unzip the template files into that one instead.)).
+
+Then select the template in the [[plugin:config|Config Manager]] by adjusting the [[config:template]]  option.
+
+---- pluginrepo ----
+includetemplates: yes
+screenshot:       yes
+plugintype:       32
+-----
+
+===== Creating a Template =====
+
+Please refer to the [[devel:template|Template Development]] page to learn about creating your own templates. If you created a template, please share it by creating a new page in the ''template'' namespace.
+
+If you like to have a template ported to [[DokuWiki]] use the [[http://forum.dokuwiki.org/forum/20|template wishlist sub-forum]].

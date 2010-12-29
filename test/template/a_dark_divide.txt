@@ -1,0 +1,12 @@
+====== a simple sample Template ======
+
+---- template ----
+Author_mail:    ja@anymorphic.com Anymorphic
+Description:    A simple theme, based on the Design of Modern Clix and the technology of arctic.
+LastUpdate_dt:  2010-08-21
+Compatible:     
+Template_tags:  simple, clean, navigation, sidebar
+Screenshot_img: http://www.dokuwiki.org/lib/exe/fetch.php?hash=55d7c3&media=http%3A%2F%2Fanymorphic.com%2Fa_dark_divide.png
+----
+
+The template features a small menu and a sidebar. To populate the menu in the top, create a list of wiki-syntax linksin the page ”:menu”.

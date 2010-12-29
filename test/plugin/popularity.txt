@@ -1,0 +1,15 @@
+====== popularity plugin ======
+
+---- plugin ----
+description: collects data
+author     : Andreas Gohr 
+email      : dokuwiki@cosmocode.de
+type       : syntax
+lastupdate : 2010-06-28
+compatible : anteater
+depends    : 
+conflicts  : 
+similar    : 
+tags       : popularity
+
+----

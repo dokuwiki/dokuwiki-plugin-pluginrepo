@@ -1,0 +1,18 @@
+====== GeoURL for DokuWiki ======
+
+---- plugin ----
+description: This plugin allows you to set geographic data for your Wiki with GeoURL, which allows you and your visitors to find geographically nearly sites.
+author     : Krzysztof Burghardt
+email      : krzysztof@burghardt.pl
+type       : admin
+lastupdate : 2007-03-10
+compatible : 2006-03-09, 2006-11-06
+depends    : 
+conflicts  : 
+similar    : 
+tags       : export extension facebook feed file filter flash footnotes form formatting formula gallery game google gpsies graphviz groups headings hide highlight highlighting home html hyphen icons im image images include index ip java javascript keyboard language latex lightbox links list listing logging maintenance management maps markup_language math media mediawiki menu meta moderation music mysql namespace navigation news odt page pages panorama password pdf php ping plugins plugintype poll popup printing program quotes random recommend redirect references rename replace repository revisions rss science search section sidebar signature slideshow social sort spam sqlite sso statistics status style subscription svg sympa sync syntax tables tags task template tickets time todo toolbar tooltip tracker typography uml update upload url user users utf-8 video wysiwyg xml xmlrpc yahoo 
+
+downloadurl: http://www.burghardt.pl/files/geourl-20070310.tar.gz
+----
+
+[[http://www.burghardt.pl/2007/11/geourl-plugin-for-dokuwiki/|Details and Download]]

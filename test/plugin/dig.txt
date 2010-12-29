@@ -1,0 +1,22 @@
+====== dig plugin ======
+
+[[http://www.cosmocode.de/en/wiki/dokuwiki/plugins|{{ http://www.cosmocode.de/_media/en/wiki/dokuwiki/cosmologo.png?recache|A CosmoCode Plugin}}]]
+
+---- plugin ----
+description: Print DNS details for a given list of domain names
+author     : Andreas Gohr 
+email      : dokuwiki@cosmocode.de
+type       : syntax
+lastupdate : 2010-06-28
+compatible : 2009-12-25
+depends    : 
+conflicts  : 
+similar    : 
+tags       : !bundled !discontinued   !maybe.broken  abstract acl address admin advertising  annotations applet archive authentication backup barcode bibtex biology blacklist  bookmark  box boxes bug bugtracker button cache calculation calendar captcha caption changelog chart chemistry code collapsible comic command configuration convert counter create csv  date  diagram  download eclipse  editor email  encryption export extension  feed file filter flash footnotes form formatting formula gallery icons  include ip java javascript keyboard language latex lightbox  list  logging maintenance management  markup_language math media  menu  moderation music mysql namespace navigation  odt page pages panorama password pdf php ping plugins plugintype poll popup printing program quotes random redirect references replace repository revisions rss science search section sidebar signature slideshow  sort spam  sso statistics status style subscription svg sympa sync syntax   task template tickets time todo toolbar tooltip tracker typography uml update upload url  users utf-8 video wysiwyg xml xmlrpc yahoo
+
+downloadurl: http://github.com/cosmocode/dig/zipball/master
+bugtracker : http://github.com/cosmocode/dig/issues
+sourcerepo : http://github.com/cosmocode/dig/
+----
+
+This plugin queries data about a list of domain names from DNS. This is useful for documenting your owned domain names and servers.
