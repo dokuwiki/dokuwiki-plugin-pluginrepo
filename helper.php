@@ -9,8 +9,6 @@
 
 class helper_plugin_pluginrepo extends DokuWiki_Plugin {
 
-    var $localised = array();      // set to true by setupLocale() after loading language dependent strings
-    var $lang = array();           // array to hold language dependent strings, best accessed via ->getLang()
     var $dokuReleases;             // array of DokuWiki releases (name & date)
 
     var $types = array(
@@ -63,40 +61,6 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
             $data['email'] = $mail;
         }
         return $data;
-    }
-
-    /**
-     * getLang($id)
-     * use this function to access plugin language strings
-     * to try to minimise unnecessary loading of the strings when the plugin doesn't require them
-     * e.g. when info plugin is querying plugins for information about themselves.
-     *
-     * @param   $id     id of the string to be retrieved
-     * @return  string  string in appropriate language or english if not available
-     */
-    function getLang($langcode,$id) {
-        if (!$this->localised[$langcode]) $this->setupLocale($langcode);
-
-        return (isset($this->lang[$langcode][$id]) ? $this->lang[$langcode][$id] : '');
-    }
-
-    /**
-     *  setupLocale()
-     *  reads all the plugins language dependent strings into $this->lang
-     *  this function is automatically called by getLang()
-     */
-    function setupLocale($langcode) {
-        if ($this->localised[$langcode]) return;
-
-        $path = DOKU_PLUGIN.$this->getPluginName().'/lang/';
-        $lang = array();
-
-        // don't include once, in case several plugin components require the same language file
-        @include($path.'en/lang.php');
-        if ($langcode != 'en') @include($path.$langcode.'/lang.php');
-
-        $this->lang[$langcode] = $lang;
-        $this->localised[$langcode] = true;
     }
 
     /**

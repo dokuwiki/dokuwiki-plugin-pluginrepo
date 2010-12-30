@@ -93,20 +93,9 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * Override getLang to be able to select language by namespace
-     */
-    function getLang($langcode,$id) {
-        return $this->hlp->getLang($langcode,$id);
-    }
-
-    /**
      * Output the data in a table
      */
     function _showData($data,$id,&$R){
-        global $ID;
-        $lang = split(":",getNS($ID),2);
-        $lang =(count($lang) == 2 ? $lang[0] : 'en');
-
         $rel = $this->hlp->getPluginRelations($id);
         $type = $this->hlp->parsetype($data['type']);
 
@@ -127,31 +116,31 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $R->doc .= '<div>';
         $R->doc .= '<p><strong>'.noNS($id).' ';
         $R->doc .= ($type == 32 ? 'template':'plugin');
-        $R->doc .= '</strong> '.$this->getLang($lang,'by').' ';
+        $R->doc .= '</strong> '.$this->getLang('by').' ';
         $R->emaillink($data['email'],$data['author']);
         $R->doc .= '<br />'.hsc($data['description']).'</p>';
 
         if(preg_match('/^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/',$data['lastupdate'])){
             $R->doc .= '<span class="lastupd">';
-            $R->doc .= $this->getLang($lang,'last_updated_on');
+            $R->doc .= $this->getLang('last_updated_on');
             $R->doc .= ' <em>'.$data['lastupdate'].'</em>.</span> ';
         }
 
         $target = getNS($ID).'s';
         if($type && $type != 32){
             $R->doc .= '<span class="type">';
-            $R->doc .= $this->getLang($lang,'provides');
+            $R->doc .= $this->getLang('provides');
             $R->doc .= ' <em>'.$this->hlp->listtype($type,$target).'</em>.</span>';
         }
 
         $R->doc .= '<table class="inline compatible">';
         $R->doc .= '<tr><th colspan="4">';
-        $R->doc .= $this->getLang($lang,'compatible_with');
+        $R->doc .= $this->getLang('compatible_with');
         $R->doc .= '</th></tr>';
 
         if (!$data['compatible']) {
             $R->doc .= '<tr><td class="compatible__msg" colspan="'.$this->getConf('showcompat').'">';
-            $R->doc .= $this->getLang($lang,'no_compatibility');
+            $R->doc .= $this->getLang('no_compatibility');
             $R->doc .= '</td></tr>';
 
         } else {
@@ -170,7 +159,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
             if (strpos($data['compatible'],'devel') !== false) {
                 $R->doc .= '<tr><td class="compatible__msg" colspan="'.$this->getConf('showcompat').'">';
-                $R->internallink('devel:develonly',$this->getLang($lang,'develonly'));
+                $R->internallink('devel:develonly',$this->getLang('develonly'));
                 $R->doc .= '</td></tr>';
 
             } elseif ($norecentcompat) {
@@ -190,14 +179,14 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         }
         if($data['conflicts']){
             $R->doc .= '<span class="conflicts">';
-            $R->doc .= $this->getLang($lang,'conflicts_with');
+            $R->doc .= $this->getLang('conflicts_with');
             $R->doc .= ' <em>';
             $R->doc .= $this->hlp->listplugins($data['conflicts'],$R);
             $R->doc .= '</em>!</span><br />';
         }
         if($data['depends']){
             $R->doc .= '<span class="depends">';
-            $R->doc .= $this->getLang($lang,'requires');
+            $R->doc .= $this->getLang('requires');
             $R->doc .= ' <em>';
             $R->doc .= $this->hlp->listplugins($data['depends'],$R);
             $R->doc .= '</em>.</span><br />';
@@ -208,7 +197,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         }
         if($data['similar']){
             $R->doc .= '<span class="similar">';
-            $R->doc .= $this->getLang($lang,'similar_to');
+            $R->doc .= $this->getLang('similar_to');
             $R->doc .= ' <em>';
             $R->doc .= $this->hlp->listplugins($data['similar'],$R);
             $R->doc .= '</em>.</span><br />';
@@ -218,7 +207,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $R->doc .= '<p>';
         if($data['tags']){
             $R->doc .= '<span class="tags">';
-            $R->doc .= $this->getLang($lang,'tagged_with');
+            $R->doc .= $this->getLang('tagged_with');
             $R->doc .= ' <em>';
             $R->doc .= $this->hlp->listtags($data['tags'],$target);
             $R->doc .= '</em>.</span><br />';
@@ -227,10 +216,10 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
         if($data['securitywarning']){
             $R->doc .= '<p class="securitywarning">';
-            $securitylink = $R->internallink('devel:security',$this->getLang($lang,'securitylink'),NULL,true);
-            $R->doc .= '<b>'.sprintf($this->getLang($lang,'securitywarning'),$securitylink).'</b><br /><br />';
+            $securitylink = $R->internallink('devel:security',$this->getLang('securitylink'),NULL,true);
+            $R->doc .= '<b>'.sprintf($this->getLang('securitywarning'),$securitylink).'</b><br /><br />';
             if(in_array($data['securitywarning'],$this->hlp->securitywarning)){
-                $R->doc .= '<i>'.$this->getLang($lang,'security_'.$data['securitywarning']).'</i>';
+                $R->doc .= '<i>'.$this->getLang('security_'.$data['securitywarning']).'</i>';
             }else{
                 $R->doc .= '<i>'.hsc($data['securitywarning']).'</i>';
             }
@@ -239,16 +228,16 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
         if($data['securityissue']){
             $R->doc .= '<p class="security">';
-            $R->doc .= '<b>'.$this->getLang($lang,'securityissue').'</b><br /><br />';
+            $R->doc .= '<b>'.$this->getLang('securityissue').'</b><br /><br />';
             $R->doc .= '<i>'.hsc($data['securityissue']).'</i><br /><br />';
-            $securitylink = $R->internallink('devel:security',$this->getLang($lang,'securitylink'),NULL,true);
-            $R->doc .= sprintf($this->getLang($lang,'securityrecommendation'),$securitylink);
+            $securitylink = $R->internallink('devel:security',$this->getLang('securitylink'),NULL,true);
+            $R->doc .= sprintf($this->getLang('securityrecommendation'),$securitylink);
             $R->doc .= '.</p>';
         }
 
         if(strpos($id,'_') !== false) {
             $R->doc .= '<p class="security">';
-            $R->doc .= '<b>'.$this->getLang($lang,'name_underscore').'</b>';
+            $R->doc .= '<b>'.$this->getLang('name_underscore').'</b>';
             $R->doc .= '</p>';
         }
 
@@ -256,10 +245,10 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         
         // add tabs
         $R->doc .= '<ul id="pluginrepo__foldout">';
-        if($data['downloadurl']) $R->doc .= '<li><a class="download" href="'.hsc($data['downloadurl']).'">'.$this->getLang($lang,'downloadurl').'</a></li>';
-        if($data['bugtracker'])  $R->doc .= '<li><a class="bugs" href="'.hsc($data['bugtracker']).'">'.$this->getLang($lang,'bugtracker').'</a></li>';
-        if($data['sourcerepo'])  $R->doc .= '<li><a class="repo" href="'.hsc($data['sourcerepo']).'">'.$this->getLang($lang,'sourcerepo').'</a></li>';
-        if($data['donationurl']) $R->doc .= '<li><a class="donate" href="'.hsc($data['donationurl']).'">'.$this->getLang($lang,'donationurl').'</a></li>';
+        if($data['downloadurl']) $R->doc .= '<li><a class="download" href="'.hsc($data['downloadurl']).'">'.$this->getLang('downloadurl').'</a></li>';
+        if($data['bugtracker'])  $R->doc .= '<li><a class="bugs" href="'.hsc($data['bugtracker']).'">'.$this->getLang('bugtracker').'</a></li>';
+        if($data['sourcerepo'])  $R->doc .= '<li><a class="repo" href="'.hsc($data['sourcerepo']).'">'.$this->getLang('sourcerepo').'</a></li>';
+        if($data['donationurl']) $R->doc .= '<li><a class="donate" href="'.hsc($data['donationurl']).'">'.$this->getLang('donationurl').'</a></li>';
         $R->doc .= '</ul>';
     }
 

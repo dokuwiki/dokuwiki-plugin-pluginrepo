@@ -90,7 +90,7 @@ function getRepository($opt) {
         $feed .= '<securityissue>'.hsc($plugin['securityissue']).'</securityissue>';
         $feed .= '<securitywarning>';
         if (in_array($plugin['securitywarning'],$hlp->securitywarning)) {
-            $feed .= $hlp->getLang($lang,'security_'.$plugin['securitywarning']);
+            $feed .= $hlp->getLang('security_'.$plugin['securitywarning']);
         } else {
             $feed .= hsc($plugin['securitywarning']);
         }
