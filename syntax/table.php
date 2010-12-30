@@ -235,7 +235,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
         $R->section_open(2);
         $R->doc .= '<div id="pluginrepo__table">';
-        $R->doc .= '<a name="repotable" />';
+        $R->doc .= '<a name="repotable"></a>';
         $R->doc .= '<h3>'.$header.'</h3>';
 
         if($_REQUEST['pluginsort'] == 'p' || $_REQUEST['pluginsort'] == '^p') {
