@@ -96,6 +96,8 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
      * Output the data in a table
      */
     function _showData($data,$id,&$R){
+        global $ID;
+
         $rel = $this->hlp->getPluginRelations($id);
         $type = $this->hlp->parsetype($data['type']);
 
