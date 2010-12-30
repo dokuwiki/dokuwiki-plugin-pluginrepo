@@ -84,12 +84,10 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
                 $R->doc .= '<b>Repoquery error - Unknown field:</b> '.hsc($fields[$fieldItr]).'<br/>';
                 return;
             }
-            if ($fields[$fieldItr] != 'cnt') {
-                $fields[$fieldItr] = 'A.'.$fields[$fieldItr];
-            }
         }
         // create ORDER BY sql clause for shown fields, ensure 'plugin' field included 
-        $ordersql = join(',', array_merge($fields,array('A.plugin')));
+        $ordersql = 'A.plugin'.($fields ? ',A.'.join(',A.',$fields) : '');
+        $ordersql = str_replace('A.cnt','cnt',$ordersql);
 
         // sanitize WHERE input
         if (!$data['where']) {
@@ -118,7 +116,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
             $R->doc .= '<b>Repoquery error - Unsupported chars in HAVING clause:</b> '.hsc($data['having']).'<br/>';
             return;
         }
-        
+
         $stmt = $db->prepare("SELECT A.*, COUNT(C.value) as cnt
                                 FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value AND C.key = 'plugin'
                                WHERE $wheresql 
@@ -130,10 +128,11 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
         $values = preg_split("/,/",$data['values']);
         $values = array_map('trim',$values);
         $values = array_filter($values);
-        if (!$values) $values = array('');
+        if (!$values && array_key_exists('values',$data)) $values = array('');
         $stmt->execute($values);
         $datarows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        if (!$values) $values = array('');
         $headline = 'Plugins WHERE '.vsprintf(str_replace('?','%s',$wheresql),$values);
         $headline .= ($havingsql?' '.$havingsql:'');
 
@@ -142,8 +141,8 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
             // sort into alpha groups if only displaying plugin links
             $plugingroups = array();
             foreach ($datarows as $row) {
-                $firstchar = substr(noNS($row['A.plugin']),0,1);
-                $plugingroups[$firstchar][] = $row['A.plugin'];
+                $firstchar = substr(noNS($row['plugin']),0,1);
+                $plugingroups[$firstchar][] = $row['plugin'];
             }
 
             $R->doc .= '<table class="inline">';
@@ -172,13 +171,13 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
                 foreach ($fields as $field) {
                     $groupkey .= $row[$field];
                 }
-                $plugingroups[$groupkey][] = $row['A.plugin'];
+                $plugingroups[$groupkey][] = $row['plugin'];
             }
 
             $R->doc .= '<table class="inline">';
             $R->doc .= '<tr>';
             foreach ($fields as $field) {
-                $R->doc .= '<th>'.ucfirst(str_replace('A.','',$field)).'</th>';
+                $R->doc .= '<th>'.ucfirst($field).'</th>';
             }
             $R->doc .= '<th colspan="2">'.hsc($headline).'</th></tr>';
             $prevkey = '';
@@ -194,18 +193,18 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
                 foreach ($fields as $field) {
                     $R->doc .= '<td>';
 
-                    if ($field == 'A.type') {
+                    if ($field == 'type') {
                         foreach($this->hlp->types as $k => $v){
-                            if($row['A.type'] & $k){
+                            if($row['type'] & $k){
                                 $R->doc .= $v.' ';
                             }
                         }
 
-                    } elseif ($field == 'A.plugin') {
-                        $R->doc .= $this->hlp->pluginlink($R,$row['A.plugin']);
+                    } elseif ($field == 'plugin') {
+                        $R->doc .= $this->hlp->pluginlink($R,$row['plugin']);
 
-                    } elseif ($field == 'A.email' || $field == 'A.author') {
-                        $R->doc .= $R->emaillink($row['A.email'],$row['A.author']);
+                    } elseif ($field == 'email' || $field == 'author') {
+                        $R->doc .= $R->emaillink($row['email'],$row['author']);
 
                     } else {
                         $R->doc .= hsc($row[$field]);

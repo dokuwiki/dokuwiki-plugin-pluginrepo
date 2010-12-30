@@ -186,8 +186,8 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $tagData =$this->hlp->getTags($cloudmin,$data);
         // $tagData will be sorted by cnt (descending)
         foreach($tagData as $tag) {
-            if ($tag['A.tag'] == $this->hlp->obsoleteTag) continue;
-            $tags[$tag['A.tag']] = $tag['cnt'];
+            if ($tag['tag'] == $this->hlp->obsoleteTag) continue;
+            $tags[$tag['tag']] = $tag['cnt'];
             if(!$max) $max = $tag['cnt'];
             $min = $tag['cnt'];
         }
@@ -310,52 +310,52 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
         $compatgroup = '9999-99-99';
         foreach($plugins as $row) {
-            $link = $this->hlp->pluginlink($R, $row['A.plugin'], ucfirst(noNS($row['A.plugin'])).($row['A.type']==32?' template':' plugin'));
+            $link = $this->hlp->pluginlink($R, $row['plugin'], ucfirst(noNS($row['plugin'])).($row['type']==32?' template':' plugin'));
             if(strpos($link,'class="wikilink2"')){
-                $this->hlp->deletePlugin($row['A.plugin']);
+                $this->hlp->deletePlugin($row['plugin']);
                 continue;
             }
 
-            if (!$data['compatible'] && !$sort && $row['A.bestcompatible'] !== $compatgroup) {
+            if (!$data['compatible'] && !$sort && $row['bestcompatible'] !== $compatgroup) {
                 $R->doc .= '</table>';
-                if ($row['A.bestcompatible']) {
-                    $R->doc .= $this->getLang($lang,'compatible_with').' <b>'.$row['A.bestcompatible'].'</b>';
+                if ($row['bestcompatible']) {
+                    $R->doc .= $this->getLang($lang,'compatible_with').' <b>'.$row['bestcompatible'].'</b>';
                 } else {
                     $R->doc .= $this->getLang($lang,'t_oldercompatibility');
                 }
                 $R->doc .= '<table class="inline">';
-                $compatgroup = $row['A.bestcompatible'];
+                $compatgroup = $row['bestcompatible'];
             }
 
             $R->doc .= '<tr>';
             $R->doc .= '<td>';
-            $R->doc .= '<a name="'.substr($row['A.plugin'],0,1).'"></a>';
+            $R->doc .= '<a name="'.substr($row['plugin'],0,1).'"></a>';
 
             $R->doc .= '<div class="repo_plugintitle">';
             $R->doc .= $link;
             $R->doc .= '</div>';
-            if($row['A.downloadurl'] && !$row['A.securityissue'] && !$row['A.securitywarning']){
+            if($row['downloadurl'] && !$row['securityissue'] && !$row['securitywarning']){
                 $R->doc .= '<div class="repo_download">';
-                $R->doc .= $R->externallink($row['A.downloadurl'], $this->getLang($lang,'t_download'), null, true);
+                $R->doc .= $R->externallink($row['downloadurl'], $this->getLang($lang,'t_download'), null, true);
                 $R->doc .= '</div>';
             }
             $R->doc .= '<div class="clearer"></div><div class="details">';
-            $R->doc .= hsc($row['A.description']).'<br />';
+            $R->doc .= hsc($row['description']).'<br />';
 
             $R->doc .= '<div class="repo_provides">'.$this->getLang($lang,'t_provides').': ';
-            $R->doc .= $this->hlp->listtype($row['A.type'],$ID);
+            $R->doc .= $this->hlp->listtype($row['type'],$ID);
             $R->doc .= ' '.$this->getLang($lang,'t_tags').': ';
-            $R->doc .= $this->hlp->listtags($row['A.tags'],$ID);
+            $R->doc .= $this->hlp->listtags($row['tags'],$ID);
             $R->doc .= '</div></div>';
 
             $R->doc .= '<div class="repo_mail">'.$this->getLang($lang,'t_author').': ';
-            $R->emaillink($row['A.email'],$row['A.author']);
+            $R->emaillink($row['email'],$row['author']);
             $R->doc .= '</div>';
             $R->doc .= '</td>';
 
             if ($data['screenshot'] == 'yes') {
                 $R->doc .= '<td class="screenshot">';
-                $val = $row['A.screenshot'];
+                $val = $row['screenshot'];
                 if ($val) {
                     $title = 'screenshot: '.basename(str_replace(':','/',$val));
                     $R->doc .= '<a href="'.ml($val).'" class="media" rel="lightbox">';
@@ -364,9 +364,9 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
                 $R->doc .= '</td>';
             }
 
-            if(strpos($this->getConf('bundled'),$row['A.plugin']) === false){
+            if(strpos($this->getConf('bundled'),$row['plugin']) === false){
                 $R->doc .= '<td class="lastupdate">';
-                $R->doc .= hsc($row['A.lastupdate']);
+                $R->doc .= hsc($row['lastupdate']);
                 $R->doc .= '</td><td class="popularity">';
                 $R->doc .= '<div class="prog-border" title="'.$row['cnt'].'/'.$allcnt.'"><div class="prog-bar" style="width: '.sprintf(100*$row['cnt']/$popmax).'%;"></div></div>';
                 $R->doc .= '</td>';
@@ -378,8 +378,8 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
             if ($data['compatible'] == 'yes') {
                 $R->doc .= '<td class="center">';
-                $R->doc .= $row['A.bestcompatible'].'<br />';
-                $R->doc .= $this->hlp->dokuReleases[$row['A.bestcompatible']]['label'];
+                $R->doc .= $row['bestcompatible'].'<br />';
+                $R->doc .= $this->hlp->dokuReleases[$row['bestcompatible']]['label'];
                 $R->doc .= '</td>';
             }
 
@@ -411,9 +411,9 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= '</tr>';
 
         foreach($plugins as $row) {
-            $link = $this->hlp->pluginlink($R, $row['A.plugin']);
+            $link = $this->hlp->pluginlink($R, $row['plugin']);
             if(strpos($link,'class="wikilink2"')){
-                $this->hlp->deletePlugin($row['A.plugin']);
+                $this->hlp->deletePlugin($row['plugin']);
                 continue;
             }
 
@@ -422,21 +422,21 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
             $R->doc .= $link;
             $R->doc .= '</td>';
             $R->doc .= '<td>';
-            $R->doc .= '<strong>'.hsc($row['A.name']).'</strong><br />';
-            $R->doc .= hsc($row['A.description']);
+            $R->doc .= '<strong>'.hsc($row['name']).'</strong><br />';
+            $R->doc .= hsc($row['description']);
             $R->doc .= '</td>';
 
             $R->doc .= '<td>';
-            $R->emaillink($row['A.email'],$row['A.author']);
+            $R->emaillink($row['email'],$row['author']);
             $R->doc .= '</td>';
 
             $R->doc .= '<td>';
-            $R->doc .= $this->hlp->listtype($row['A.type'],$ID);
+            $R->doc .= $this->hlp->listtype($row['type'],$ID);
             $R->doc .= '</td>';
 
             if ($data['screenshot'] == 'yes') {
                 $R->doc .= '<td>';
-                $val = $row['A.screenshot'];
+                $val = $row['screenshot'];
                 if ($val) {
                     $title = 'screenshot: '.basename(str_replace(':','/',$val));
                     $R->doc .= '<a href="'.ml($val).'" class="media" rel="lightbox">';
@@ -445,9 +445,9 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
                 $R->doc .= '</td>';
             }
 
-            if(strpos($this->getConf('bundled'),$row['A.plugin']) === false){
+            if(strpos($this->getConf('bundled'),$row['plugin']) === false){
                 $R->doc .= '<td>';
-                $R->doc .= hsc($row['A.lastupdate']);
+                $R->doc .= hsc($row['lastupdate']);
                 $R->doc .= '</td><td>';
                 $R->doc .= '<div class="prog-border" title="'.$row['cnt'].'/'.$allcnt.'"><div class="prog-bar" style="width: '.sprintf(100*$row['cnt']/$popmax).'%;"></div></div>';
                 $R->doc .= '</td>';

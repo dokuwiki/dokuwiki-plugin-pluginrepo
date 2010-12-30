@@ -321,9 +321,11 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                                WHERE A.plugin = B.plugin
                                  AND $shown
                             GROUP BY tag
-                              HAVING cnt >= ?
+                              HAVING cnt >= :minlimit
                             ORDER BY cnt DESC");
-        $stmt->execute(array($minlimit));
+
+        $stmt->bindParam(':minlimit', $minlimit, PDO::PARAM_INT);
+        $stmt->execute();
         $tags = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $tags;
     }
@@ -370,7 +372,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                                 FROM popularity p
                                WHERE p.key = 'plugin'
                                  AND p.value = 'popularity'"); 
-        $stmt->execute(array(''));
+        $stmt->execute();
         $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         $retval = $res[0]['cnt'];

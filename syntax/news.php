@@ -121,10 +121,10 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
         for ($i = 0; $i < $limit; $i++) {
             $row = $plugins[$start+$i];
             $R->doc .= '<br />';
-            $R->doc .= $this->hlp->pluginlink($R, $row['A.plugin'], ucfirst(noNS($row['A.plugin'])).($row['A.type']==32?' template':' plugin'));
-            $R->doc .= '<p>'.$row['A.description'].'</p>';
+            $R->doc .= $this->hlp->pluginlink($R, $row['plugin'], ucfirst(noNS($row['plugin'])).($row['type']==32?' template':' plugin'));
+            $R->doc .= '<p>'.$row['description'].'</p>';
 
-            $val = $row['A.screenshot'];
+            $val = $row['screenshot'];
             if ($val && $data['screenshot'] == 'yes') {
                 $title = 'screenshot: '.basename(str_replace(':','/',$val));
                 $R->doc .= '<a href="'.ml($val).'" class="media" rel="lightbox">';
@@ -132,7 +132,7 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
             }
 
             $R->doc .= 'Author: ';
-            $R->emaillink($row['A.email'],$row['A.author']);
+            $R->emaillink($row['email'],$row['author']);
             $R->doc .= '<br />';
         }
     }

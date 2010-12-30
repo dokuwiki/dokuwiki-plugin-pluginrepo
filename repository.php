@@ -58,21 +58,21 @@ function getRepository($opt) {
     $feed .= '<repository>';
     foreach($plugins as $plugin) {
         $feed .= '<plugin>';
-        $id = hsc($plugin['A.plugin']);
+        $id = hsc($plugin['plugin']);
         $feed .= '<id>'.$id.'</id>';
-        if ($plugin['A.type'] == 32) {
+        if ($plugin['type'] == 32) {
             $feed .= '<link><a href="'.DOKU_URL.'doku.php?id=template:'.$id.'" title="template:'.$id.'">'.$id.'</a></link>';
         } else {
             $feed .= '<link><a href="'.DOKU_URL.'doku.php?id=plugin:'.$id.'" title="plugin:'.$id.'">'.$id.'</a></link>';
         }
-        $feed .= '<name>'.hsc($plugin['A.name']).'</name>';
-        $feed .= '<description>'.hsc($plugin['A.description']).'</description>';
-        $feed .= '<author>'.hsc($plugin['A.author']).'</author>'; // mail not exposed as an anti-spam measure
+        $feed .= '<name>'.hsc($plugin['name']).'</name>';
+        $feed .= '<description>'.hsc($plugin['description']).'</description>';
+        $feed .= '<author>'.hsc($plugin['author']).'</author>'; // mail not exposed as an anti-spam measure
         $feed .= '<type>';
-        if ($plugin['A.type']) {
+        if ($plugin['type']) {
             $types = array();
             foreach($hlp->types as $k => $v){
-                if($plugin['A.type'] & $k){
+                if($plugin['type'] & $k){
                     $types[] = $v;
                 }
             }
@@ -81,35 +81,35 @@ function getRepository($opt) {
         }
         $feed .= '</type>';
 
-        $feed .= '<lastupdate>'.hsc(str_replace("'",'',$plugin['A.lastupdate'])).'</lastupdate>';
-        if (strpos($plugin['A.compatible'],'devel') !== false) {
+        $feed .= '<lastupdate>'.hsc(str_replace("'",'',$plugin['lastupdate'])).'</lastupdate>';
+        if (strpos($plugin['compatible'],'devel') !== false) {
             $feed .= '<develonly>true</develonly>';
         }
         $feed .= '<compatible>';
-        $compatibility = $hlp->cleanCompat($plugin['A.compatible']);
+        $compatibility = $hlp->cleanCompat($plugin['compatible']);
         foreach ($compatibility as $date => $name) {
             $feed .= '<release>'.$date.'</release>';
         }
         $feed .= '</compatible>';
-        $feed .= '<securityissue>'.hsc($plugin['A.securityissue']).'</securityissue>';
+        $feed .= '<securityissue>'.hsc($plugin['securityissue']).'</securityissue>';
         $feed .= '<securitywarning>';
-        if (in_array($plugin['A.securitywarning'],$hlp->securitywarning)) {
-            $feed .= $hlp->getLang($lang,'security_'.$plugin['A.securitywarning']);
+        if (in_array($plugin['securitywarning'],$hlp->securitywarning)) {
+            $feed .= $hlp->getLang($lang,'security_'.$plugin['securitywarning']);
         } else {
-            $feed .= hsc($plugin['A.securitywarning']);
+            $feed .= hsc($plugin['securitywarning']);
         }
         $feed .= '</securitywarning>';
 
         $feed .= '<tags>';
-        $tags = $hlp->parsetags($plugin['A.tags']);
+        $tags = $hlp->parsetags($plugin['tags']);
         foreach ($tags as $link) {
             $feed .= '<tag>'.hsc($link).'</tag>';
         }
         $feed .= '</tags>';
 
-        $feed .= '<downloadurl>'.hsc($plugin['A.downloadurl']).'</downloadurl>';
-        $feed .= '<bugtracker>'.hsc($plugin['A.bugtracker']).'</bugtracker>';
-        $feed .= '<donationurl>'.hsc($plugin['A.donationurl']).'</donationurl>';
+        $feed .= '<downloadurl>'.hsc($plugin['downloadurl']).'</downloadurl>';
+        $feed .= '<bugtracker>'.hsc($plugin['bugtracker']).'</bugtracker>';
+        $feed .= '<donationurl>'.hsc($plugin['donationurl']).'</donationurl>';
 
         if ($opt['plugins']) {
             $rel = $hlp->getPluginRelations($id);
