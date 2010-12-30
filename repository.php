@@ -57,14 +57,10 @@ function getRepository($opt) {
     $feed = '<?xml version="1.0" encoding="utf-8"?>';
     $feed .= '<repository>';
     foreach($plugins as $plugin) {
-        $feed .= '<plugin>';
         $id = hsc($plugin['plugin']);
+        $feed .= '<plugin>';
         $feed .= '<id>'.$id.'</id>';
-        if ($plugin['type'] == 32) {
-            $feed .= '<link><a href="'.DOKU_URL.'doku.php?id=template:'.$id.'" title="template:'.$id.'">'.$id.'</a></link>';
-        } else {
-            $feed .= '<link><a href="'.DOKU_URL.'doku.php?id=plugin:'.$id.'" title="plugin:'.$id.'">'.$id.'</a></link>';
-        }
+        $feed .= '<dokulink>'.($plugin['type'] == 32 ? $id : 'plugin:'.$id).'</dokulink>';
         $feed .= '<name>'.hsc($plugin['name']).'</name>';
         $feed .= '<description>'.hsc($plugin['description']).'</description>';
         $feed .= '<author>'.hsc($plugin['author']).'</author>'; // mail not exposed as an anti-spam measure
