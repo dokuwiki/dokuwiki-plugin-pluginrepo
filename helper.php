@@ -93,7 +93,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
 
         // trigger creation of tables if db empty
         try {
-            $db->exec('SELECT 1 FROM plugin_depends');
+            $db->exec('SELECT 1 FROM plugin_depends LIMIT 1');
         } catch(PDOException $e) {
             $this->_initPluginDB($db);
         }
