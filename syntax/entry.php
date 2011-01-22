@@ -309,11 +309,19 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
                              ':tags' => $data['tags'], 
                              ':type' => $type));
 
+        if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {
+            $insert = 'INSERT IGNORE';
+            $popinsert = 'INSERT IGNORE INTO popularity (uid,`key`,value) VALUES (?,?,?)'; // TODO: remove debug
+        } else {
+            $insert = 'INSERT OR IGNORE';
+            $popinsert = 'INSERT OR IGNORE INTO popularity (uid, key, value) VALUES (?,?,?)';
+        }
+
         $tags = $this->hlp->parsetags($data['tags']);
         $stmt = $db->prepare('DELETE FROM plugin_tags WHERE plugin = ?');
         $stmt->execute(array($id));
         foreach($tags as $tag){
-            $stmt = $db->prepare('INSERT OR IGNORE INTO plugin_tags (plugin, tag) VALUES (?,LOWER(?))');
+            $stmt = $db->prepare($insert.' INTO plugin_tags (plugin, tag) VALUES (?,LOWER(?))');
             $stmt->execute(array($id,$tag));
         }
 
@@ -323,7 +331,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $stmt = $db->prepare('DELETE FROM plugin_depends WHERE plugin = ?');
         $stmt->execute(array($id));
         foreach($deps as $dep){
-            $stmt = $db->prepare('INSERT OR IGNORE INTO plugin_depends (plugin, other) VALUES (?,LOWER(?))');
+            $stmt = $db->prepare($insert.' INTO plugin_depends (plugin, other) VALUES (?,LOWER(?))');
             $stmt->execute(array($id,$dep));
         }
 
@@ -333,7 +341,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $stmt = $db->prepare('DELETE FROM plugin_conflicts WHERE plugin = ?');
         $stmt->execute(array($id));
         foreach($deps as $dep){
-            $stmt = $db->prepare('INSERT OR IGNORE INTO plugin_conflicts (plugin, other) VALUES (?,LOWER(?))');
+            $stmt = $db->prepare($insert.' INTO plugin_conflicts (plugin, other) VALUES (?,LOWER(?))');
             $stmt->execute(array($id,$dep));
         }
 
@@ -343,7 +351,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $stmt = $db->prepare('DELETE FROM plugin_similar WHERE plugin = ?');
         $stmt->execute(array($id));
         foreach($deps as $dep){
-            $stmt = $db->prepare('INSERT OR IGNORE INTO plugin_similar (plugin, other) VALUES (?,LOWER(?))');
+            $stmt = $db->prepare($insert.' INTO plugin_similar (plugin, other) VALUES (?,LOWER(?))');
             $stmt->execute(array($id,$dep));
         }
 
@@ -353,7 +361,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $users = rand(0,20);
         $uidstart = rand(0,20);
         for ($i = 0; $i < $users; $i++) {
-            $stmt = $db->prepare('INSERT OR IGNORE INTO popularity (uid, key, value) VALUES (?,?,?)');
+            $stmt = $db->prepare($popinsert);
             $stmt->execute(array("U".($uidstart+$i),'plugin',$id));
         }
     }

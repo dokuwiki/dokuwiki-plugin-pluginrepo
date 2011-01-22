@@ -83,7 +83,6 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
 
             if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {
                 // Running on mysql; do something mysql specific here
-                $db->exec('SET names utf8');
             }
 
         } catch(PDOException $e) {
@@ -93,7 +92,9 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
 
         // trigger creation of tables if db empty
         try {
-            $db->exec('SELECT 1 FROM plugin_depends');
+            $stmt = $db->prepare('SELECT 1 FROM plugin_depends');
+            $stmt->execute();
+
         } catch(PDOException $e) {
             $this->_initPluginDB($db);
         }
