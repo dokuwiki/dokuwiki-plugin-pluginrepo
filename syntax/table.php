@@ -102,7 +102,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * Output repo table overview/intro and search form 
+     * Output repo table overview/intro and search form
      */
     function _showMainSearch(&$R, $data){
         $R->doc .= '<p>';
@@ -159,7 +159,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
      */
     function _tagcloud(&$R, $data){
         global $ID;
-        
+
         $R->doc .= '<h3>';
         $R->doc .= $this->getLang('t_filterbytag');
         $R->doc .= '</h3>';

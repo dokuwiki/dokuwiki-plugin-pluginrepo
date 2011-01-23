@@ -13,7 +13,7 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
      * will hold the data helper plugin
      */
     var $hlp = null;
-    
+
     /**
      * Constructor. Load helper plugin
      */
@@ -69,7 +69,7 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
 
         $R->doc .= '<div class="repo__news">';
         $R->doc .= '<div class="repo__newsheader">'.hsc($data['headline']).'</div>';
-        
+
         switch ($data['style']) {
             case 'sameauthor':
                 $this->showSameAuthor($R,$data);
@@ -80,7 +80,7 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
 
         if ($data['link']) {
             $R->doc .= '<div class="repo_newslink">';
-            $R->internallink($data['link'],$data['linktext']);        
+            $R->internallink($data['link'],$data['linktext']);
             $R->doc .= '</div>';
         }
         $R->doc .= '</div>';
