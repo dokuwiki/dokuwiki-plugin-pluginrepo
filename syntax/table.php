@@ -109,7 +109,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= $this->getLang('t_searchintro');
         $R->doc .= '<p>';
 
-        $R->doc .= '<div id="repo_searchform">';
+        $R->doc .= '<div id="repo__searchform">';
         $R->doc .= '<form action="'.wl().'" accept-charset="utf-8" class="search" id="dw__search2" method="get"><div class="no">';
         $R->doc .= '<input type="hidden" name="do" value="search" />';
         $R->doc .= '<input type="text" id="qsearch2__in" accesskey="f" name="id" class="edit" />';
@@ -183,7 +183,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
         ksort($tags);
         foreach($tags as $tag => $size){
-            $R->doc .= '<a href="'.wl($ID,array('plugintag'=>$tag)).'#repotable" '.
+            $R->doc .= '<a href="'.wl($ID,array('plugintag'=>$tag)).'#pluginrepo__table" '.
                        'class="wikilink1 cl'.$size.'"'.
                        'title="List all plugins with this tag">'.hsc($tag).'</a> ';
         }

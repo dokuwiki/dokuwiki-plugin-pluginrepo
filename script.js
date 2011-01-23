@@ -20,6 +20,8 @@ addInitEvent(function () {
     if (outObj === null){ return; }
     if (formObj === null){ return; }
 
+    inObj.setAttribute("autocomplete","off");
+
     function clear_results(){
         outObj.style.display = 'none';
         outObj.innerHTML = '';
@@ -41,7 +43,7 @@ addInitEvent(function () {
         clear_results();
         var value = inObj.value;
         if(value === ''){ return; }
-        sack_obj.runAJAX('call=qsearch&q=' + encodeURI(value));
+        sack_obj.runAJAX('call=qsearch&q=' + encodeURI('@plugin '+value));
     });
 
     addEvent(inObj, 'keyup', function () {clear_results(); delay.start(); });

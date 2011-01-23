@@ -291,3 +291,13 @@ div.repo__news div.repo_newslink {
 div.repo__news div a{
     font-weight: normal;
 }
+
+div#pluginrepo__repo div.repo_info {
+    position: relative;
+}
+
+div#qsearch2__out {
+    position: absolute;
+    right: auto;
+    left: 0;
+}
