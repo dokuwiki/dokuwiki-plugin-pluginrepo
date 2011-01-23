@@ -83,7 +83,6 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
 
             if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {
                 // Running on mysql; do something mysql specific here
-                $db->exec('SET names utf8');
             }
 
         } catch(PDOException $e) {
@@ -93,7 +92,8 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
 
         // trigger creation of tables if db empty
         try {
-            $db->exec('SELECT 1 FROM plugin_depends LIMIT 1');
+            $stmt = $db->prepare('SELECT 1 FROM plugin_depends LIMIT 1');
+            $stmt->execute();
         } catch(PDOException $e) {
             $this->_initPluginDB($db);
         }
@@ -496,7 +496,11 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                                 bugtracker varchar(255) default NULL, sourcerepo varchar(255) default NULL, donationurl varchar(255) default NULL, type int(11) NOT NULL default 0, 
                                 screenshot varchar(255) default NULL, tags varchar(255) default NULL, securitywarning varchar(255) default NULL, securityissue varchar(255) NOT NULL,
                                 bestcompatible varchar(50) default NULL);');
-        $db->exec('CREATE TABLE popularity (uid varchar(32) NOT NULL, key varchar(255) NOT NULL, value varchar(255) NOT NULL);');
+        if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {
+            $db->exec('CREATE TABLE popularity (uid varchar(32) NOT NULL, `key` varchar(255) NOT NULL, value varchar(255) NOT NULL);');
+        } else {
+            $db->exec('CREATE TABLE popularity (uid varchar(32) NOT NULL, key varchar(255) NOT NULL, value varchar(255) NOT NULL);');
+        }
     }
 }
 
