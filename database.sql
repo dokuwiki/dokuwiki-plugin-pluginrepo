@@ -68,7 +68,7 @@ CREATE TABLE `plugin_tags` (
   `plugin` varchar(50) NOT NULL,
   `tag` varchar(255) NOT NULL,
   PRIMARY KEY  (`plugin`,`tag`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Sotres the plugin tags';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores the plugin tags';
 SET character_set_client = @saved_cs_client;
 
 --
