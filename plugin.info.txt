@@ -4,4 +4,4 @@ email  sandell.hakan@gmail.com
 date   2010-10-14
 name   Repository plugin
 desc   Helps organizing the plugin repository
-url    http://github.com/HåkanS/dokuwiki-plugin-cumulus/zipball/master
+url    https://github.com/HakanS/dokuwiki-plugin-pluginrepo/zipball/master
