@@ -10,7 +10,7 @@ if(!defined('DOKU_INC')) die();
 class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
 
     /**
-     * will hold the data helper plugin
+     * will hold the repository helper plugin
      */
     var $hlp = null;
     
