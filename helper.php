@@ -20,7 +20,14 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                     32 => 'Template');
 
     var $obsoleteTag = '!obsolete';
+    var $bundled;
     var $securitywarning = array('informationleak','allowsscript','requirespatch','partlyhidden');
+
+    function helper_plugin_pluginrepo() {
+        $this->bundled = split(',', $this->getConf('bundled'));
+        $this->bundled = array_map('trim', $this->bundled);
+        $this->bundled = array_filter($this->bundled);
+    }
 
     /**
      * Parse syntax data block, return keyed array of values
@@ -303,22 +310,18 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $db = $this->_getPluginsDB();
         if (!$db) return;
 
-        $bundled = preg_split('/[;,\s]/',$this->getConf('bundled'));
-        $bundled = array_filter($bundled);
-        $bundled = array_unique($bundled);
-        
         $sql = "SELECT COUNT(uid) as cnt
                   FROM popularity
                  WHERE popularity.key = 'plugin' ";
 
-        $sql .= str_repeat("AND popularity.value != ? ",count($bundled));
+        $sql .= str_repeat("AND popularity.value != ? ",count($this->bundled));
 
         $sql .= "GROUP BY popularity.value
                  ORDER BY cnt DESC
                  LIMIT 1";
 
         $stmt = $db->prepare($sql); 
-        $stmt->execute($bundled);
+        $stmt->execute($this->bundled);
         $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         $retval = $res[0]['cnt'];
