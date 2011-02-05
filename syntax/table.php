@@ -11,7 +11,7 @@ if(!defined('DOKU_INC')) die();
 class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
     /**
-     * will hold the data helper plugin
+     * will hold the repository helper plugin
      */
     var $hlp = null;
 
@@ -352,16 +352,16 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
                 $R->doc .= '</td>';
             }
 
-            if(strpos($this->getConf('bundled'),$row['plugin']) === false){
+            if(in_array($row['plugin'], $this->hlp->bundled)){
+                $R->doc .= '<td colspan="2" class="center"><i>';
+                $R->internallink(':bundled',$this->getLang('t_bundled'));
+                $R->doc .= '</i></td>';
+            }else{
                 $R->doc .= '<td class="lastupdate">';
                 $R->doc .= hsc($row['lastupdate']);
                 $R->doc .= '</td><td class="popularity">';
                 $R->doc .= '<div class="prog-border" title="'.$row['cnt'].'/'.$allcnt.'"><div class="prog-bar" style="width: '.sprintf(100*$row['cnt']/$popmax).'%;"></div></div>';
                 $R->doc .= '</td>';
-            }else{
-                $R->doc .= '<td colspan="2" class="center"><i>';
-                $R->internallink(':bundled',$this->getLang('t_bundled'));
-                $R->doc .= '</i></td>';
             }
 
             if ($data['compatible'] == 'yes') {
@@ -433,14 +433,14 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
                 $R->doc .= '</td>';
             }
 
-            if(strpos($this->getConf('bundled'),$row['plugin']) === false){
+            if(in_array($row['plugin'], $this->hlp->bundled)){
+                $R->doc .= '<td></td><td><i>'.$this->getLang('t_bundled').'</i></td>';
+            }else{
                 $R->doc .= '<td>';
                 $R->doc .= hsc($row['lastupdate']);
                 $R->doc .= '</td><td>';
                 $R->doc .= '<div class="prog-border" title="'.$row['cnt'].'/'.$allcnt.'"><div class="prog-bar" style="width: '.sprintf(100*$row['cnt']/$popmax).'%;"></div></div>';
                 $R->doc .= '</td>';
-            }else{
-                $R->doc .= '<td></td><td><i>'.$this->getLang('t_bundled').'</i></td>';
             }
 
             $R->doc .= '</tr>';
