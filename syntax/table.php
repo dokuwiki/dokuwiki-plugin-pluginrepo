@@ -317,7 +317,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
             $R->doc .= '<tr>';
             $R->doc .= '<td>';
-            $R->doc .= '<a name="'.substr($row['plugin'],0,1).'"></a>';
+            $R->doc .= '<a name="'.substr(noNS($row['plugin']),0,1).'"></a>';
 
             $R->doc .= '<div class="repo_plugintitle">';
             $R->doc .= $link;
