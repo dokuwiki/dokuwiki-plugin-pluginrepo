@@ -174,7 +174,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $tagData =$this->hlp->getTags($cloudmin,$data);
         // $tagData will be sorted by cnt (descending)
         foreach($tagData as $tag) {
-            if ($tag['tag'] == $this->hlp->obsoleteTag) continue;
+            if ($tag['tag'] == $this->hlp->obsoleteTag) continue; // obsolete plugins are not included in the table
             $tags[$tag['tag']] = $tag['cnt'];
             if(!$max) $max = $tag['cnt'];
             $min = $tag['cnt'];
