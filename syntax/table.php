@@ -256,7 +256,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
             $R->doc .= '</div>';
         }
 
-        if($type != 0 || $tag) {
+        if($type != 0 || $tag || $_REQUEST['pluginsort']) {
             $R->doc .= '<div class="repo__resetfilter">';
             $R->doc .= $R->internallink($ID,$this->getLang('t_resetfilter'));
             $R->doc .= '</div>';
