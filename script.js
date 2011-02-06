@@ -46,7 +46,7 @@ addInitEvent(function () {
         clear_results();
         var value = inObj.value;
         if(value === ''){ return; }
-        sack_obj.runAJAX('call=qsearch&q=' + encodeURI('@plugin '+value));
+        sack_obj.runAJAX('call=qsearch&q=' + encodeURI(value + ' @' + nsObj.value));
     });
 
     addEvent(inObj, 'keyup', function () {clear_results(); delay.start(); });
@@ -54,5 +54,5 @@ addInitEvent(function () {
     // attach eventhandler to output field
     addEvent(outObj, 'click', function () {outObj.style.display = 'none'; });
 
-    addEvent(formObj, 'submit', function () {inObj.value=inObj.value+' @'+nsObj.value; return true; });
+    addEvent(formObj, 'submit', function () {inObj.value = inObj.value + ' @' + nsObj.value; return true; });
 });
