@@ -10,15 +10,18 @@ addInitEvent(function () {
     var inID  = 'qsearch2__in';
     var outID = 'qsearch2__out';
     var formID = 'dw__search2';
+    var nsID = 'dw__ns';
 
     var inObj  = document.getElementById(inID);
     var outObj = document.getElementById(outID);
     var formObj = document.getElementById(formID);
+    var nsObj = document.getElementById(nsID);
 
     // objects found?
     if (inObj === null){ return; }
     if (outObj === null){ return; }
     if (formObj === null){ return; }
+    if (nsObj === null){ return; }
 
     function clear_results(){
         outObj.style.display = 'none';
@@ -49,5 +52,5 @@ addInitEvent(function () {
     // attach eventhandler to output field
     addEvent(outObj, 'click', function () {outObj.style.display = 'none'; });
 
-    addEvent(formObj, 'submit', function () {inObj.value=inObj.value+' @plugin'; return true; });
+    addEvent(formObj, 'submit', function () {inObj.value=inObj.value+' @'+nsObj.value; return true; });
 });

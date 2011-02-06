@@ -32,10 +32,12 @@ $lang['sourcerepo']          = 'Source Repository';
 $lang['donationurl']         = 'Thank the Author';
 
 // Plugin table
-$lang['t_searchplugins']     = 'Search Plugins';
-$lang['t_searchintro']       = 'Filter available plugins by type or by using the tag cloud. You could also search within the plugin namespace using the search box.';
+$lang['t_search_plugins']    = 'Search Plugins';
+$lang['t_search_template']   = 'Search Templates';
+$lang['t_searchintro_plugins'] = 'Filter available plugins by type or by using the tag cloud. You could also search within the plugin namespace using the search box.';
+$lang['t_searchintro_template']= 'Filter available templates by using the tag cloud. You could also search within the template namespace using the search box.';
 $lang['t_btn_search']        = 'Search';
-$lang['t_btn_searchtip']     = 'Search within plugin namespace';
+$lang['t_btn_searchtip']     = 'Search within namespace';
 $lang['t_filterbytype']      = 'Filter by type';
 $lang['t_typesyntax']        = '%s plugins extend DokuWiki\'s basic syntax.';
 $lang['t_typeaction']        = '%s plugins replaces or extend DokuWiki\'s core functionality';
@@ -44,14 +46,15 @@ $lang['t_typerender']        = '%s plugins adds new export modes or replaces the
 $lang['t_typehelper']        = '%s plugins provides functionality shared by other plugins';
 $lang['t_typetemplate']      = '%s changes the look and feel of DokuWiki';
 $lang['t_filterbytag']       = 'Filter by tag';
-$lang['t_availabletype']     = 'Available %s Plugins';
-$lang['t_availabletagged']   = 'Available Plugins Tagged With %s';
-$lang['t_availableplugins']  = 'Available Plugins';
+$lang['t_availabletype']     = 'Available %s plugins';
+$lang['t_availabletagged']   = 'Tagged with \'%s\'';
+$lang['t_availableplugins']  = 'All available';
 $lang['t_jumptoplugins']     = 'Jump to first plugin starting with:';
-$lang['t_resetfilter']       = 'Show all plugins (remove filter)';
+$lang['t_resetfilter']       = 'Show all (remove filter)';
 $lang['t_oldercompatibility'] = 'Compatible with older DokuWiki versions';
 
-$lang['t_name']              = 'Plugin';
+$lang['t_name_plugins']      = 'Plugin';
+$lang['t_name_template']     = 'Template';
 $lang['t_sortname']          = 'Sort by name';
 $lang['t_description']       = 'Description';
 $lang['t_author']            = 'Author';

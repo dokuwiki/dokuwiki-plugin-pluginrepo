@@ -77,8 +77,10 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
      * Output table of plugins with filter and navigation
      */
     function _showData(&$R, $data){
+        global $ID;
+
         $R->info['cache'] = false;
-        $R->header($this->getLang('t_searchplugins'), 2, null);
+        $R->header($this->getLang('t_search_'.$ID), 2, null);
         $R->section_open(2);
 
         $R->doc .= '<div id="pluginrepo__repo">';
@@ -105,13 +107,21 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
      * Output repo table overview/intro and search form 
      */
     function _showMainSearch(&$R, $data){
+        global $ID;
+        if (substr($ID,-1,1) == 's') {
+            $searchNS = substr($ID,0,-1);
+        } else {
+            $searchNS = $ID;
+        }
+
         $R->doc .= '<p>';
-        $R->doc .= $this->getLang('t_searchintro');
+        $R->doc .= $this->getLang('t_searchintro_'.$ID);
         $R->doc .= '<p>';
 
         $R->doc .= '<div id="repo_searchform">';
         $R->doc .= '<form action="'.wl().'" accept-charset="utf-8" class="search" id="dw__search2" method="get"><div class="no">';
         $R->doc .= '<input type="hidden" name="do" value="search" />';
+        $R->doc .= '<input type="hidden" id="dw__ns" name="ns" value="'.$searchNS.'" />';
         $R->doc .= '<input type="text" id="qsearch2__in" accesskey="f" name="id" class="edit" />';
         $R->doc .= '<input type="submit" value="'.$this->getLang('t_btn_search').'" class="button" title="'.$this->getLang('t_btn_searchtip').'" />';
         $R->doc .= '<div id="qsearch2__out" class="ajax_qsearch JSpopup"></div>';
@@ -283,7 +293,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         }
 
         $R->doc .= '<table class="inline">';
-        $R->doc .= '<tr><th><a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='p'?'^p':'p'). '#repotable').'" title="'.$this->getLang('t_sortname').'">'.  ($sortcol=='p'?$sortarr:'').$this->getLang('t_name').'</a>';
+        $R->doc .= '<tr><th><a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='p'?'^p':'p'). '#repotable').'" title="'.$this->getLang('t_sortname').'">'.  ($sortcol=='p'?$sortarr:'').$this->getLang('t_name_'.$ID).'</a>';
         $R->doc .= '        <div class="repo_authorsort">
                             <a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='a'?'^a':'a'). '#repotable').'" title="'.$this->getLang('t_sortauthor').'">'.($sortcol=='a'?$sortarr:'').$this->getLang('t_author').'</a></div></th>';
         if ($data['screenshot'] == 'yes') {
