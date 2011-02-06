@@ -4,4 +4,4 @@ email  sandell.hakan@gmail.com
 date   2011-02-05
 name   Repository plugin
 desc   Helps organizing the plugin repository
-url    https://github.com/HakanS/dokuwiki-plugin-pluginrepo/zipball/master
+url    https://github.com/splitbrain/dokuwiki-plugin-pluginrepo/zipball/master
