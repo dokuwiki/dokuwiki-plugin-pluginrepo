@@ -109,9 +109,9 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
             $val = $data['screenshot_img'];
             $title = 'screenshot: '.basename(str_replace(':','/',$val));
-            $R->doc .= '<div id="pluginrepo__pluginscreenshot">'; 
+            $R->doc .= '<div id="pluginrepo__pluginscreenshot">';
             $R->doc .= '<a href="'.ml($val).'" class="media" rel="lightbox">';
-            $R->doc .= '<img src="'.ml($val,"w=190").'" alt="'.hsc($title).'" title="'.hsc($title).'" width="190"/>';
+            $R->doc .= '<img src="'.ml($val,"w=190").'" alt="'.hsc($title).'" title="'.hsc($title).'" width="190" />';
             $R->doc .= '</a></div>';
         }
 
@@ -244,7 +244,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         }
 
         $R->doc .= '</div>';
-        
+
         // add tabs
         $R->doc .= '<ul id="pluginrepo__foldout">';
         if($data['downloadurl']) $R->doc .= '<li><a class="download" href="'.hsc($data['downloadurl']).'">'.$this->getLang('downloadurl').'</a></li>';
@@ -273,49 +273,47 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         } else {
             $compatible = array_shift(array_keys($this->hlp->cleanCompat($data['compatible'])));
         }
-        
+
         $type = $this->hlp->parsetype($data['type']);
 
         // handle securityissue, tags field NOT NULL otherwise WHERE clauses will fail
         if (!$data['securityissue']) $data['securityissue'] = "";
         if (!$data['tags']) $data['tags'] = "";
 
-        $stmt = $db->prepare('REPLACE INTO plugins 
-                               (plugin, name, description, 
-                                author, email, 
+        $stmt = $db->prepare('REPLACE INTO plugins
+                               (plugin, name, description,
+                                author, email,
                                 compatible, bestcompatible, lastupdate, securityissue, securitywarning,
-                                downloadurl, bugtracker, sourcerepo, donationurl, 
+                                downloadurl, bugtracker, sourcerepo, donationurl,
                                 screenshot, tags, type)
                               VALUES
-                               (:plugin, :name, :description, 
-                                :author, LOWER(:email), 
+                               (:plugin, :name, :description,
+                                :author, LOWER(:email),
                                 :compatible, :bestcompatible, :lastupdate, :securityissue, :securitywarning,
-                                :downloadurl, :bugtracker, :sourcerepo, :donationurl, 
+                                :downloadurl, :bugtracker, :sourcerepo, :donationurl,
                                 :screenshot, :tags, :type) ');
-        $stmt->execute(array(':plugin' =>  $id, 
-                             ':name' => $name, 
-                             ':description' => $data['description'], 
-                             ':author' => $data['author'], 
-                             ':email' => $data['email'], 
+        $stmt->execute(array(':plugin' =>  $id,
+                             ':name' => $name,
+                             ':description' => $data['description'],
+                             ':author' => $data['author'],
+                             ':email' => $data['email'],
                              ':compatible' => $data['compatible'],
                              ':bestcompatible' => $compatible,
-                             ':lastupdate' => $data['lastupdate'], 
+                             ':lastupdate' => $data['lastupdate'],
                              ':securityissue' => $data['securityissue'],
                              ':securitywarning' => $data['securitywarning'],
-                             ':downloadurl' => $data['downloadurl'], 
-                             ':bugtracker' => $data['bugtracker'], 
-                             ':sourcerepo' => $data['sourcerepo'], 
-                             ':donationurl' => $data['donationurl'], 
-                             ':screenshot' => $data['screenshot_img'], 
-                             ':tags' => $data['tags'], 
+                             ':downloadurl' => $data['downloadurl'],
+                             ':bugtracker' => $data['bugtracker'],
+                             ':sourcerepo' => $data['sourcerepo'],
+                             ':donationurl' => $data['donationurl'],
+                             ':screenshot' => $data['screenshot_img'],
+                             ':tags' => $data['tags'],
                              ':type' => $type));
 
         if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {
             $insert = 'INSERT IGNORE';
-            $popinsert = 'INSERT IGNORE INTO popularity (uid,`key`,value) VALUES (?,?,?)'; // TODO: remove debug
         } else {
             $insert = 'INSERT OR IGNORE';
-            $popinsert = 'INSERT OR IGNORE INTO popularity (uid, key, value) VALUES (?,?,?)';
         }
 
         $tags = $this->hlp->parsetags($data['tags']);
@@ -354,16 +352,6 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         foreach($deps as $dep){
             $stmt = $db->prepare($insert.' INTO plugin_similar (plugin, other) VALUES (?,LOWER(?))');
             $stmt->execute(array($id,$dep));
-        }
-
-        // TODO: remove debug
-        $stmt = $db->prepare('DELETE FROM popularity WHERE popularity.value = ?');
-        $stmt->execute(array($id));
-        $users = rand(0,20);
-        $uidstart = rand(0,20);
-        for ($i = 0; $i < $users; $i++) {
-            $stmt = $db->prepare($popinsert);
-            $stmt->execute(array("U".($uidstart+$i),'plugin',$id));
         }
     }
 }

@@ -32,9 +32,9 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     /**
      * Parse syntax data block, return keyed array of values
      *
-     *  You may use the # character to add comments to the block. 
-     *  Those will be ignored and will neither be displayed nor saved. 
-     *  If you need to enter # as data, escape it with a backslash (\#). 
+     *  You may use the # character to add comments to the block.
+     *  Those will be ignored and will neither be displayed nor saved.
+     *  If you need to enter # as data, escape it with a backslash (\#).
      *  If you need a backslash, escape it as well (\\)
      */
     function parseData($match){
@@ -73,7 +73,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     /**
      * Create database connection and return PDO object
      * the config option 'db_name' must contain the
-     * DataSourceName, which consists of the PDO driver name, 
+     * DataSourceName, which consists of the PDO driver name,
      * followed by a colon, followed by the PDO driver-specific connection syntax
      * see http://se2.php.net/manual/en/pdo.construct.php
      *
@@ -99,9 +99,8 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
 
         // trigger creation of tables if db empty
         try {
-            $stmt = $db->prepare('SELECT 1 FROM plugin_depends');
+            $stmt = $db->prepare('SELECT 1 FROM plugin_depends LIMIT 1');
             $stmt->execute();
-
         } catch(PDOException $e) {
             $this->_initPluginDB($db);
         }
@@ -116,13 +115,13 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
 
     /**
      * Return array of plugins with some metadata
-     * available filters passed as array: 
+     * available filters passed as array:
      *   'plugins'    (array) returns data of named plugins
-     *   'plugintype' (integer) 
+     *   'plugintype' (integer)
      *   'plugintag'  (string)
      *   'pluginsort' (string)
      *   'showall'    (yes/no) default/unset is 'no' and obsolete plugins and security issues are not returned
-     *   'includetemplates' (yes/no) default/unset is 'no' and template data will not be returned  
+     *   'includetemplates' (yes/no) default/unset is 'no' and template data will not be returned
      */
     function getPlugins($filter=null) {
         $db = $this->_getPluginsDB();
@@ -144,7 +143,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
 
         $sort = strtolower(trim($filter['pluginsort']));
         $sortsql = $this->_getPluginsSortSql($sort);
-        
+
         if ($filter['showall'] == 'yes') {
             $shown = "1";
         } else {
@@ -180,7 +179,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         } else {
             $stmt = $db->prepare("SELECT A.*, COUNT(C.value) as cnt
                                     FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value and C.key = 'plugin'
-                                   WHERE $shown 
+                                   WHERE $shown
                               $pluginsql
                                    GROUP BY A.plugin
                                 $sortsql");
@@ -236,7 +235,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         foreach ($stmt as $row) {
             $meta['conflicts'][] = $row['plugin'];
         }
-        
+
         $stmt = $db->prepare('SELECT other FROM plugin_conflicts WHERE plugin = ?');
         $stmt->execute(array($id));
         foreach ($stmt as $row) {
@@ -310,6 +309,10 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $db = $this->_getPluginsDB();
         if (!$db) return;
 
+        $bundled = preg_split('/[;,\s]/',$this->getConf('bundled'));
+        $bundled = array_filter($bundled);
+        $bundled = array_unique($bundled);
+
         $sql = "SELECT COUNT(uid) as cnt
                   FROM popularity
                  WHERE popularity.key = 'plugin' ";
@@ -320,10 +323,10 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                  ORDER BY cnt DESC
                  LIMIT 1";
 
-        $stmt = $db->prepare($sql); 
+        $stmt = $db->prepare($sql);
         $stmt->execute($this->bundled);
         $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
+
         $retval = $res[0]['cnt'];
         if(!$retval) $retval = 1;
         return $retval;
@@ -339,10 +342,10 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $stmt = $db->prepare("SELECT COUNT(p.uid) as cnt
                                 FROM popularity p
                                WHERE p.key = 'plugin'
-                                 AND p.value = 'popularity'"); 
+                                 AND p.value = 'popularity'");
         $stmt->execute();
         $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
+
         $retval = $res[0]['cnt'];
         if(!$retval) $retval = 1;
         return $retval;
@@ -494,10 +497,10 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $db->exec('CREATE TABLE plugin_depends (plugin varchar(50) NOT NULL, other varchar(50) NOT NULL);');
         $db->exec('CREATE TABLE plugin_similar (plugin varchar(50) NOT NULL, other varchar(50) NOT NULL);');
         $db->exec('CREATE TABLE plugin_tags (plugin varchar(50) NOT NULL, tag varchar(255) NOT NULL);');
-        $db->exec('CREATE TABLE plugins (plugin varchar(50) PRIMARY KEY NOT NULL, name varchar(255) default NULL, 
-                                description varchar(255) default NULL, author varchar(255) default NULL, email varchar(255) default NULL, 
+        $db->exec('CREATE TABLE plugins (plugin varchar(50) PRIMARY KEY NOT NULL, name varchar(255) default NULL,
+                                description varchar(255) default NULL, author varchar(255) default NULL, email varchar(255) default NULL,
                                 compatible varchar(255) default NULL, lastupdate date default NULL, downloadurl varchar(255) default NULL,
-                                bugtracker varchar(255) default NULL, sourcerepo varchar(255) default NULL, donationurl varchar(255) default NULL, type int(11) NOT NULL default 0, 
+                                bugtracker varchar(255) default NULL, sourcerepo varchar(255) default NULL, donationurl varchar(255) default NULL, type int(11) NOT NULL default 0,
                                 screenshot varchar(255) default NULL, tags varchar(255) default NULL, securitywarning varchar(255) default NULL, securityissue varchar(255) NOT NULL,
                                 bestcompatible varchar(50) default NULL);');
         if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {

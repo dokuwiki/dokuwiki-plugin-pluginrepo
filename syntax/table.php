@@ -104,7 +104,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * Output repo table overview/intro and search form 
+     * Output repo table overview/intro and search form
      */
     function _showMainSearch(&$R, $data){
         global $ID;
@@ -118,7 +118,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= $this->getLang('t_searchintro_'.$ID);
         $R->doc .= '<p>';
 
-        $R->doc .= '<div id="repo_searchform">';
+        $R->doc .= '<div id="repo__searchform">';
         $R->doc .= '<form action="'.wl().'" accept-charset="utf-8" class="search" id="dw__search2" method="get"><div class="no">';
         $R->doc .= '<input type="hidden" name="do" value="search" />';
         $R->doc .= '<input type="hidden" id="dw__ns" name="ns" value="'.$searchNS.'" />';
@@ -169,7 +169,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
      */
     function _tagcloud(&$R, $data){
         global $ID;
-        
+
         $R->doc .= '<h3>';
         $R->doc .= $this->getLang('t_filterbytag');
         $R->doc .= '</h3>';
@@ -193,7 +193,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
         ksort($tags);
         foreach($tags as $tag => $size){
-            $R->doc .= '<a href="'.wl($ID,array('plugintag'=>$tag)).'#repotable" '.
+            $R->doc .= '<a href="'.wl($ID,array('plugintag'=>$tag)).'#pluginrepo__table" '.
                        'class="wikilink1 cl'.$size.'"'.
                        'title="List all plugins with this tag">'.hsc($tag).'</a> ';
         }

@@ -16,7 +16,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
     var $allowedfields = array('plugin','name','description','author','email','compatible',
                                'lastupdate','type','securityissue','securitywarning','screenshot',
                                'downloadurl','bugtracker','sourcerepo','donationurl','tags','cnt');
-    
+
     /**
      * Constructor. Load helper plugin
      */
@@ -85,7 +85,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
                 return;
             }
         }
-        // create ORDER BY sql clause for shown fields, ensure 'plugin' field included 
+        // create ORDER BY sql clause for shown fields, ensure 'plugin' field included
         $ordersql = 'A.plugin'.($fields ? ',A.'.join(',A.',$fields) : '');
         $ordersql = str_replace('A.cnt','cnt',$ordersql);
 
@@ -119,7 +119,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
 
         $stmt = $db->prepare("SELECT A.*, COUNT(C.value) as cnt
                                 FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value AND C.key = 'plugin'
-                               WHERE $wheresql 
+                               WHERE $wheresql
                             GROUP BY A.plugin
                              $havingsql
                             ORDER BY $ordersql");
