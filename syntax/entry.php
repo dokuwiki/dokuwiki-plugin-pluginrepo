@@ -276,8 +276,9 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         
         $type = $this->hlp->parsetype($data['type']);
 
-        // handle securityissue field NOT NULL
+        // handle securityissue, tags field NOT NULL otherwise WHERE clauses will fail
         if (!$data['securityissue']) $data['securityissue'] = "";
+        if (!$data['tags']) $data['tags'] = "";
 
         $stmt = $db->prepare('REPLACE INTO plugins 
                                (plugin, name, description, 
