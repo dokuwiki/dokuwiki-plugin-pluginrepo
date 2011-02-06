@@ -309,13 +309,10 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $db = $this->_getPluginsDB();
         if (!$db) return;
 
-        $bundled = preg_split('/[;,\s]/',$this->getConf('bundled'));
-        $bundled = array_filter($bundled);
-        $bundled = array_unique($bundled);
-
-        $sql = "SELECT COUNT(uid) as cnt
-                  FROM popularity
-                 WHERE popularity.key = 'plugin' ";
+        $sql = "SELECT *, COUNT(uid) as cnt
+                  FROM popularity LEFT JOIN plugins ON popularity.value=plugins.plugin
+                 WHERE popularity.key = 'plugin' 
+                   AND plugins.tags <> '".$this->obsoleteTag."' ";
 
         $sql .= str_repeat("AND popularity.value != ? ",count($this->bundled));
 
