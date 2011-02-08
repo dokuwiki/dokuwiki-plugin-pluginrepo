@@ -268,7 +268,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             $data['lastupdate'] = $data['lastupdate'];
         }
 
-        if (in_array($row['plugin'], $this->hlp->bundled)) {
+        if (in_array($id, $this->hlp->bundled)) {
             $compatible = '9999-99-99';
         } else {
             $compatible = array_shift(array_keys($this->hlp->cleanCompat($data['compatible'])));
