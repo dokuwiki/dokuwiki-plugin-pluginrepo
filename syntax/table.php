@@ -80,7 +80,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         global $ID;
 
         $R->info['cache'] = false;
-        $R->header($this->getLang('t_search_'.$ID), 2, null);
+        $R->header($this->getLang('t_search_'.noNS($ID)), 2, null);
         $R->section_open(2);
 
         $R->doc .= '<div id="pluginrepo__repo">';
@@ -115,7 +115,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         }
 
         $R->doc .= '<p>';
-        $R->doc .= $this->getLang('t_searchintro_'.$ID);
+        $R->doc .= $this->getLang('t_searchintro_'.noNS($ID));
         $R->doc .= '<p>';
 
         $R->doc .= '<div id="repo__searchform">';
@@ -293,7 +293,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         }
 
         $R->doc .= '<table class="inline">';
-        $R->doc .= '<tr><th><a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='p'?'^p':'p'). '#repotable').'" title="'.$this->getLang('t_sortname').'">'.  ($sortcol=='p'?$sortarr:'').$this->getLang('t_name_'.$ID).'</a>';
+        $R->doc .= '<tr><th><a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='p'?'^p':'p'). '#repotable').'" title="'.$this->getLang('t_sortname').'">'.  ($sortcol=='p'?$sortarr:'').$this->getLang('t_name_'.noNS($ID)).'</a>';
         $R->doc .= '        <div class="repo_authorsort">
                             <a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='a'?'^a':'a'). '#repotable').'" title="'.$this->getLang('t_sortauthor').'">'.($sortcol=='a'?$sortarr:'').$this->getLang('t_author').'</a></div></th>';
         if ($data['screenshot'] == 'yes') {
