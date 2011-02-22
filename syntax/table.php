@@ -308,8 +308,8 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
         $compatgroup = '9999-99-99';
         foreach($plugins as $row) {
-            $link = $this->hlp->pluginlink($R, $row['plugin'], ucfirst(noNS($row['plugin'])).($row['type']==32?' template':' plugin'));
-            if(strpos($link,'class="wikilink2"')){
+            $id = (getNS($row['plugin']) ? $row['plugin'] : ':plugin:'.$row['plugin']);
+            if(!page_exists(cleanID($id))){
                 $this->hlp->deletePlugin($row['plugin']);
                 continue;
             }
@@ -330,7 +330,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
             $R->doc .= '<a name="'.substr(noNS($row['plugin']),0,1).'"></a>';
 
             $R->doc .= '<div class="repo_plugintitle">';
-            $R->doc .= $link;
+            $R->doc .= $this->hlp->pluginlink($R, $row['plugin'], ucfirst(noNS($row['plugin'])).($row['type']==32?' template':' plugin'));
             $R->doc .= '</div>';
             if($row['downloadurl'] && !$row['securityissue'] && !$row['securitywarning']){
                 $R->doc .= '<div class="repo_download">';
@@ -409,15 +409,15 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= '</tr>';
 
         foreach($plugins as $row) {
-            $link = $this->hlp->pluginlink($R, $row['plugin']);
-            if(strpos($link,'class="wikilink2"')){
+            $id = (getNS($row['plugin']) ? $row['plugin'] : ':plugin:'.$row['plugin']);
+            if(!page_exists(cleanID($id))){
                 $this->hlp->deletePlugin($row['plugin']);
                 continue;
             }
 
             $R->doc .= '<tr>';
             $R->doc .= '<td>';
-            $R->doc .= $link;
+            $R->doc .= $this->hlp->pluginlink($R, $row['plugin']);
             $R->doc .= '</td>';
             $R->doc .= '<td>';
             $R->doc .= '<strong>'.hsc($row['name']).'</strong><br />';
