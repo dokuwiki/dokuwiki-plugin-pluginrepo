@@ -27,6 +27,7 @@ $lang['securityrecommendation']   = 'It is not recommended to use this plugin un
 $lang['securitylink']        = 'plugin security guidelines';
 $lang['name_underscore']     = 'Plugin name contains underscore, will not generate popularity points.';
 $lang['downloadurl']         = 'Download the Plugin';
+$lang['downloadurl_tpl']     = 'Download the Template';
 $lang['bugtracker']          = 'Bugs / Feature Wishes';
 $lang['sourcerepo']          = 'Source Repository';
 $lang['donationurl']         = 'Thank the Author';
