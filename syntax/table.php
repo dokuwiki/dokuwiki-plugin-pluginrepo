@@ -317,7 +317,8 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
             if (!$data['compatible'] && !$sort && $row['bestcompatible'] !== $compatgroup) {
                 $R->doc .= '</table>';
                 if ($row['bestcompatible']) {
-                    $R->doc .= $this->getLang('compatible_with').' <b>'.$row['bestcompatible'].'</b>';
+                    $label = array_shift($this->hlp->cleanCompat($row['bestcompatible']));
+                    $R->doc .= $this->getLang('compatible_with').' <b>'.$row['bestcompatible'].' '.$label.'</b>';
                 } else {
                     $R->doc .= $this->getLang('t_oldercompatibility');
                 }
