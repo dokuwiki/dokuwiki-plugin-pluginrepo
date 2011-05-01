@@ -29,6 +29,7 @@ $lang['securityrecommendation']    = 'Не рекомендуется испол
 $lang['securitylink']        = 'рекомендации по безопасности плагина';
 $lang['name_underscore']     = 'Название плагина содержит символ подчёркивания, «градусник» популярности формироваться не будет.';
 $lang['downloadurl']         = 'Скачать плагин';
+$lang['downloadurl_tpl']     = 'Скачать шаблон';
 $lang['bugtracker']          = 'Ошибки / пожелания';
 $lang['sourcerepo']          = 'Репозиторий кода';
 $lang['donationurl']         = 'Отблагодарить автора';
