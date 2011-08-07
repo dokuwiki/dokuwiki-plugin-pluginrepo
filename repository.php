@@ -32,7 +32,7 @@ foreach($opt as $key => $value) {
     $string .= "|$key:$value|";
 }
 $cache = new cache($string, '.xml');
-if($cache->useCache(array('age'=>172800))) {
+if($cache->useCache(array('age'=>7200))) {
     $feed = $cache->retrieveCache();
 } else {
     // create new feed
