@@ -24,15 +24,23 @@ header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 header('Pragma: public');
 header('Content-Type: application/xml; charset=utf-8');
 header('X-Robots-Tag: noindex');
-// TODO: add caching
     http_conditionalRequest(time());
 
-// create new feed
-$feed = getRepository($opt);
+ksort($opt);
+$string = "pluginrepo";
+foreach($opt as $key => $value) {
+    $string .= "|$key:$value|";
+}
+$cache = new cache($string, '.xml');
+if($cache->useCache(array('age'=>172800))) {
+    $feed = $cache->retrieveCache();
+} else {
+    // create new feed
+    $feed = getRepository($opt);
 
-// save cachefile
-//$cache->storeCache($feed);
-
+    // save cachefile
+    $cache->storeCache($feed);
+}
 // finally deliver
 print $feed;
 
@@ -102,41 +110,42 @@ function getRepository($opt) {
             $feed .= '<tag>'.hsc($link).'</tag>';
         }
         $feed .= '</tags>';
+        if($plugin['type'] == 32) {
+            $feed.= '<screenshoturl>'.hsc($plugin['screenshot']).'</screenshoturl>';
+        }
 
         $feed .= '<downloadurl>'.hsc($plugin['downloadurl']).'</downloadurl>';
         $feed .= '<bugtracker>'.hsc($plugin['bugtracker']).'</bugtracker>';
         $feed .= '<donationurl>'.hsc($plugin['donationurl']).'</donationurl>';
 
-        if ($opt['plugins']) {
-            $rel = $hlp->getPluginRelations($id);
-            $feed .= '<relations>';
+        $rel = $hlp->getPluginRelations($id);
+        $feed .= '<relations>';
 
-            $feed .= '<similar>';
-            if ($rel['similar']) {
-                foreach ($rel['similar'] as $link) {
-                    $feed .= '<id>'.hsc($link).'</id>';
-                }
+        $feed .= '<similar>';
+        if ($rel['similar']) {
+            foreach ($rel['similar'] as $link) {
+                $feed .= '<id>'.hsc($link).'</id>';
             }
-            $feed .= '</similar>';
-
-            $feed .= '<conflicts>';
-            if ($rel['conflicts']) {
-                foreach ($rel['conflicts'] as $link) {
-                    $feed .= '<id>'.hsc($link).'</id>';
-                }
-            }
-            $feed .= '</conflicts>';
-
-            $feed .= '<depends>';
-            if ($rel['depends']) {
-                foreach ($rel['depends'] as $link) {
-                    $feed .= '<id>'.hsc($link).'</id>';
-                }
-            }
-            $feed .= '</depends>';
-
-            $feed .= '</relations>';
         }
+        $feed .= '</similar>';
+
+        $feed .= '<conflicts>';
+        if ($rel['conflicts']) {
+            foreach ($rel['conflicts'] as $link) {
+                $feed .= '<id>'.hsc($link).'</id>';
+            }
+        }
+        $feed .= '</conflicts>';
+
+        $feed .= '<depends>';
+        if ($rel['depends']) {
+            foreach ($rel['depends'] as $link) {
+                $feed .= '<id>'.hsc($link).'</id>';
+            }
+        }
+        $feed .= '</depends>';
+
+        $feed .= '</relations>';
 
         $feed .= '</plugin>';
     }
