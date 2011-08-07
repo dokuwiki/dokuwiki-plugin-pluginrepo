@@ -257,7 +257,8 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         foreach ($stmt as $row) {
             $meta['sameauthor'][] = $row['plugin'];
         }
-
+        if(!empty($meta['conflicts'])) $meta['conflicts'] = array_unique($meta['conflicts']);
+        if(!empty($meta['similar'])) $meta['similar'] = array_unique($meta['similar']);
         return $meta;
     }
 
