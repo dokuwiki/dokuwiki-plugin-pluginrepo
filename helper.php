@@ -230,34 +230,27 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $id = strtolower($id);
         $meta = array();
 
-        $stmt = $db->prepare('SELECT plugin FROM plugin_conflicts WHERE other = ?');
-        $stmt->execute(array($id));
+        $stmt = $db->prepare('SELECT plugin,other FROM plugin_conflicts WHERE plugin = ? OR other = ?');
+        $stmt->execute(array($id,$id));
         foreach ($stmt as $row) {
-            $meta['conflicts'][] = $row['plugin'];
+            if($row['plugin'] == $id) $meta['conflicts'][] = $row['other'];
+            elseif($row['other'] == $id) $meta['conflicts'][] = $row['plugin'];
         }
 
-        $stmt = $db->prepare('SELECT other FROM plugin_conflicts WHERE plugin = ?');
-        $stmt->execute(array($id));
+
+        $stmt = $db->prepare('SELECT plugin,other FROM plugin_similar WHERE plugin = ? OR other = ?');
+        $stmt->execute(array($id,$id));
         foreach ($stmt as $row) {
-            $meta['conflicts'][] = $row['other'];
+            if($row['plugin'] == $id) $meta['similar'][] = $row['other'];
+            elseif($row['other'] == $id) $meta['similar'][] = $row['plugin'];
         }
 
-        $stmt = $db->prepare('SELECT plugin FROM plugin_similar WHERE other = ?');
-        $stmt->execute(array($id));
-        foreach ($stmt as $row) {
-            $meta['similar'][] = $row['plugin'];
-        }
 
-        $stmt = $db->prepare('SELECT other FROM plugin_similar WHERE plugin = ?');
-        $stmt->execute(array($id));
+        $stmt = $db->prepare('SELECT plugin,other FROM plugin_depends WHERE plugin = ? OR other = ?');
+        $stmt->execute(array($id,$id));
         foreach ($stmt as $row) {
-            $meta['similar'][] = $row['other'];
-        }
-
-        $stmt = $db->prepare('SELECT other FROM plugin_depends WHERE plugin = ?');
-        $stmt->execute(array($id));
-        foreach ($stmt as $row) {
-            $meta['depends'][] = $row['other'];
+            if($row['plugin'] == $id) $meta['depends'][] = $row['other'];
+            elseif($row['other'] == $id) $meta['depends'][] = $row['plugin'];
         }
 
         $stmt = $db->prepare('SELECT plugin FROM plugins WHERE plugin <> ? AND author=(SELECT author FROM plugins WHERE plugin = ?)');
