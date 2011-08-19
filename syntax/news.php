@@ -67,8 +67,8 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
     function render($format, &$R, $data) {
         if($format != 'xhtml') return false;
 
-        $R->doc .= '<div class="repo__news">';
-        $R->doc .= '<div class="repo__newsheader">'.hsc($data['headline']).'</div>';
+        $R->doc .= '<div class="pluginrepo_news">'.NL;
+        $R->doc .= '<h4>'.hsc($data['headline']).'</h4>'.NL;
 
         switch ($data['style']) {
             case 'sameauthor':
@@ -79,9 +79,9 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
         }
 
         if ($data['link']) {
-            $R->doc .= '<div class="repo_newslink">';
+            $R->doc .= '<p class="more">';
             $R->internallink($data['link'],$data['linktext']);
-            $R->doc .= '</div>';
+            $R->doc .= '</p>'.NL;
         }
         $R->doc .= '</div>';
     }
@@ -94,20 +94,19 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
         } else {
             $id = curNS($ID).':'.noNS($ID);
         }
-        $R->doc .= '<br />';
 
         $rel = $this->hlp->getPluginRelations($id);
         if (count($rel) == 0) {
-            $R->doc .= "Can't find any other plugins";
+            $R->doc .= '<p class="nothing">Can\'t find any other plugins</p>'.NL;
             return;
         }
 
         $itr = 0;
-        $R->doc .= '<ul>';
+        $R->doc .= '<ul>'.NL;
         while ($itr < count($rel['sameauthor']) && $itr < 10) {
-            $R->doc .= '<li>'.$this->hlp->pluginlink($R,$rel['sameauthor'][$itr++]).'</li>';
+            $R->doc .= '<li>'.$this->hlp->pluginlink($R,$rel['sameauthor'][$itr++]).'</li>'.NL;
         }
-        $R->doc .= '</ul>';
+        $R->doc .= '</ul>'.NL;
     }
 
     function showDefault(&$R, $data) {
@@ -120,20 +119,18 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
         }
         for ($i = 0; $i < $limit; $i++) {
             $row = $plugins[$start+$i];
-            $R->doc .= '<br />';
-            $R->doc .= $this->hlp->pluginlink($R, $row['plugin'], ucfirst(noNS($row['plugin'])).($row['type']==32?' template':' plugin'));
-            $R->doc .= '<p>'.$row['description'].'</p>';
+            $R->doc .= '<p class="title">'.$this->hlp->pluginlink($R, $row['plugin'], ucfirst(noNS($row['plugin'])).($row['type']==32?' template':' plugin')).'</p>'.NL;
+            $R->doc .= '<p class="description">'.$row['description'].'</p>'.NL;
 
             $val = $row['screenshot'];
             if ($val && $data['screenshot'] == 'yes') {
-                $title = 'screenshot: '.basename(str_replace(':','/',$val));
-                $R->doc .= '<a href="'.ml($val).'" class="media" rel="lightbox">';
-                $R->doc .= '<img src="'.ml($val,"w=200").'" alt="'.hsc($title).'" width="200"/></a>';
+                $R->doc .= '<a href="'.ml($val).'" class="media screenshot" rel="lightbox">';
+                $R->doc .= '<img src="'.ml($val,"w=200").'" alt="" width="200" /></a>'.NL;
             }
 
-            $R->doc .= 'Author: ';
+            $R->doc .= '<p class="author">Author: ';
             $R->emaillink($row['email'],$row['author']);
-            $R->doc .= '<br />';
+            $R->doc .= '</p>'.NL;
         }
     }
 

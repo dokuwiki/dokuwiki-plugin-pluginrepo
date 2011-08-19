@@ -1,3 +1,6 @@
+
+/*____________ entry ____________*/
+
 div#pluginrepo__plugin {
     background-color: #fff;
     border: 1px solid __border__;
@@ -73,6 +76,8 @@ div#pluginrepo__plugin div#pluginrepo__pluginscreenshot {
     float: right;
 }
 
+/*____________ query ____________*/
+
 div.pluginrepo__query table.inline {
     margin-bottom: 0em;
 }
@@ -80,6 +85,8 @@ div.pluginrepo__query table.inline {
 div.pluginrepo__query div.pluginrepo__querytotal {
     margin-bottom: 1em;
 }
+
+/*____________ table ____________*/
 
 div#pluginrepo__table div.repo__alphabet {
     width: 70%;
@@ -172,6 +179,8 @@ div#pluginrepo__table .prog-bar {
     padding: 0pt;
 }
 
+/*____________ repo ____________*/
+
 div#pluginrepo__repo div.repo_info {
     width: 24%;
     float: left;
@@ -210,6 +219,16 @@ div#pluginrepo__repo div.repo_cloud a.cl2 { font-size: 1em }
 div#pluginrepo__repo div.repo_cloud a.cl3 { font-size: 1.3em }
 div#pluginrepo__repo div.repo_cloud a.cl4 { font-size: 1.6em }
 div#pluginrepo__repo div.repo_cloud a.cl5 { font-size: 1.9em }
+
+div#pluginrepo__repo div.repo_info {
+    position: relative;
+}
+
+div#qsearch2__out {
+    position: absolute;
+    right: auto;
+    left: 0;
+}
 
 
 ul#pluginrepo__foldout {
@@ -269,40 +288,47 @@ ul#pluginrepo__foldout a:active {
     text-indent: 0px;
 }
 
-div.repo__news {
-    border: 1px solid __border__;
-    padding: 6px;
-    width: 210px;
+
+/*____________ news ____________*/
+
+.dokuwiki div.pluginrepo_news {
+    border: 1px solid __background_alt__;
+    border-radius: 2px;
+    padding: .5em;
+    margin: 0 0 1em 1em;
+    width: 16em;
+    min-width: 210px;
     float: right;
+    text-align: left;
+    /* so that other backgrounds underneath won't shine through */
+    background: __background__;
+    color: inherit;
 }
 
-div.repo__news div.repo__newsheader {
-    margin: -6px;
-    height: 1.6em;
-    text-align: center;
+.dokuwiki div.pluginrepo_news h4 {
+    margin: -.5em -.5em .5em;
+    padding: .2em .5em .3em;
+    text-align: left;
     font-weight: bold;
-    background-color: __border__;
-    color: __background__;
+    background-color: __background_neu__;
+    color: __text_neu__;
+    font-size: 1em;
 }
-div.repo__news a {
+.dokuwiki div.pluginrepo_news p {
+    margin-bottom: .5em;
+}
+.dokuwiki div.pluginrepo_news ul {
+    margin: 0 0 .5em 1.5em;
+}
+.dokuwiki div.pluginrepo_news p.title {
     font-weight: bold;
 }
-div.repo__news li a{
-    font-weight: normal;
+.dokuwiki div.pluginrepo_news a.screenshot {
+    display: block;
+    margin-bottom: .5em;
 }
-div.repo__news div.repo_newslink {
+.dokuwiki div.pluginrepo_news p.more {
     text-align: right;
-}
-div.repo__news div a{
-    font-weight: normal;
+    margin-bottom: 0;
 }
 
-div#pluginrepo__repo div.repo_info {
-    position: relative;
-}
-
-div#qsearch2__out {
-    position: absolute;
-    right: auto;
-    left: 0;
-}
