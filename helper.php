@@ -4,7 +4,7 @@
  *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Andreas Gohr <andi@splitbrain.org>
- * @author     Håkan Sandell <hakan.sandell@home.se>
+ * @author     Hakan Sandell <hakan.sandell@home.se>
  */
 
 class helper_plugin_pluginrepo extends DokuWiki_Plugin {
