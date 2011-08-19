@@ -154,36 +154,62 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
             $shown .= " AND A.type <> 32";
         }
 
+        if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {
+            $concat = "CONCAT('template:',C.value)";
+        } else {
+            $concat = "('template:'||C.value)";
+        }
+
         if ($tag) {
             if (!$this->types[$type]) {
                 $type = 255;
             }
-            $stmt = $db->prepare("SELECT A.*, COUNT(C.value) as cnt
-                                    FROM plugin_tags B, plugins A LEFT JOIN popularity C ON A.plugin = C.value and C.key = 'plugin'
-                                   WHERE $shown
-                                     AND (A.type & :type)
-                                     AND A.plugin = B.plugin
-                                     AND B.tag = :tag
-                                   GROUP BY A.plugin
+            $stmt = $db->prepare("      SELECT A.*, SUBSTR(A.plugin,10) as simplename, COUNT(C.value) as cnt
+                                          FROM plugin_tags B, plugins A LEFT JOIN popularity C ON A.plugin = $concat
+                                         WHERE C.key = 'conf_template' AND $shown
+                                           AND (A.type & :type)
+                                           AND A.plugin = B.plugin
+                                           AND B.tag = :tag
+                                         GROUP BY A.plugin
+                                 UNION
+                                        SELECT A.*, A.plugin as simplename, COUNT(C.value) as cnt
+                                          FROM plugin_tags B, plugins A LEFT JOIN popularity C ON A.plugin = C.value
+                                         WHERE C.key = 'plugin' AND  $shown
+                                           AND (A.type & :type)
+                                           AND A.plugin = B.plugin
+                                           AND B.tag = :tag
+                                         GROUP BY A.plugin
                                 $sortsql");
             $stmt->execute(array(':tag' => $tag, ':type' => $type));
 
         } elseif($this->types[$type]) {
-            $stmt = $db->prepare("SELECT A.*, COUNT(C.value) as cnt
-                                    FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value and C.key = 'plugin'
-                                   WHERE $shown
-                                     AND (A.type & :type)
-                                   GROUP BY A.plugin
-                                $sortsql");
+            $stmt = $db->prepare("      SELECT A.*, SUBSTR(A.plugin,10) as simplename, COUNT(C.value) as cnt
+                                          FROM plugins A LEFT JOIN popularity C ON A.plugin = $concat
+                                         WHERE C.key = 'conf_template' AND $shown
+                                           AND (A.type & :type)
+                                         GROUP BY A.plugin
+                                 UNION
+                                        SELECT A.*, A.plugin as simplename, COUNT(C.value) as cnt
+                                          FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value
+                                         WHERE C.key = 'plugin' AND $shown
+                                           AND (A.type & :type)
+                                         GROUP BY A.plugin
+                                 $sortsql");
             $stmt->execute(array(':type' => $type));
 
         } else {
-            $stmt = $db->prepare("SELECT A.*, COUNT(C.value) as cnt
-                                    FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value and C.key = 'plugin'
-                                   WHERE $shown
-                              $pluginsql
-                                   GROUP BY A.plugin
-                                $sortsql");
+            $stmt = $db->prepare("      SELECT A.*, SUBSTR(A.plugin,10) as simplename, COUNT(C.value) as cnt
+                                          FROM plugins A LEFT JOIN popularity C ON A.plugin = $concat
+                                         WHERE C.key = 'conf_template' AND $shown
+                                    $pluginsql
+                                         GROUP BY A.plugin
+                                 UNION
+                                        SELECT A.*, A.plugin as simplename, COUNT(C.value) as cnt
+                                          FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value
+                                         WHERE C.key = 'plugin' AND $shown
+                                    $pluginsql
+                                         GROUP BY A.plugin
+                                 $sortsql");
             $stmt->execute($plugins);
         }
 
@@ -204,15 +230,15 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         } elseif ($sort == 'd' || $sort == 'lastupdate') {
             $sortsql = 'ORDER BY A.lastupdate'.$sortsql;
         } elseif ($sort == 't' || $sort == 'type') {
-            $sortsql = 'ORDER BY A.type'.$sortsql.', A.plugin';
+            $sortsql = 'ORDER BY A.type'.$sortsql.', simplename';
         } elseif ($sort == 'v' || $sort == 'compatibility') {
-            $sortsql = 'ORDER BY A.bestcompatible'.$sortsql.', A.plugin';
+            $sortsql = 'ORDER BY A.bestcompatible'.$sortsql.', simplename';
         } elseif ($sort == 'c' || $sort == 'popularity') {
             $sortsql = 'ORDER BY cnt'.$sortsql;
         } elseif ($sort == 'p' || $sort == 'plugin') {
-            $sortsql = 'ORDER BY A.plugin'.$sortsql;
+            $sortsql = 'ORDER BY simplename'.$sortsql;
         } else {
-            $sortsql = 'ORDER BY A.bestcompatible DESC, A.plugin'.$sortsql;
+            $sortsql = 'ORDER BY A.bestcompatible DESC, simplename'.$sortsql;
         }
         return $sortsql;
     }
@@ -253,7 +279,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
             $meta['depends'][] = $row['other'];
         }
 
-        $stmt = $db->prepare('SELECT plugin FROM plugins WHERE plugin <> ? AND author=(SELECT author FROM plugins WHERE plugin = ?)');
+        $stmt = $db->prepare('SELECT plugin FROM plugins WHERE plugin <> ? AND email=(SELECT email FROM plugins WHERE plugin = ?)');
         $stmt->execute(array($id,$id));
         foreach ($stmt as $row) {
             $meta['sameauthor'][] = $row['plugin'];
