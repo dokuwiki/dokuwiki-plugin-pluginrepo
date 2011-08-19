@@ -46,8 +46,9 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         // parse info
         $data = array();
         foreach ( $lines as $line ) {
-            // ignore comments
+            // ignore comments and bullet syntax
             $line = preg_replace('/(?<![&\\\\])#.*$/','',$line);
+            $line = preg_replace('/^  \* /','',$line);
             $line = str_replace('\\#','#',$line);
             $line = trim($line);
             if(empty($line)) continue;
@@ -421,7 +422,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     }
 
     function renderCompatibilityHelp() {
-        $infolink = '<a url="http://www.dokuwiki.org/extension_compatibility" title="'.$this->getLang('compatible_with_info').'"><sup>?</sup></a>';
+        $infolink = '<sup><a url="http://www.dokuwiki.org/extension_compatibility" title="'.$this->getLang('compatible_with_info').'">?</a></sup>';
         return sprintf($this->getLang('compatible_with'), $infolink);
     }
 
