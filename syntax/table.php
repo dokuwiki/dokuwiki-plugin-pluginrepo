@@ -306,7 +306,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         }
         $R->doc .= '</tr>';
 
-        $compatgroup = '9999-99-99';
+        $compatgroup = 'xx9999-99-99';
         foreach($plugins as $row) {
             $id = (getNS($row['plugin']) ? $row['plugin'] : ':plugin:'.$row['plugin']);
             if(!page_exists(cleanID($id))){
@@ -318,7 +318,8 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
                 $R->doc .= '</table>';
                 if ($row['bestcompatible']) {
                     $label = array_shift($this->hlp->cleanCompat($row['bestcompatible']));
-                    $R->doc .= $this->getLang('compatible_with').' <b>'.$row['bestcompatible'].' '.$label.'</b>';
+                    $label = $label['label'];
+                    $R->doc .= $this->hlp->renderCompatibilityHelp().' <b>'.$row['bestcompatible'].' '.$label.'</b>';
                 } else {
                     $R->doc .= $this->getLang('t_oldercompatibility');
                 }

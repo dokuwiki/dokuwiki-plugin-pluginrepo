@@ -57,6 +57,11 @@ div#pluginrepo__plugin table td div.compatible {
     padding-right: 12px;
 }
 
+div#pluginrepo__plugin table td div.implicitcompatible {
+    background: #fff url(images/exclamation.png) no-repeat right;
+    padding-right: 12px;
+}
+
 div#pluginrepo__plugin table td div.unkown_compatible {
     background: #fff;
     color: __border__;

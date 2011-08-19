@@ -10,7 +10,8 @@
 $lang['by']                  = 'by';
 $lang['last_updated_on']     = 'Last updated on';
 $lang['provides']            = 'Provides';
-$lang['compatible_with']     = 'Compatible with DokuWiki';
+$lang['compatible_with']     = 'Compatible with DokuWiki%s';
+$lang['compatible_with_info']= 'Please update this field';
 $lang['no_compatibility']    = 'No compatibility info given!';
 $lang['develonly']           = 'Devel only';
 $lang['conflicts_with']      = 'Conflicts with';

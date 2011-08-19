@@ -137,7 +137,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
         $R->doc .= '<table class="inline compatible">';
         $R->doc .= '<tr><th colspan="4">';
-        $R->doc .= $this->getLang('compatible_with');
+        $R->doc .= $this->hlp->renderCompatibilityHelp();
         $R->doc .= '</th></tr>';
 
         if (!$data['compatible']) {
@@ -154,6 +154,9 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
                 $value = 'unkown_compatible';
                 if (array_key_exists($release['date'], $compatibility)) {
                     $value = 'compatible';
+                    if ($compatibility[$release['date']]['implicit']) {
+                        $value = 'implicitcompatible';
+                    }
                     $norecentcompat = false;
                 }
                 $compatrow = '<td><div class="'.$value.'">'.$release['date'].'<br />'.$release['label'].'</div></td>'.$compatrow;
@@ -270,7 +273,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         }
 
         if (in_array($id, $this->hlp->bundled)) {
-            $compatible = '9999-99-99';
+            $compatible = 'xx9999-99-99';
         } else {
             $compatible = array_shift(array_keys($this->hlp->cleanCompat($data['compatible'])));
         }

@@ -398,15 +398,31 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
             }
         }
 
-        preg_match_all('/([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]|[a-zA-Z]{4,})/', $compatible, $matches);
+        preg_match_all('/([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\+?|[a-zA-Z]{4,}\+?)/', $compatible, $matches);
         $matches[0] = array_map('strtolower',$matches[0]);
         $retval = array();
-        foreach ($this->dokuReleases as $release) {
-            if (in_array($release['date'], $matches[0]) || in_array($release['name'], $matches[0])) {
-                $retval[$release['date']] = $release['label'];
+        $implicitCompatible = false;
+        $dokuReleases = $this->dokuReleases;
+        ksort($dokuReleases);
+        foreach ($dokuReleases as $release) {
+            if (in_array($release['date'].'+', $matches[0]) || in_array($release['name'].'+', $matches[0])) {
+                $nextImplicitCompatible = true;
+            }
+            if ($nextImplicitCompatible || in_array($release['date'], $matches[0]) || in_array($release['name'], $matches[0]) || $implicitCompatible) {
+                $retval[$release['date']]['label'] = $release['label'];
+                $retval[$release['date']]['implicit'] = $implicitCompatible;
+            }
+            if ($nextImplicitCompatible) {
+                $implicitCompatible = true;
             }
         }
+        krsort($retval);
         return $retval;
+    }
+
+    function renderCompatibilityHelp() {
+        $infolink = '<a url="http://www.dokuwiki.org/extension_compatibility" title="'.$this->getLang('compatible_with_info').'"><sup>?</sup></a>';
+        return sprintf($this->getLang('compatible_with'), $infolink);
     }
 
     /**

@@ -91,7 +91,7 @@ function getRepository($opt) {
         }
         $feed .= '<compatible>';
         $compatibility = $hlp->cleanCompat($plugin['compatible']);
-        foreach ($compatibility as $date => $name) {
+        foreach ($compatibility as $date => $info) {
             $feed .= '<release>'.$date.'</release>';
         }
         $feed .= '</compatible>';
