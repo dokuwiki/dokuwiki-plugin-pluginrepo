@@ -86,7 +86,10 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
             }
         }
         // create ORDER BY sql clause for shown fields, ensure 'plugin' field included
-        $ordersql = 'A.plugin'.($fields ? ',A.'.join(',A.',$fields) : '');
+        $ordersql = 'A.plugin';
+        if ($fields) {
+            $ordersql = 'A.'.join(',A.',$fields).','.$ordersql;
+        }
         $ordersql = str_replace('A.cnt','cnt',$ordersql);
 
         // sanitize WHERE input
