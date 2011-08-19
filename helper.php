@@ -331,7 +331,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
 
         $sql = "SELECT *, COUNT(uid) as cnt
                   FROM popularity LEFT JOIN plugins ON popularity.value=plugins.plugin
-                 WHERE popularity.key = 'plugin' 
+                 WHERE popularity.key = 'plugin'
                    AND plugins.tags <> '".$this->obsoleteTag."' ";
 
         $sql .= str_repeat("AND popularity.value != ? ",count($this->bundled));
@@ -448,7 +448,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     }
 
     function renderCompatibilityHelp() {
-        $infolink = '<sup><a url="http://www.dokuwiki.org/extension_compatibility" title="'.$this->getLang('compatible_with_info').'">?</a></sup>';
+        $infolink = '<sup><a href="http://www.dokuwiki.org/extension_compatibility" title="'.$this->getLang('compatible_with_info').'">?</a></sup>';
         return sprintf($this->getLang('compatible_with'), $infolink);
     }
 
