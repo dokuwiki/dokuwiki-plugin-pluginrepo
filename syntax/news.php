@@ -119,7 +119,8 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
         }
         for ($i = 0; $i < $limit; $i++) {
             $row = $plugins[$start+$i];
-            $R->doc .= '<p class="title">'.$this->hlp->pluginlink($R, $row['plugin'], ucfirst(noNS($row['plugin'])).($row['type']==32?' template':' plugin')).'</p>'.NL;
+            $linkText = ucfirst(noNS($row['plugin'])).($row['type']==32?' template':' plugin');
+            $R->doc .= '<p class="title">'.$this->hlp->pluginlink($R, $row['plugin'], $linkText).'</p>'.NL;
             $R->doc .= '<p class="description">'.$row['description'].'</p>'.NL;
 
             $val = $row['screenshot'];
