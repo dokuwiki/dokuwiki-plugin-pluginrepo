@@ -165,16 +165,16 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                 $type = 255;
             }
             $stmt = $db->prepare("      SELECT A.*, SUBSTR(A.plugin,10) as simplename, COUNT(C.value) as cnt
-                                          FROM plugin_tags B, plugins A LEFT JOIN popularity C ON A.plugin = $concat
-                                         WHERE C.key = 'conf_template' AND $shown
+                                          FROM plugin_tags B, plugins A LEFT JOIN popularity C ON A.plugin = $concat AND C.key = 'conf_template'
+                                         WHERE A.type = 32 AND $shown
                                            AND (A.type & :type)
                                            AND A.plugin = B.plugin
                                            AND B.tag = :tag
                                          GROUP BY A.plugin
                                  UNION
                                         SELECT A.*, A.plugin as simplename, COUNT(C.value) as cnt
-                                          FROM plugin_tags B, plugins A LEFT JOIN popularity C ON A.plugin = C.value
-                                         WHERE C.key = 'plugin' AND  $shown
+                                          FROM plugin_tags B, plugins A LEFT JOIN popularity C ON A.plugin = C.value AND C.key = 'plugin' 
+                                         WHERE A.type < 32 AND $shown
                                            AND (A.type & :type)
                                            AND A.plugin = B.plugin
                                            AND B.tag = :tag
@@ -184,14 +184,14 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
 
         } elseif($this->types[$type]) {
             $stmt = $db->prepare("      SELECT A.*, SUBSTR(A.plugin,10) as simplename, COUNT(C.value) as cnt
-                                          FROM plugins A LEFT JOIN popularity C ON A.plugin = $concat
-                                         WHERE C.key = 'conf_template' AND $shown
+                                          FROM plugins A LEFT JOIN popularity C ON A.plugin = $concat AND C.key = 'conf_template'
+                                         WHERE A.type = 32 AND $shown
                                            AND (A.type & :type)
                                          GROUP BY A.plugin
                                  UNION
                                         SELECT A.*, A.plugin as simplename, COUNT(C.value) as cnt
-                                          FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value
-                                         WHERE C.key = 'plugin' AND $shown
+                                          FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value AND C.key = 'plugin'
+                                         WHERE A.type < 32 AND $shown
                                            AND (A.type & :type)
                                          GROUP BY A.plugin
                                  $sortsql");
@@ -199,14 +199,14 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
 
         } else {
             $stmt = $db->prepare("      SELECT A.*, SUBSTR(A.plugin,10) as simplename, COUNT(C.value) as cnt
-                                          FROM plugins A LEFT JOIN popularity C ON A.plugin = $concat
-                                         WHERE C.key = 'conf_template' AND $shown
+                                          FROM plugins A LEFT JOIN popularity C ON A.plugin = $concat AND C.key = 'conf_template'
+                                         WHERE A.type = 32 AND $shown
                                     $pluginsql
                                          GROUP BY A.plugin
                                  UNION
                                         SELECT A.*, A.plugin as simplename, COUNT(C.value) as cnt
-                                          FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value
-                                         WHERE C.key = 'plugin' AND $shown
+                                          FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value AND C.key = 'plugin'
+                                         WHERE A.type < 32 AND $shown
                                     $pluginsql
                                          GROUP BY A.plugin
                                  $sortsql");
