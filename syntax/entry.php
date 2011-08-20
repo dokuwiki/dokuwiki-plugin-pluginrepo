@@ -100,125 +100,65 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
         $rel = $this->hlp->getPluginRelations($id);
         $type = $this->hlp->parsetype($data['type']);
+        $extensionType = ($type == 32) ? 'template':'plugin';
 
-        if (!$data['screenshot_img']) {
-            $R->doc .= '<div id="pluginrepo__plugin" class="pluginrepo__box">';
+        $R->doc .= '<div class="pluginrepo_entry">'.NL;
 
-        } else {
-            $R->doc .= '<div id="pluginrepo__plugin" class="pluginrepo__screenshotbox">';
-
-            $val = $data['screenshot_img'];
-            $title = 'screenshot: '.basename(str_replace(':','/',$val));
-            $R->doc .= '<div id="pluginrepo__pluginscreenshot">';
-            $R->doc .= '<a href="'.ml($val).'" class="media" rel="lightbox">';
-            $R->doc .= '<img src="'.ml($val,"w=190").'" alt="'.hsc($title).'" title="'.hsc($title).'" width="190" />';
-            $R->doc .= '</a></div>';
-        }
-
-        $R->doc .= '<div>';
-        $R->doc .= '<p><strong>'.noNS($id).' ';
+        /* ===== main info ==== */
+        $R->doc .= '<div class="mainInfo">'.NL;
+        /*
+        $R->doc .= '<h4>'.noNS($id).' ';
         $R->doc .= ($type == 32 ? 'template':'plugin');
-        $R->doc .= '</strong> '.$this->getLang('by').' ';
-        $R->emaillink($data['email'],$data['author']);
-        $R->doc .= '<br />'.hsc($data['description']).'</p>';
+        $R->doc .= '</h4>';
+        */
 
-        if(preg_match('/^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/',$data['lastupdate'])){
-            $R->doc .= '<span class="lastupd">';
-            $R->doc .= $this->getLang('last_updated_on');
-            $R->doc .= ' <em>'.$data['lastupdate'].'</em>.</span> ';
+        $extensionIcon = '<a class="media" href="/'.$extensionType.'s"><img alt="'.$extensionType.'" class="medialeft" src="'.DOKU_BASE.'lib/plugins/pluginrepo/images/dwplugin.png" width="60" height="60" /></a> ';
+        $R->doc .= '<p class="description">'.$extensionIcon.hsc($data['description']).'</p>'.NL;
+        if ($data['screenshot_img']) {
+            $val = $data['screenshot_img'];
+            $R->doc .= '<a href="'.ml($val).'" class="media screenshot" rel="lightbox">';
+            $R->doc .= '<img src="'.ml($val,"w=220").'" alt="" width="220" /></a>'.NL;
         }
+        $R->doc .= '</div>';// mainInfo
 
+        /* ===== meta info ==== */
+        $R->doc .= '<div class="metaInfo"><dl>'.NL;
         $target = getNS($ID).'s';
+
+        // last updated
+        if(preg_match('/^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/',$data['lastupdate'])){
+            $R->doc .= '<dt>'.$this->getLang('last_updated_on').'</dt>'.NL;
+            $R->doc .= '<dd>'.$data['lastupdate'].'</dd>'.NL;
+        }
+        // type
         if($type && $type != 32){
-            $R->doc .= '<span class="type">';
-            $R->doc .= $this->getLang('provides');
-            $R->doc .= ' <em>'.$this->hlp->listtype($type,$target).'</em>.</span>';
+            $R->doc .= '<dt>'.$this->getLang('provides').'</dt>'.NL;
+            $R->doc .= '<dd>'.$this->hlp->listtype($type,$target).'</dd>'.NL;
         }
 
-        $R->doc .= '<table class="inline compatible">';
-        $R->doc .= '<tr><th colspan="4">';
-        $R->doc .= $this->hlp->renderCompatibilityHelp();
-        $R->doc .= '</th></tr>';
-
-        if (!$data['compatible']) {
-            $R->doc .= '<tr><td class="compatible__msg" colspan="'.$this->getConf('showcompat').'">';
-            $R->doc .= $this->getLang('no_compatibility');
-            $R->doc .= '</td></tr>';
-
-        } else {
-            $compatibility = $this->hlp->cleanCompat($data['compatible']);
-            $cols = 0;
-            $norecentcompat = true;
-            foreach ($this->hlp->dokuReleases as $release) {
-                if (++$cols > 4) break;
-                $value = 'unkown_compatible';
-                if (array_key_exists($release['date'], $compatibility)) {
-                    $value = 'compatible';
-                    if ($compatibility[$release['date']]['implicit']) {
-                        $value = 'implicitcompatible';
-                    }
-                    $norecentcompat = false;
-                }
-                $compatrow = '<td><div class="'.$value.'">'.$release['date'].'<br />'.$release['label'].'</div></td>'.$compatrow;
-            }
-
-            if (strpos($data['compatible'],'devel') !== false) {
-                $R->doc .= '<tr><td class="compatible__msg" colspan="'.$this->getConf('showcompat').'">';
-                $R->internallink('devel:develonly',$this->getLang('develonly'));
-                $R->doc .= '</td></tr>';
-
-            } elseif ($norecentcompat) {
-                $R->doc .= '<tr><td class="compatible__msg" colspan="'.$this->getConf('showcompat').'">';
-                $R->doc .= $data['compatible'].'<br />';
-                $R->doc .= '</td></tr>';
-            } else {
-                $R->doc .= '<tr>'.$compatrow.'</tr>';
-            }
+        if($data['sourcerepo']) {
+            $R->doc .= '<dt>'.$this->getLang('sourcerepo').'</dt>'.NL;
+            // TODO: should be different link text
+            $R->doc .= '<dd><a href="'.hsc($data['sourcerepo']).'">source</a></dd>'.NL;
         }
-        $R->doc .= '</table>'; // end of compatibility table
-        $R->doc .= '</div>';
 
-        $R->doc .= '<p>';
         if ($rel['conflicts']) {
             $data['conflicts'] .= ','.join(',',$rel['conflicts']);
         }
         if($data['conflicts']){
-            $R->doc .= '<span class="conflicts">';
-            $R->doc .= $this->getLang('conflicts_with');
-            $R->doc .= ' <em>';
-            $R->doc .= $this->hlp->listplugins($data['conflicts'],$R);
-            $R->doc .= '</em>!</span><br />';
+            $R->doc .= '<dt>'.$this->getLang('conflicts_with').'</dt>'.NL;
+            $R->doc .= '<dd>'.$this->hlp->listplugins($data['conflicts'],$R).'</dd>'.NL;
         }
         if($data['depends']){
-            $R->doc .= '<span class="depends">';
-            $R->doc .= $this->getLang('requires');
-            $R->doc .= ' <em>';
-            $R->doc .= $this->hlp->listplugins($data['depends'],$R);
-            $R->doc .= '</em>.</span><br />';
+            $R->doc .= '<dt>'.$this->getLang('requires').'</dt>'.NL;
+            $R->doc .= '<dd>'.$this->hlp->listplugins($data['depends'],$R).'</dd>'.NL;
         }
 
-        if ($rel['similar']) {
-            $data['similar'] .= ','.join(',',$rel['similar']);
-        }
-        if($data['similar']){
-            $R->doc .= '<span class="similar">';
-            $R->doc .= $this->getLang('similar_to');
-            $R->doc .= ' <em>';
-            $R->doc .= $this->hlp->listplugins($data['similar'],$R);
-            $R->doc .= '</em>.</span><br />';
-        }
-        $R->doc .= '</p>';
+        $R->doc .= '</dl>'.NL;
 
-        $R->doc .= '<p>';
-        if($data['tags']){
-            $R->doc .= '<span class="tags">';
-            $R->doc .= $this->getLang('tagged_with');
-            $R->doc .= ' <em>';
-            $R->doc .= $this->hlp->listtags($data['tags'],$target);
-            $R->doc .= '</em>.</span><br />';
-        }
-        $R->doc .= '</p>';
+        $R->doc .= '</div>'.NL;// metaInfo
 
+/*
         if($data['securitywarning']){
             $R->doc .= '<p class="securitywarning">';
             $securitylink = $R->internallink('devel:security',$this->getLang('securitylink'),NULL,true);
@@ -247,15 +187,92 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         }
 
         $R->doc .= '</div>';
+*/
 
-        // add tabs
-        $R->doc .= '<ul id="pluginrepo__foldout">';
-        $downloadtext = ($type == 32 ? $this->getLang('downloadurl_tpl') : $this->getLang('downloadurl'));
-        if($data['downloadurl']) $R->doc .= '<li><a class="download" href="'.hsc($data['downloadurl']).'">'.$downloadtext.'</a></li>';
-        if($data['bugtracker'])  $R->doc .= '<li><a class="bugs" href="'.hsc($data['bugtracker']).'">'.$this->getLang('bugtracker').'</a></li>';
-        if($data['sourcerepo'])  $R->doc .= '<li><a class="repo" href="'.hsc($data['sourcerepo']).'">'.$this->getLang('sourcerepo').'</a></li>';
-        if($data['donationurl']) $R->doc .= '<li><a class="donate" href="'.hsc($data['donationurl']).'">'.$this->getLang('donationurl').'</a></li>';
-        $R->doc .= '</ul>';
+        /* ===== usage info ==== */
+        $R->doc .= '<div class="usageInfo">'.NL;
+
+        /* compatibility */
+        $R->doc .= '<div class="compatibility">';
+        $R->doc .= '<p>'.$this->hlp->renderCompatibilityHelp().'</p>'.NL;
+
+        if (!$data['compatible']) {
+            $R->doc .= '<p class="nothing">';
+            $R->doc .= $this->getLang('no_compatibility');
+            $R->doc .= '</p>'.NL;
+
+        } else {
+            $compatibility = $this->hlp->cleanCompat($data['compatible']);
+            $cols = 0;
+            $norecentcompat = true;
+            $compatrow = '';
+            foreach ($this->hlp->dokuReleases as $release) {
+                if (++$cols > 4) break;
+                $value = 'unknown';// maybe, possibly?
+                if (array_key_exists($release['date'], $compatibility)) {
+                    $value = 'yes';// compatible?
+                    if ($compatibility[$release['date']]['implicit']) {
+                        $value = 'probably';
+                    }
+                    $norecentcompat = false;
+                }
+                $compatrow .= '<li class="'.$value.'">'.$release['date'].' '.$release['label'];
+                $compatrow .= '<span class="a11y">:</span> <strong>'.$value.'</strong></li>'.NL;
+            }
+
+            if (strpos($data['compatible'],'devel') !== false) {
+                $R->doc .= '<p>';
+                $R->internallink('devel:develonly',$this->getLang('develonly'));
+                $R->doc .= '</p>'.NL;
+
+            } elseif ($norecentcompat) {
+                $R->doc .= '<p>';
+                $R->doc .= $data['compatible'];
+                $R->doc .= '</p>'.NL;
+            } else {
+                $R->doc .= '<div class="versions"><ul>'.NL.$compatrow.'</ul></div>'.NL;
+            }
+        }
+        $R->doc .= '</div>'.NL;// compatibilityInfo
+
+        /* action links (download, bugs, donate) */
+        if ($data['downloadurl'] || $data['bugtracker'] || $data['donationurl']) {
+            $R->doc .= '<ul>'.NL;
+            $downloadtext = ($type == 32 ? $this->getLang('downloadurl_tpl') : $this->getLang('downloadurl'));
+            if($data['downloadurl']) $R->doc .= '<li><a class="download" href="'.hsc($data['downloadurl']).'">'.$downloadtext.'</a></li>'.NL;
+            if($data['bugtracker'])  $R->doc .= '<li><a class="bugs" href="'.hsc($data['bugtracker']).'">'.$this->getLang('bugtracker').'</a></li>'.NL;
+            if($data['donationurl']) $R->doc .= '<li><a class="donate" href="'.hsc($data['donationurl']).'">'.$this->getLang('donationurl').'</a></li>'.NL;
+            $R->doc .= '</ul><div class="clearer"></div>'.NL;
+        }
+
+        $R->doc .= '</div>'.NL;// usageInfo
+
+        /* ===== more info ==== */
+        if($rel['similar'] || $data['tags']) {
+            $R->doc .= '<div class="moreInfo">'; // main div
+            if ($rel['similar']) {
+                $data['similar'] .= ','.join(',',$rel['similar']);
+            }
+            if($data['similar']){
+                $R->doc .= '<p>'.$this->getLang('similar_to').' ';
+                $R->doc .= $this->hlp->listplugins($data['similar'],$R).'</p>'.NL;
+            }
+
+            if($data['tags']){
+                $R->doc .= '<p>'.$this->getLang('tagged_with').' ';
+                $R->doc .= $this->hlp->listtags($data['tags'],$target).'</p>'.NL;
+            }
+            $R->doc .= '</div>';// moreInfo
+        }
+
+        // author
+        $R->doc .= '<div class="authorInfo">';
+        //$R->doc .= $this->getLang('by').' ';
+        $R->emaillink($data['email'],$data['author']);
+        // TODO: by the same author
+        $R->doc .= '</div>'; // authorInfo
+
+        $R->doc .= '</div>'; // pluginrepo_entry
     }
 
     /**

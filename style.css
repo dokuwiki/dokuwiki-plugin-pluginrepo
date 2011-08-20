@@ -1,80 +1,102 @@
 
 /*____________ entry ____________*/
 
-div#pluginrepo__plugin {
-    background-color: #fff;
-    border: 1px solid __border__;
-    padding: 0.7em 1em 0.2em 1em;
-    font-size: 90%;
+.dokuwiki div.pluginrepo_entry {
+    max-width: 800px;
+    min-width: 230px;
+    border: 1px solid __background_alt__;
+    border-radius: 2px;
+    margin: 0 1.5em 1.5em 0;
+    text-align: left;
 }
 
-div.pluginrepo__box {
-    width: 450px;
+/* layout */
+.dokuwiki div.pluginrepo_entry div.mainInfo,
+.dokuwiki div.pluginrepo_entry div.metaInfo,
+.dokuwiki div.pluginrepo_entry div.usageInfo {
+    float: left;
+    padding: .5em;
 }
-div.pluginrepo__screenshotbox {
-    width: 615px;
+.dokuwiki div.pluginrepo_entry div.mainInfo {
+    width: 350px;
+}
+.dokuwiki div.pluginrepo_entry div.metaInfo {
+    width: 200px;
+}
+.dokuwiki div.pluginrepo_entry div.usageInfo {
+    width: 200px;
+}
+.dokuwiki div.pluginrepo_entry div.moreInfo,
+.dokuwiki div.pluginrepo_entry div.authorInfo {
+    clear: left;
+    padding: .5em;
 }
 
-div#pluginrepo__plugin div {
-    background: #fff url(images/dwplugin.png) 5px 5px no-repeat;
-    height: auto !important;
-    height: 80px;
-    min-height: 80px;
-    padding-left: 80px;
+/* general styles within the entry */
+.dokuwiki div.pluginrepo_entry p {
+    margin-bottom: .5em;
+}
+.dokuwiki div.pluginrepo_entry ul {
+    margin: 0 0 .5em 0;
+    list-style: none;
+}
+.dokuwiki div.pluginrepo_entry ul li {
+    color: __text__;
+}
+.dokuwiki div.pluginrepo_entry dt {
+    font-weight: bold;
+}
+.dokuwiki div.pluginrepo_entry dd {
+    margin-bottom: .5em;
+}
+
+/* mainInfo */
+.dokuwiki div.pluginrepo_entry div.mainInfo img.medialeft {
     margin-bottom: 1em;
-    font-size: 105%;
+}
+.dokuwiki div.pluginrepo_entry div.mainInfo a.screenshot {
+    display: block;
+    clear: left;
+    margin-left: 1.5em;
 }
 
-div#pluginrepo__plugin p.security,
-div#pluginrepo__plugin p.securitywarning {
-    background-color: #fcc;
-    color: #000;
-    border: 1px solid #faa;
-    padding: 0.3em;
+
+/* metaInfo */
+.dokuwiki div.pluginrepo_entry div.metaInfo {
 }
 
-div#pluginrepo__plugin p.securitywarning {
-    background-color: #ffc;
+/* usageInfo */
+.dokuwiki div.pluginrepo_entry div.compatibility p {
+    font-weight: bold;
+    margin-bottom: .5em;
+}
+/* TODO: temporary */
+.dokuwiki div.pluginrepo_entry div.compatibility p sup {
+    display: none;
 }
 
-div#pluginrepo__plugin table.compatible {
-    margin-top: 0.5em;
-    margin-bottom: 0em;
-    font-size: 80%;
-    text-align: center;
-    min-width: 330px;
+/* compatibility */
+.dokuwiki div.pluginrepo_entry div.compatibility div.versions {
+    position: relative;
+}
+.dokuwiki div.pluginrepo_entry div.compatibility ul {
+    background-color: __background__;
+}
+.dokuwiki div.pluginrepo_entry div.compatibility ul:hover {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.dokuwiki div.pluginrepo_entry div.compatibility li {
+    display: none;
+}
+.dokuwiki div.pluginrepo_entry div.compatibility li:first-child {
+    display: block;
+}
+.dokuwiki div.pluginrepo_entry div.compatibility ul:hover li {
+    display: block;
 }
 
-div#pluginrepo__plugin td {
-    font-style: italic;
-}
-
-div#pluginrepo__plugin table td div {
-    min-height: 0px;
-    padding: 0px;
-    margin: 0em;
-}
-
-div#pluginrepo__plugin table td div.compatible {
-    background: #fff url(../../images/success.png) no-repeat right;
-    padding-right: 12px;
-}
-
-div#pluginrepo__plugin table td div.implicitcompatible {
-    background: #fff url(images/exclamation.png) no-repeat right;
-    padding-right: 12px;
-}
-
-div#pluginrepo__plugin table td div.unkown_compatible {
-    background: #fff;
-    color: __border__;
-}
-
-div#pluginrepo__plugin div#pluginrepo__pluginscreenshot {
-    background: #fff;
-    padding: 0em 0em 0em 1em;
-    float: right;
-}
 
 /*____________ query ____________*/
 
@@ -227,64 +249,6 @@ div#qsearch2__out {
     position: absolute;
     right: auto;
     left: 0;
-}
-
-
-ul#pluginrepo__foldout {
-    margin: 0;
-    list-style-type: none;
-    margin-bottom: 4em;
-}
-
-ul#pluginrepo__foldout li {
-    float: left;
-}
-
-ul#pluginrepo__foldout a.bugs {
-    background: transparent url(images/bugs.png) top left no-repeat;
-}
-
-ul#pluginrepo__foldout a.repo {
-    background: transparent url(images/repo.png) top left no-repeat;
-}
-
-ul#pluginrepo__foldout a.donate {
-    background: transparent url(images/donate.png) top left no-repeat;
-}
-
-ul#pluginrepo__foldout a.download {
-    background: transparent url(images/download.png) top left no-repeat;
-    width: 167px;
-    text-indent: 0px;
-}
-
-ul#pluginrepo__foldout a {
-    display: block;
-    width: 0px;
-    height: 30px;
-    overflow: hidden;
-    white-space: nowrap;
-    padding-left: 30px;
-    line-height: 32px;
-    font-size: 14px;
-    text-decoration: none;
-    border-left: 1px solid __border__;
-    border-bottom: 1px solid __border__;
-    border-right: 1px solid __border__;
-    margin: 0 0px 0px 3px;
-
-    -moz-border-radius-bottomleft: 3px;
-    -webkit-border-bottom-left-radius: 3px;
-    -moz-border-radius-bottomright: 3px;
-    -webkit-border-bottom-right-radius: 3px;
-
-    text-indent: -9000px;
-}
-
-ul#pluginrepo__foldout a:hover,
-ul#pluginrepo__foldout a:active {
-    width: 167px;
-    text-indent: 0px;
 }
 
 
