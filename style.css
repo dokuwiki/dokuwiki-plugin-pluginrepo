@@ -78,11 +78,10 @@ div#pluginrepo__plugin div#pluginrepo__pluginscreenshot {
 
 /*____________ query ____________*/
 
-div.pluginrepo__query table.inline {
-    margin-bottom: 0em;
+.dokuwiki div.pluginrepo_query table {
+    margin-bottom: .5em;
 }
-
-div.pluginrepo__query div.pluginrepo__querytotal {
+.dokuwiki div.error.repoquery {
     margin-bottom: 1em;
 }
 

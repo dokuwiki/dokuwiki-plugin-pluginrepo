@@ -81,7 +81,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
         $fields = array_unique($fields);
         for ($fieldItr = 0; $fieldItr < count($fields); $fieldItr++) {
             if (!in_array($fields[$fieldItr], $this->allowedfields)) {
-                $R->doc .= '<b>Repoquery error - Unknown field:</b> '.hsc($fields[$fieldItr]).'<br/>';
+                $R->doc .= '<div class="error repoquery"><strong>Repoquery error - Unknown field:</strong> '.hsc($fields[$fieldItr]).'</div>';
                 return;
             }
         }
@@ -94,10 +94,10 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
 
         // sanitize WHERE input
         if (!$data['where']) {
-            $R->doc .= '<b>Repoquery error - Missing WHERE clause</b><br/>';
+            $R->doc .= '<div class="error repoquery"><strong>Repoquery error - Missing WHERE clause</strong></div>';
             return;
         } elseif (strpos($data['where'],'cnt') !== false) {
-            $R->doc .= '<b>Repoquery error - "cnt" could not be used with WHERE, use HAVING instead.</b><br/>';
+            $R->doc .= '<div class="error repoquery"><strong>Repoquery error - "cnt" could not be used with WHERE, use HAVING instead</strong></div>';
             return;
         }
 
@@ -107,7 +107,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
         }
         $error = preg_replace('/(LIKE|AND|OR|NOT|IS|NULL|[<>=\?\(\)])/i','',$error);
         if (trim($error)) {
-            $R->doc .= '<b>Repoquery error - Unsupported chars in WHERE clause:</b> '.hsc($error).'<br/>';
+            $R->doc .= '<div class="error repoquery"><strong>Repoquery error - Unsupported chars in WHERE clause:</strong> '.hsc($error).'</div>';
             return;
         }
         $wheresql = $data['where'];
@@ -116,7 +116,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
         if (preg_match('/^cnt\s*[=><]+\s*\d+$/i',$data['having'])) {
             $havingsql = 'HAVING '.$data['having'];
         } elseif ($data['having']) {
-            $R->doc .= '<b>Repoquery error - Unsupported chars in HAVING clause:</b> '.hsc($data['having']).'<br/>';
+            $R->doc .= '<div class="error repoquery"><strong>Repoquery error - Unsupported chars in HAVING clause:</strong> '.hsc($data['having']).'</div>';
             return;
         }
 
@@ -139,7 +139,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
         $headline = 'Plugins WHERE '.vsprintf(str_replace('?','%s',$wheresql),$values);
         $headline .= ($havingsql?' '.$havingsql:'');
 
-        $R->doc .= '<div class="pluginrepo__query">';
+        $R->doc .= '<div class="pluginrepo_query">';
         if (count($fields) == 0) {
             // sort into alpha groups if only displaying plugin links
             $plugingroups = array();
@@ -225,7 +225,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
             }
             $R->doc .= '</table>';
         }
-        $R->doc .= '<div class="pluginrepo__querytotal">=> '.count($datarows).' plugins matching query</div>';
+        $R->doc .= '<p class="querytotal">∑ '.count($datarows).' plugins matching query</p>';
         $R->doc .= '</div>';
         return true;
     }
