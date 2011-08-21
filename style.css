@@ -66,9 +66,9 @@
 }
 
 /* usageInfo */
-.dokuwiki div.pluginrepo_entry div.compatibility p {
+.dokuwiki div.pluginrepo_entry div.compatibility p.label {
     font-weight: bold;
-    margin-bottom: .5em;
+    margin-bottom: 0;
 }
 /* TODO: temporary */
 .dokuwiki div.pluginrepo_entry div.compatibility p sup {
@@ -78,14 +78,24 @@
 /* compatibility */
 .dokuwiki div.pluginrepo_entry div.compatibility div.versions {
     position: relative;
+    min-height: 20px;
 }
 .dokuwiki div.pluginrepo_entry div.compatibility ul {
-    background-color: __background__;
+    background: transparent url(images/arrowdown.png) no-repeat right bottom;
+    overflow: hidden;
+    margin: 0;
+    padding-left: 2px;
 }
 .dokuwiki div.pluginrepo_entry div.compatibility ul:hover {
     position: absolute;
     top: 0;
     left: 0;
+    box-shadow: 0 5px 5px #999;
+    width: 250px;
+    overflow: visible;
+    border: 2px solid __background__;
+    margin: -2px -2px 0;
+    background: __background__;
 }
 .dokuwiki div.pluginrepo_entry div.compatibility li {
     display: none;
@@ -96,6 +106,65 @@
 .dokuwiki div.pluginrepo_entry div.compatibility ul:hover li {
     display: block;
 }
+.dokuwiki div.pluginrepo_entry div.compatibility ul li strong span {
+    display: none;
+}
+.dokuwiki div.pluginrepo_entry div.compatibility ul li strong {
+    font-weight: normal;
+    background: transparent url(images/unknown.png) no-repeat top right;
+    padding-right: 20px;
+}
+.dokuwiki div.pluginrepo_entry div.compatibility ul li.yes strong {
+    background-image: url(../../images/success.png);
+}
+.dokuwiki div.pluginrepo_entry div.compatibility ul li.probably strong {
+    background-image: url(images/exclamation.png);
+}
+.dokuwiki div.pluginrepo_entry div.compatibility ul:hover li strong {
+    float: right;
+    clear: right;
+}
+.dokuwiki div.pluginrepo_entry div.compatibility ul:hover li strong span {
+    display: inline;
+}
+
+.dokuwiki div.pluginrepo_entry div.usageInfo ul.actions {
+    margin-top: 2em;
+}
+.dokuwiki div.pluginrepo_entry div.usageInfo ul.actions a {
+    display: block;
+    padding: .3em .3em .4em 37px;
+    font-size: 120%;
+    text-decoration: none;
+    border: 1px solid __background_alt__;
+    border-radius: 5px;
+    margin-bottom: .5em;
+    background-repeat: no-repeat;
+    background-position: 2px 0;
+}
+.dokuwiki div.pluginrepo_entry div.usageInfo ul.actions a:hover {
+    border: 1px solid __border__;
+}
+.dokuwiki div.pluginrepo_entry div.usageInfo ul.actions a.bugs {
+    background-image: url(images/bugs.png);
+}
+.dokuwiki div.pluginrepo_entry div.usageInfo ul.actions a.donate {
+    background-image: url(images/donate.png);
+}
+.dokuwiki div.pluginrepo_entry div.usageInfo ul.actions a.download {
+    background-image: url(images/download.png);
+}
+
+/* security */
+.dokuwiki div.pluginrepo_entry div.error,
+.dokuwiki div.pluginrepo_entry div.info,
+.dokuwiki div.pluginrepo_entry div.notify {
+    padding-top: .5em;
+    margin-bottom: .5em;
+    background-position: .5em .5em;
+    padding-left: 2.5em;
+}
+
 
 
 /*____________ query ____________*/

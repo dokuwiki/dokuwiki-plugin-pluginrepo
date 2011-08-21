@@ -158,43 +158,12 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
         $R->doc .= '</div>'.NL;// metaInfo
 
-/*
-        if($data['securitywarning']){
-            $R->doc .= '<p class="securitywarning">';
-            $securitylink = $R->internallink('devel:security',$this->getLang('securitylink'),NULL,true);
-            $R->doc .= '<b>'.sprintf($this->getLang('securitywarning'),$securitylink).'</b><br /><br />';
-            if(in_array($data['securitywarning'],$this->hlp->securitywarning)){
-                $R->doc .= '<i>'.$this->getLang('security_'.$data['securitywarning']).'</i>';
-            }else{
-                $R->doc .= '<i>'.hsc($data['securitywarning']).'</i>';
-            }
-            $R->doc .= '</p>';
-        }
-
-        if($data['securityissue']){
-            $R->doc .= '<p class="security">';
-            $R->doc .= '<b>'.$this->getLang('securityissue').'</b><br /><br />';
-            $R->doc .= '<i>'.hsc($data['securityissue']).'</i><br /><br />';
-            $securitylink = $R->internallink('devel:security',$this->getLang('securitylink'),NULL,true);
-            $R->doc .= sprintf($this->getLang('securityrecommendation'),$securitylink);
-            $R->doc .= '.</p>';
-        }
-
-        if(strpos($id,'_') !== false) {
-            $R->doc .= '<p class="security">';
-            $R->doc .= '<b>'.$this->getLang('name_underscore').'</b>';
-            $R->doc .= '</p>';
-        }
-
-        $R->doc .= '</div>';
-*/
-
         /* ===== usage info ==== */
         $R->doc .= '<div class="usageInfo">'.NL;
 
         /* compatibility */
         $R->doc .= '<div class="compatibility">';
-        $R->doc .= '<p>'.$this->hlp->renderCompatibilityHelp().'</p>'.NL;
+        $R->doc .= '<p class="label">'.$this->hlp->renderCompatibilityHelp().'</p>'.NL;
 
         if (!$data['compatible']) {
             $R->doc .= '<p class="nothing">';
@@ -217,7 +186,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
                     $norecentcompat = false;
                 }
                 $compatrow .= '<li class="'.$value.'">'.$release['date'].' '.$release['label'];
-                $compatrow .= '<span class="a11y">:</span> <strong>'.$value.'</strong></li>'.NL;
+                $compatrow .= '&nbsp;<strong><span>'.$value.'</span></strong></li>'.NL;
             }
 
             if (strpos($data['compatible'],'devel') !== false) {
@@ -237,19 +206,55 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
         /* action links (download, bugs, donate) */
         if ($data['downloadurl'] || $data['bugtracker'] || $data['donationurl']) {
-            $R->doc .= '<ul>'.NL;
+            $R->doc .= '<ul class="actions">'.NL;
+            /*
             $downloadtext = ($type == 32 ? $this->getLang('downloadurl_tpl') : $this->getLang('downloadurl'));
-            if($data['downloadurl']) $R->doc .= '<li><a class="download" href="'.hsc($data['downloadurl']).'">'.$downloadtext.'</a></li>'.NL;
-            if($data['bugtracker'])  $R->doc .= '<li><a class="bugs" href="'.hsc($data['bugtracker']).'">'.$this->getLang('bugtracker').'</a></li>'.NL;
-            if($data['donationurl']) $R->doc .= '<li><a class="donate" href="'.hsc($data['donationurl']).'">'.$this->getLang('donationurl').'</a></li>'.NL;
+            $this->getLang('bugtracker')
+            $this->getLang('donationurl')
+            */
+            if($data['downloadurl']) $R->doc .= '<li><a class="download" href="'.hsc($data['downloadurl']).'">Download</a></li>'.NL;
+            if($data['bugtracker'])  $R->doc .= '<li><a class="bugs" href="'.hsc($data['bugtracker']).'">Report bugs</a></li>'.NL;
+            if($data['donationurl']) $R->doc .= '<li><a class="donate" href="'.hsc($data['donationurl']).'">Donate</a></li>'.NL;
             $R->doc .= '</ul><div class="clearer"></div>'.NL;
         }
 
         $R->doc .= '</div>'.NL;// usageInfo
 
         /* ===== more info ==== */
-        if($rel['similar'] || $data['tags']) {
-            $R->doc .= '<div class="moreInfo">'; // main div
+        $hasUnderscoreIssue = (strpos($id,'_') !== false);
+        if($rel['similar'] || $data['tags'] || $data['securitywarning'] || $data['securityissue'] || $hasUnderscoreIssue) {
+            $R->doc .= '<div class="moreInfo">';
+
+            /* security issues */
+            if($data['securitywarning']){
+
+                $R->doc .= '<div class="notify">';
+                $securitylink = $R->internallink('devel:security',$this->getLang('securitylink'),NULL,true);
+                $R->doc .= '<p><strong>'.sprintf($this->getLang('securitywarning'),$securitylink).'</strong> ';
+                if(in_array($data['securitywarning'],$this->hlp->securitywarning)){
+                    $R->doc .= $this->getLang('security_'.$data['securitywarning']);
+                }else{
+                    $R->doc .= hsc($data['securitywarning']);
+                }
+                $R->doc .= '</p></div>';
+            }
+
+            if($data['securityissue']){
+                $R->doc .= '<div class="error">';
+                $R->doc .= '<p><strong>'.$this->getLang('securityissue').'</strong> ';
+                $R->doc .= hsc($data['securityissue']);
+                $securitylink = $R->internallink('devel:security',$this->getLang('securitylink'),NULL,true);
+                $R->doc .= '</p><p>'.sprintf($this->getLang('securityrecommendation'),$securitylink).'</p>';
+                $R->doc .= '</div>';
+            }
+
+            if(strpos($id,'_') !== false) {
+                $R->doc .= '<div class="info"><p>';
+                $R->doc .= $this->getLang('name_underscore');
+                $R->doc .= '</p></div>';
+            }
+
+            /* similar & tags */
             if ($rel['similar']) {
                 $data['similar'] .= ','.join(',',$rel['similar']);
             }
