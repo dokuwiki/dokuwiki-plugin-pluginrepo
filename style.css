@@ -155,6 +155,29 @@
     background-image: url(images/download.png);
 }
 
+.dokuwiki div.pluginrepo_entry div.authorInfo {
+    overflow: hidden;
+    background-color: __background_neu__;
+    color: __text_neu__;
+}
+.dokuwiki div.pluginrepo_entry div.authorInfo strong {
+    float: left;
+    font-size: 120%;
+    margin-right: .5em;
+    font-weight: normal;
+}
+.dokuwiki div.pluginrepo_entry div.authorInfo strong a.mail {
+    background-position: 0 4px;
+    padding-left: 18px;
+}
+.dokuwiki div.pluginrepo_entry div.authorInfo ul {
+    margin-bottom: 0;
+    line-height: 1.6;
+}
+.dokuwiki div.pluginrepo_entry div.authorInfo ul li {
+    display: inline;
+}
+
 /* security */
 .dokuwiki div.pluginrepo_entry div.error,
 .dokuwiki div.pluginrepo_entry div.info,

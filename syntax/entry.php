@@ -272,12 +272,36 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
         // author
         $R->doc .= '<div class="authorInfo">';
-        //$R->doc .= $this->getLang('by').' ';
+        $R->doc .= '<strong>'.ucfirst($this->getLang('by')).' ';
         $R->emaillink($data['email'],$data['author']);
-        // TODO: by the same author
+        $R->doc .= '</strong>';
+        $this->_showSameAuthor($R);
         $R->doc .= '</div>'; // authorInfo
 
         $R->doc .= '</div>'; // pluginrepo_entry
+    }
+
+    function _showSameAuthor(&$R) {
+        global $ID;
+
+        if (curNS($ID) == 'plugin') {
+            $id = noNS($ID);
+        } else {
+            $id = curNS($ID).':'.noNS($ID);
+        }
+
+        $rel = $this->hlp->getPluginRelations($id);
+        if (count($rel) == 0) {
+            $R->doc .= '<p class="nothing">Can\'t find any other plugins</p>'.NL;
+            return;
+        }
+
+        $itr = 0;
+        $R->doc .= '<ul>'.NL;
+        while ($itr < count($rel['sameauthor']) && $itr < 10) {
+            $R->doc .= '<li>'.$this->hlp->pluginlink($R,$rel['sameauthor'][$itr++]).'</li>'.NL;
+        }
+        $R->doc .= '</ul>'.NL;
     }
 
     /**
