@@ -21,7 +21,7 @@ $lang['similar_to']          = 'Ähnlich zu';
 $lang['tagged_with']         = 'Markiert mit';
 $lang['securitywarning']     = 'Sicherheitshinweis (Bitte folgendes lesen %s):';
 $lang['security_informationleak'] = 'Dieses Plugin veröffentlicht Informationen, die eventuell für Hacker wertvoll sind. Es wird empfohlen das Plugin nicht in öffentlichen Installationen zu verwenden.';
-$lang['security_allowsscript']    = 'Dieses Plugin erlaubt die Ausführunf von Skripts. Es sollte nur in privaten Installationen verwendet werden, oder wenn _allen_ Autoren vertraut wird.';
+$lang['security_allowsscript']    = 'Dieses Plugin erlaubt die Ausführung von Skripts. Es sollte nur in privaten Installationen verwendet werden, oder wenn _allen_ Autoren vertraut wird.';
 $lang['security_requirespatch']   = 'Für dieses Plugin muss der DokuWiki-Kern angepasst werden. Manuelle Veränderungen können Inkompatibilitäten zu älteren Plugins verursachen und erschweren es Aktualisierungen durchzuführen.';
 $lang['security_partlyhidden']    = 'Das Verstecken von Teilen einer Seite wird nicht von DokuWiki unterstützt. Die meisten Versuche führen dazu, dass Informationslecks durch RSS-Feeds, die Suchfunktion oder anderen Kernfunktionalitäten entstehen.';
 $lang['securityissue']       = 'Folgende Sicherheitslücken sind in diesem Plugin bekannt:';
@@ -30,7 +30,8 @@ $lang['securitylink']        = 'Plugin Sicherheitsrichtlinien';
 $lang['name_underscore']     = 'Pluginname enthält Unterstriche. Keine Generierung von Popularitätspunkten.';
 $lang['downloadurl']         = 'Plugin herunterladen';
 $lang['bugtracker']          = 'Bugs/Features Wünsche';
-$lang['sourcerepo']          = 'Quellcodeverwaltung';
+$lang['sourcerepo']          = 'Verwaltung';
+$lang['source']              = 'Quellcode';
 $lang['donationurl']         = 'Dem Autor danken';
 
 // Plugin table

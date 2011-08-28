@@ -3,7 +3,7 @@
  * English language file for pluginrepo plugin
  *
  * @license GPL 2 http://www.gnu.org/licenses/gpl-2.0.html
- * @author  Håkan Sandell <sandell.hakan@gmail.com>
+ * @author  Hï¿½kan Sandell <sandell.hakan@gmail.com>
  */
 
 // Plugin entry
@@ -30,7 +30,8 @@ $lang['name_underscore']     = 'Plugin name contains underscore, will not genera
 $lang['downloadurl']         = 'Download the Plugin';
 $lang['downloadurl_tpl']     = 'Download the Template';
 $lang['bugtracker']          = 'Bugs / Feature Wishes';
-$lang['sourcerepo']          = 'Source Repository';
+$lang['sourcerepo']          = 'Repository';
+$lang['source']              = 'Source';
 $lang['donationurl']         = 'Thank the Author';
 
 // Plugin table

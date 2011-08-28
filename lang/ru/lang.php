@@ -32,6 +32,7 @@ $lang['downloadurl']         = 'Скачать плагин';
 $lang['downloadurl_tpl']     = 'Скачать шаблон';
 $lang['bugtracker']          = 'Ошибки / пожелания';
 $lang['sourcerepo']          = 'Репозиторий кода';
+$lang['source']              = 'кода';
 $lang['donationurl']         = 'Отблагодарить автора';
 
 // Таблица плагинов

@@ -138,8 +138,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
         if($data['sourcerepo']) {
             $R->doc .= '<dt>'.$this->getLang('sourcerepo').'</dt>'.NL;
-            // TODO: should be different link text
-            $R->doc .= '<dd><a href="'.hsc($data['sourcerepo']).'">source</a></dd>'.NL;
+            $R->doc .= '<dd><a class="urlextern" href="'.hsc($data['sourcerepo']).'">'.$this->getLang('source').'</a></dd>'.NL;
         }
 
         if ($rel['conflicts']) {
