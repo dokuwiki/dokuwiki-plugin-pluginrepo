@@ -319,7 +319,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
                 if ($row['bestcompatible']) {
                     $label = array_shift($this->hlp->cleanCompat($row['bestcompatible']));
                     $label = $label['label'];
-                    $R->doc .= $this->hlp->renderCompatibilityHelp().' <b>'.$row['bestcompatible'].' '.$label.'</b>';
+                    $R->doc .= $this->hlp->renderCompatibilityHelp(true).' <b>'.$row['bestcompatible'].' '.$label.'</b>';
                 } else {
                     $R->doc .= $this->getLang('t_oldercompatibility');
                 }

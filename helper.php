@@ -173,7 +173,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                                          GROUP BY A.plugin
                                  UNION
                                         SELECT A.*, A.plugin as simplename, COUNT(C.value) as cnt
-                                          FROM plugin_tags B, plugins A LEFT JOIN popularity C ON A.plugin = C.value AND C.key = 'plugin' 
+                                          FROM plugin_tags B, plugins A LEFT JOIN popularity C ON A.plugin = C.value AND C.key = 'plugin'
                                          WHERE A.type < 32 AND $shown
                                            AND (A.type & :type)
                                            AND A.plugin = B.plugin
@@ -447,8 +447,9 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         return $retval;
     }
 
-    function renderCompatibilityHelp() {
+    function renderCompatibilityHelp($addInfolink=false) {
         $infolink = '<sup><a href="http://www.dokuwiki.org/extension_compatibility" title="'.$this->getLang('compatible_with_info').'">?</a></sup>';
+        $infolink = $addInfolink ? $infolink : '';
         return sprintf($this->getLang('compatible_with'), $infolink);
     }
 

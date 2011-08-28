@@ -70,10 +70,6 @@
     font-weight: bold;
     margin-bottom: 0;
 }
-/* TODO: temporary */
-.dokuwiki div.pluginrepo_entry div.compatibility p sup {
-    display: none;
-}
 
 /* compatibility */
 .dokuwiki div.pluginrepo_entry div.compatibility div.versions {
