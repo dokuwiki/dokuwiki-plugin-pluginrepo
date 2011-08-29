@@ -478,7 +478,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $tags = $this->parsetags($string);
         $out = array();
         foreach($tags as $tag){
-            $out[] = '<a href="'.wl($target,array('plugintag'=>$tag)).'#repotable" '.
+            $out[] = '<a href="'.wl($target,array('plugintag'=>$tag)).'#extension__table" '.
                         'class="wikilink1" title="List all plugins with this tag">'.hsc($tag).'</a>';
         }
         return join($sep,$out);
@@ -503,7 +503,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $types = array();
         foreach($this->types as $k => $v){
             if($type & $k){
-                $types[] = '<a href="'.wl($target,array('plugintype'=>$k)).'#repotable" '.
+                $types[] = '<a href="'.wl($target,array('plugintype'=>$k)).'#extension__table" '.
                               'class="wikilink1" title="List all '.$v.' plugins">'.$v.'</a>';
             }
         }

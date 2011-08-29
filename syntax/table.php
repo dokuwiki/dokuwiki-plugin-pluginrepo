@@ -197,7 +197,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         if (count($tags) > 0) {
             $R->doc .= '<div class="cloud">'.NL;
             foreach($tags as $tag => $size){
-                $R->doc .= '<a href="'.wl($ID,array('plugintag'=>$tag)).'#pluginrepo__table" '.
+                $R->doc .= '<a href="'.wl($ID,array('plugintag'=>$tag)).'#extension__table" '.
                            'class="wikilink1 cl'.$size.'"'.
                            'title="List all plugins with this tag">'.hsc($tag).'</a> ';
             }
@@ -250,8 +250,8 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $header .= ' ('.count($plugins).')';
 
         $R->section_open(2);
-        $R->doc .= '<div class="pluginrepo_table">';
-        $R->doc .= '<h3 id="repotable">'.$header.'</h3>';// @todo: rename 'repotable'
+        $R->doc .= '<div class="pluginrepo_table" id="extension__table">';
+        $R->doc .= '<h3>'.$header.'</h3>';
 
         // alpha nav when sorted by plugin name
         if($_REQUEST['pluginsort'] == 'p' || $_REQUEST['pluginsort'] == '^p') {
@@ -305,15 +305,15 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         // table headers
         $R->doc .= '<tr>'.NL;
         // @todo: make ugly long lines shorter
-        $R->doc .= '<th class="info"><a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='p'?'^p':'p'). '#repotable').'" title="'.$this->getLang('t_sortname').'">'.  ($sortcol=='p'?$sortarr:'').$this->getLang('t_name_'.noNS($ID)).'</a>';
-        $R->doc .= '  <a class="authorSort" href="'.wl($ID,$linkopt.'pluginsort='.($sort=='a'?'^a':'a'). '#repotable').'" title="'.$this->getLang('t_sortauthor').'">'.($sortcol=='a'?$sortarr:'').$this->getLang('t_author').'</a></th>'.NL;
+        $R->doc .= '<th class="info"><a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='p'?'^p':'p'). '#extension__table').'" title="'.$this->getLang('t_sortname').'">'.  ($sortcol=='p'?$sortarr:'').$this->getLang('t_name_'.noNS($ID)).'</a>';
+        $R->doc .= '  <a class="authorSort" href="'.wl($ID,$linkopt.'pluginsort='.($sort=='a'?'^a':'a'). '#extension__table').'" title="'.$this->getLang('t_sortauthor').'">'.($sortcol=='a'?$sortarr:'').$this->getLang('t_author').'</a></th>'.NL;
         if ($data['screenshot'] == 'yes') {
             $R->doc .= '<th class="screenshot">'.$this->getLang('t_screenshot').'</th>'.NL;
         }
-        $R->doc .= '  <th class="lastupdate">  <a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='^d'?'d':'^d').'#repotable').'" title="'.$this->getLang('t_sortdate').  '">'.  ($sortcol=='d'?$sortarr:'').$this->getLang('t_date').'</a></th>'.NL;
-        $R->doc .= '  <th class="popularity">  <a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='^c'?'c':'^c').'#repotable').'" title="'.$this->getLang('t_sortpopularity').'">'.($sortcol=='c'?$sortarr:'').$this->getLang('t_popularity').'</a></th>'.NL;
+        $R->doc .= '  <th class="lastupdate">  <a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='^d'?'d':'^d').'#extension__table').'" title="'.$this->getLang('t_sortdate').  '">'.  ($sortcol=='d'?$sortarr:'').$this->getLang('t_date').'</a></th>'.NL;
+        $R->doc .= '  <th class="popularity">  <a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='^c'?'c':'^c').'#extension__table').'" title="'.$this->getLang('t_sortpopularity').'">'.($sortcol=='c'?$sortarr:'').$this->getLang('t_popularity').'</a></th>'.NL;
         if ($data['compatible'] == 'yes') {
-            $R->doc .= '  <th><a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='^v'?'v':'^v').'#repotable').'" title="'.$this->getLang('t_sortcompatible').'">'.  ($sortcol=='v'?$sortarr:'').$this->getLang('t_compatible').'</a></th>'.NL;
+            $R->doc .= '  <th><a href="'.wl($ID,$linkopt.'pluginsort='.($sort=='^v'?'v':'^v').'#extension__table').'" title="'.$this->getLang('t_sortcompatible').'">'.  ($sortcol=='v'?$sortarr:'').$this->getLang('t_compatible').'</a></th>'.NL;
         }
         $R->doc .= '</tr>'.NL;
 
@@ -427,16 +427,16 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $allcnt = $this->hlp->getPopularitySubmitters();
 
         $R->doc .= '<table class="inline">';
-        $R->doc .= '<tr><th><a href="'.wl($ID,$linkopt.'pluginsort=p#repotable').'" title="'.$this->getLang('t_sortname').'">'.$this->getLang('t_name').'</a></th>';
+        $R->doc .= '<tr><th><a href="'.wl($ID,$linkopt.'pluginsort=p#extension__table').'" title="'.$this->getLang('t_sortname').'">'.$this->getLang('t_name').'</a></th>';
 
         $R->doc .= '<th>'.$this->getLang('t_description').'</th>';
-        $R->doc .= '<th><a href="'.wl($ID,$linkopt.'pluginsort=a#repotable').'" title="'.$this->getLang('t_sortauthor').'">'.$this->getLang('t_author').'</a></th>';
-        $R->doc .= '<th><a href="'.wl($ID,$linkopt.'pluginsort=t#repotable').'" title="'.$this->getLang('t_sorttype').  '">'.$this->getLang('t_type').'</a></th>';
+        $R->doc .= '<th><a href="'.wl($ID,$linkopt.'pluginsort=a#extension__table').'" title="'.$this->getLang('t_sortauthor').'">'.$this->getLang('t_author').'</a></th>';
+        $R->doc .= '<th><a href="'.wl($ID,$linkopt.'pluginsort=t#extension__table').'" title="'.$this->getLang('t_sorttype').  '">'.$this->getLang('t_type').'</a></th>';
         if ($data['screenshot'] == 'yes') {
             $R->doc .= '<th>'.$this->getLang('t_screenshot').'</th>';
         }
-        $R->doc .= '<th><a href="'.wl($ID,$linkopt.'pluginsort=^d#repotable').'" title="'.$this->getLang('t_sortdate'). '">'.$this->getLang('t_date').'</a></th>';
-        $R->doc .= '<th><a href="'.wl($ID,$linkopt.'pluginsort=^c#repotable').'" title="'.$this->getLang('t_sortpopularity').'">'.$this->getLang('t_popularity').'</a></th>';
+        $R->doc .= '<th><a href="'.wl($ID,$linkopt.'pluginsort=^d#extension__table').'" title="'.$this->getLang('t_sortdate'). '">'.$this->getLang('t_date').'</a></th>';
+        $R->doc .= '<th><a href="'.wl($ID,$linkopt.'pluginsort=^c#extension__table').'" title="'.$this->getLang('t_sortpopularity').'">'.$this->getLang('t_popularity').'</a></th>';
         $R->doc .= '</tr>';
 
         foreach($plugins as $row) {
