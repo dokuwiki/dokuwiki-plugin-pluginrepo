@@ -1,0 +1,18 @@
+
+.dokuwiki div.pluginrepo_entry div.usageInfo ul.actions,
+.dokuwiki div.pluginrepo_table div.repoFilter,
+.dokuwiki div.pluginrepo_table div.repoCloud,
+.dokuwiki div.pluginrepo_table div.alphaNav,
+.dokuwiki div.pluginrepo_table div.resetFilter {
+    display: none;
+}
+
+.dokuwiki div.pluginrepo_entry div.authorInfo ul li {
+    display: inline;
+}
+.dokuwiki div.pluginrepo_table table div.mainInfo em {
+    display: block;
+}
+.dokuwiki div.pluginrepo_news p.title {
+    font-weight: bold;
+}
