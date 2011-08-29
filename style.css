@@ -60,7 +60,6 @@
     margin-left: 1.5em;
 }
 
-
 /* metaInfo */
 .dokuwiki div.pluginrepo_entry div.metaInfo {
 }
@@ -124,6 +123,7 @@
     display: inline;
 }
 
+/* action links */
 .dokuwiki div.pluginrepo_entry div.usageInfo ul.actions {
     margin-top: 2em;
 }
@@ -151,6 +151,7 @@
     background-image: url(images/download.png);
 }
 
+/* author info */
 .dokuwiki div.pluginrepo_entry div.authorInfo {
     overflow: hidden;
     background-color: __background_neu__;
@@ -174,7 +175,7 @@
     display: inline;
 }
 
-/* security */
+/* security (additions to core msg styles) */
 .dokuwiki div.pluginrepo_entry div.error,
 .dokuwiki div.pluginrepo_entry div.info,
 .dokuwiki div.pluginrepo_entry div.notify {
@@ -183,7 +184,6 @@
     background-position: .5em .5em;
     padding-left: 2.5em;
 }
-
 
 
 /*____________ query ____________*/
@@ -323,11 +323,23 @@
 /* alphabet navigation and reset filter on top when filtered */
 .dokuwiki div.pluginrepo_table div.alphaNav,
 .dokuwiki div.pluginrepo_table div.resetFilter {
-    margin-bottom: .2em;
+    margin-bottom: .3em;
 }
 .dokuwiki div.pluginrepo_table div.alphaNav {
     width: 70%;
     float: left;
+}
+.dokuwiki div.pluginrepo_table div.alphaNav a {
+    padding: .2em .5em;
+    margin-right: -.5em;
+}
+.dokuwiki div.pluginrepo_table div.alphaNav a:hover,
+.dokuwiki div.pluginrepo_table div.alphaNav a:active,
+.dokuwiki div.pluginrepo_table div.alphaNav a:focus {
+    background-color: __border__;
+    color: __background__;
+    border-radius: 4px;
+    text-decoration: none;
 }
 .dokuwiki div.pluginrepo_table div.resetFilter {
     float: right;
