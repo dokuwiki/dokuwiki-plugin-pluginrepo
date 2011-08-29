@@ -318,6 +318,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= '</tr>'.NL;
 
         $compatgroup = 'xx9999-99-99';
+        $tmpChar = '';
         foreach($plugins as $row) {
             $id = (getNS($row['plugin']) ? $row['plugin'] : ':plugin:'.$row['plugin']);
             if(!page_exists(cleanID($id))){
@@ -342,8 +343,14 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
             $R->doc .= '<tr>'.NL;
             $R->doc .= '<td class="info">'.NL;
-            // @todo: duplicate names not ideal
-            $R->doc .= '<a name="'.substr(noNS($row['plugin']),0,1).'"></a>'.NL;
+
+            // add anchor for alphabet navigation
+            $firstChar = substr(noNS($row['plugin']),0,1);
+            $isAlphaSort = ($_REQUEST['pluginsort'] == 'p') || ($_REQUEST['pluginsort'] == '^p');
+            if ($isAlphaSort && ($tmpChar!=$firstChar)) {
+                $R->doc .= '<a name="'.$firstChar.'"></a>'.NL;
+                $tmpChar = $firstChar;
+            }
 
             $R->doc .= '<div class="mainInfo">'.NL;
             // extension name and link
