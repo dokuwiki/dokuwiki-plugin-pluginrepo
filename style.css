@@ -197,146 +197,157 @@
 
 /*____________ table ____________*/
 
-div#pluginrepo__table div.repo__alphabet {
-    width: 70%;
-    float: left;
-}
-
-div#pluginrepo__table div.repo__resetfilter {
-    float: right;
-}
-
-div#pluginrepo__table table {
-    width: 100%;
-}
-
-div#pluginrepo__table table th a:link,
-div#pluginrepo__table table th a:active,
-div#pluginrepo__table table th a:hover,
-div#pluginrepo__table table th a:visited {
-    color: #000;
-}
-
-div#pluginrepo__table table .center {
-    text-align: center;
-}
-
-div#pluginrepo__table table .popularity,
-div#pluginrepo__table table .lastupdate {
-    width: 7em;
-    text-align: center;
-}
-
-div#pluginrepo__table table .screenshot {
-    width: 95px;
-    text-align: center;
-}
-
-div#pluginrepo__table table div.details {
-    margin-left: 1em;
-}
-
-div#pluginrepo__table div.repo_authorsort {
-    float: right;
-}
-
-div#pluginrepo__table div.repo_plugintitle {
-    padding-bottom: 0.2em;
-    float: left;
-}
-
-div#pluginrepo__table div.repo_plugintitle a{
-    font-weight: bold;
-}
-
-div#pluginrepo__table div.repo_download {
-    float: right;
-}
-
-div#pluginrepo__table div.repo_download a{
-    background: transparent url(images/download.gif) 0px 2px no-repeat;
-    padding: 0px 0px 0px 12px;
-    font-weight: bold;
-}
-
-
-div#pluginrepo__table div.repo_provides {
-    padding-top: 0.5em;
-    font-size: 70%;
-    float: left;
-}
-
-div#pluginrepo__table div.repo_mail {
-    padding-top: 0.5em;
-    font-size: 70%;
-    float: right;
-}
-
-div#pluginrepo__table div.prog-border {
-    background: #FFFFFF none repeat scroll 0%;
-    border: 1px solid silver;
-    height: 5px;
-    margin: 0pt;
-    padding: 1px;
-    width: 65px;
-}
-
-div#pluginrepo__table .prog-bar {
-    background: #8CACBB none repeat scroll 0%;
-    height: 100%;
-    margin: 0pt;
-    padding: 0pt;
-}
-
-/*____________ repo ____________*/
-
-div#pluginrepo__repo div.repo_info {
-    width: 24%;
-    float: left;
-}
-
-div#pluginrepo__repo div.repo_info ul {
-    margin: 1.5em;
-}
-
-div#pluginrepo__repo div.repo_info ul li {
-    margin-bottom: 0.5em;
-}
-
-div#pluginrepo__table h3,
-div#pluginrepo__repo  h3 {
-    margin-left: -3px;
+.dokuwiki div.pluginrepo_table h3 {
+    margin-left: 0;
     font-weight: normal;
 }
 
-div#pluginrepo__repo div#repo_searchform  {
-    float: right;
+/* layout */
+.dokuwiki div.pluginrepo_table div.repoFilter {
+    float: left;
+    width: 24%;
 }
-
-div#pluginrepo__repo div.repo_cloud {
+.dokuwiki div.pluginrepo_table div.repoCloud {
     border-left: 1px solid __border__;
-    padding: 0em 2% 1.5em 2%;
+    padding: 0em 0 1.5em 2%;
     width: 71%;
     float: right;
     overflow: auto;
-    padding-right: 0.5em;
 }
 
-div#pluginrepo__repo div.repo_cloud a.cl0 { font-size: 0.7em }
-div#pluginrepo__repo div.repo_cloud a.cl1 { font-size: 0.9em }
-div#pluginrepo__repo div.repo_cloud a.cl2 { font-size: 1em }
-div#pluginrepo__repo div.repo_cloud a.cl3 { font-size: 1.3em }
-div#pluginrepo__repo div.repo_cloud a.cl4 { font-size: 1.6em }
-div#pluginrepo__repo div.repo_cloud a.cl5 { font-size: 1.9em }
-
-div#pluginrepo__repo div.repo_info {
+/* search form */
+.dokuwiki div.pluginrepo_table form.search {
     position: relative;
 }
-
-div#qsearch2__out {
+/* quick search result AJAX popup */
+#qsearch2__out {
     position: absolute;
     right: auto;
     left: 0;
+}
+#qsearch2__out ul {
+    margin: 0 0 0 1.5em;
+}
+
+/* filter by types */
+.dokuwiki div.pluginrepo_table ul.types {
+    margin-left: 1.5em;
+}
+.dokuwiki div.pluginrepo_table ul.types li {
+    margin-bottom: .5em;
+    line-height: 1.3;
+    text-align: left;
+}
+
+/* tag cloud */
+.dokuwiki div.pluginrepo_table a.cl0 { font-size: 0.7em; }
+.dokuwiki div.pluginrepo_table a.cl1 { font-size: 0.9em; }
+.dokuwiki div.pluginrepo_table a.cl2 { font-size: 1em; }
+.dokuwiki div.pluginrepo_table a.cl3 { font-size: 1.3em; }
+.dokuwiki div.pluginrepo_table a.cl4 { font-size: 1.6em; }
+.dokuwiki div.pluginrepo_table a.cl5 { font-size: 1.9em; }
+
+/* repo table */
+.dokuwiki div.pluginrepo_table table {
+    width: 100%;
+    clear: both;
+}
+.dokuwiki div.pluginrepo_table table caption {
+    text-align: left;
+}
+.dokuwiki div.pluginrepo_table table th a {
+    color: __text__;
+}
+.dokuwiki div.pluginrepo_table table th a.authorSort {
+    float: right;
+}
+
+.dokuwiki div.pluginrepo_table table td {
+    text-align: center;
+}
+.dokuwiki div.pluginrepo_table table td.info {
+    text-align: left;
+}
+.dokuwiki div.pluginrepo_table table .popularity,
+.dokuwiki div.pluginrepo_table table .lastupdate {
+    width: 7em;
+}
+.dokuwiki div.pluginrepo_table table .screenshot {
+    width: 95px;
+}
+
+/* main info field */
+.dokuwiki div.pluginrepo_table table div.mainInfo strong {
+    float: left;
+    margin-bottom: .2em;
+}
+.dokuwiki div.pluginrepo_table table div.mainInfo em {
+    font-style: normal;
+    float: right;
+}
+.dokuwiki div.pluginrepo_table table div.mainInfo em a {
+    font-style: normal;
+    font-weight: bold;
+    float: right;
+    background: transparent url(images/download.gif) 0 2px no-repeat;
+    padding: 0 0 0 12px;
+}
+
+.dokuwiki div.pluginrepo_table table p.description {
+    clear: both;
+    margin-bottom: .4em;
+}
+
+.dokuwiki div.pluginrepo_table table dl {
+    font-size: 79%;
+}
+.dokuwiki div.pluginrepo_table table dl dt,
+.dokuwiki div.pluginrepo_table table dl dd {
+    display: inline;
+}
+.dokuwiki div.pluginrepo_table table dl dd {
+    margin: 0 .5em 0 .2em;
+}
+.dokuwiki div.pluginrepo_table table dl dt.author {
+    display: none;/* @todo: hide accessibly */
+}
+.dokuwiki div.pluginrepo_table table dl dd.author {
+    float: right;
+    margin: 0;
+}
+.dokuwiki div.pluginrepo_table table dl dd.author a.mail {
+    background-position: 0 0;
+    padding-left: 17px;
+}
+
+/* alphabet navigation and reset filter on top when filtered */
+.dokuwiki div.pluginrepo_table div.alphaNav,
+.dokuwiki div.pluginrepo_table div.resetFilter {
+    margin-bottom: .2em;
+}
+.dokuwiki div.pluginrepo_table div.alphaNav {
+    width: 70%;
+    float: left;
+}
+.dokuwiki div.pluginrepo_table div.resetFilter {
+    float: right;
+}
+
+/* progress bar */
+.dokuwiki div.pluginrepo_table div.progress {
+    background-color: __background__;
+    border: 1px solid silver;
+    height: .4em;
+    margin: 0 auto;
+    padding: 1px;
+    width: 5.5em;
+}
+.dokuwiki div.pluginrepo_table div.progress div {
+    background-color: __border__;
+    height: 100%;
+}
+.dokuwiki div.pluginrepo_table div.progress div span {
+    display: none;/* @todo: hide accessibly */
 }
 
 
