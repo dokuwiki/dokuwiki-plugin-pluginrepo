@@ -208,11 +208,11 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             $compatrow = '';
             foreach ($this->hlp->dokuReleases as $release) {
                 if (++$cols > 4) break;
-                $value = 'unknown';// maybe, possibly?
+                $value = $this->getLang('compatible_unknown');
                 if (array_key_exists($release['date'], $compatibility)) {
-                    $value = 'yes';// compatible?
+                    $value = $this->getLang('compatible_yes');
                     if ($compatibility[$release['date']]['implicit']) {
-                        $value = 'probably';
+                        $value = $this->getLang('compatible_probably');
                     }
                     $norecentcompat = false;
                 }
@@ -242,14 +242,15 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
     function _showActionLinks(&$R, $data) {
         if ($data['downloadurl'] || $data['bugtracker'] || $data['donationurl']) {
             $R->doc .= '<ul class="actions">'.NL;
-            /*
-            $downloadtext = ($type == 32 ? $this->getLang('downloadurl_tpl') : $this->getLang('downloadurl'));
-            $this->getLang('bugtracker')
-            $this->getLang('donationurl')
-            */
-            if($data['downloadurl']) $R->doc .= '<li><a class="download" href="'.hsc($data['downloadurl']).'">Download</a></li>'.NL;
-            if($data['bugtracker'])  $R->doc .= '<li><a class="bugs" href="'.hsc($data['bugtracker']).'">Report bugs</a></li>'.NL;
-            if($data['donationurl']) $R->doc .= '<li><a class="donate" href="'.hsc($data['donationurl']).'">Donate</a></li>'.NL;
+            if($data['downloadurl'])
+                $R->doc .= '<li><a class="download" href="'.hsc($data['downloadurl']).'">'.
+                           $this->getLang('downloadurl').'</a></li>'.NL;
+            if($data['bugtracker'])
+                $R->doc .= '<li><a class="bugs" href="'.hsc($data['bugtracker']).'">'.
+                           $this->getLang('bugtracker').'</a></li>'.NL;
+            if($data['donationurl'])
+                $R->doc .= '<li><a class="donate" href="'.hsc($data['donationurl']).'">'.
+                           $this->getLang('donationurl').'</a></li>'.NL;
             $R->doc .= '</ul><div class="clearer"></div>'.NL;
         }
     }

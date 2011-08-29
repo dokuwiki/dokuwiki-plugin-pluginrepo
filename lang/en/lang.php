@@ -13,6 +13,9 @@ $lang['provides']            = 'Provides';
 $lang['compatible_with']     = 'Compatible with DokuWiki%s';
 $lang['compatible_with_info']= 'Please update this field';
 $lang['no_compatibility']    = 'No compatibility info given!';
+$lang['compatible_unknown']  = 'unknown';
+$lang['compatible_yes']      = 'yes';
+$lang['compatible_probably'] = 'probably';
 $lang['develonly']           = 'Devel only';
 $lang['conflicts_with']      = 'Conflicts with';
 $lang['requires']            = 'Requires';
@@ -27,12 +30,11 @@ $lang['securityissue']       = 'The following security issue was reported for th
 $lang['securityrecommendation']   = 'It is not recommended to use this plugin until this issue was fixed. Plugin authors should read the %s';
 $lang['securitylink']        = 'plugin security guidelines';
 $lang['name_underscore']     = 'Plugin name contains underscore, will not generate popularity points.';
-$lang['downloadurl']         = 'Download the Plugin';
-$lang['downloadurl_tpl']     = 'Download the Template';
-$lang['bugtracker']          = 'Bugs / Feature Wishes';
+$lang['downloadurl']         = 'Download';
+$lang['bugtracker']          = 'Report bugs';
 $lang['sourcerepo']          = 'Repository';
 $lang['source']              = 'Source';
-$lang['donationurl']         = 'Thank the Author';
+$lang['donationurl']         = 'Donate';
 
 // Plugin table
 $lang['t_search_plugins']    = 'Search Plugins';

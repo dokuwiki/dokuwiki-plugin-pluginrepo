@@ -12,6 +12,9 @@ $lang['last_updated_on']     = 'Letzte Aktualisierung';
 $lang['provides']            = 'Beinhaltet';
 $lang['compatible_with']     = 'Kompatibel zu DokuWiki';
 $lang['no_compatibility']    = 'Keine Kompatibilitätsinformationen!';
+$lang['compatible_unknown']  = 'unbekannt';
+$lang['compatible_yes']      = 'ja';
+$lang['compatible_probably'] = 'wahrscheinlich';
 
 $lang['develonly']           = 'nur als Entwicklungsversion';
 
@@ -28,11 +31,11 @@ $lang['securityissue']       = 'Folgende Sicherheitslücken sind in diesem Plugi
 $lang['securityrecommendation']   = 'Es wird nicht empfohlen das Plugin zu verwenden, solange die Sicherheitslücke existiert. Plugin-Autoren sollten folgendes lesen: %s';
 $lang['securitylink']        = 'Plugin Sicherheitsrichtlinien';
 $lang['name_underscore']     = 'Pluginname enthält Unterstriche. Keine Generierung von Popularitätspunkten.';
-$lang['downloadurl']         = 'Plugin herunterladen';
-$lang['bugtracker']          = 'Bugs/Features Wünsche';
+$lang['downloadurl']         = 'Herunterladen';
+$lang['bugtracker']          = 'Fehler melden';
 $lang['sourcerepo']          = 'Verwaltung';
 $lang['source']              = 'Quellcode';
-$lang['donationurl']         = 'Dem Autor danken';
+$lang['donationurl']         = 'Spenden';
 
 // Plugin table
 $lang['t_search_plugins']    = 'Plugins durchsuchen';
