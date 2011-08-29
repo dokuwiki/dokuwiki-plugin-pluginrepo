@@ -101,46 +101,78 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $rel = $this->hlp->getPluginRelations($id);
         $type = $this->hlp->parsetype($data['type']);
         $extensionType = ($type == 32) ? 'template':'plugin';
+        $hasUnderscoreIssue = (strpos($id,'_') !== false);
 
         $R->doc .= '<div class="pluginrepo_entry">'.NL;
 
-        /* ===== main info ==== */
+        $this->_showMainInfo($R, $data, $extensionType);
+        $this->_showMetaInfo($R, $data, $type);
+
+        $R->doc .= '<div class="usageInfo">'.NL;
+        $this->_showCompatibility($R, $data);
+        $this->_showActionLinks($R, $data);
+        $R->doc .= '</div>'.NL;
+
+        if($rel['similar'] || $data['tags'] || $data['securitywarning'] || $data['securityissue'] || $hasUnderscoreIssue) {
+            $R->doc .= '<div class="moreInfo">'.NL;
+            $this->_showWarnings($R, $data, $hasUnderscoreIssue);
+            $this->_showTaxonomy($R, $data, $rel);
+            $R->doc .= '</div>'.NL;
+        }
+
+        $this->_showAuthorInfo($R, $data, $rel);
+
+        $R->doc .= '</div>'; // pluginrepo_entry
+    }
+
+    function _showMainInfo(&$R, $data, $extensionType) {
         $R->doc .= '<div class="mainInfo">'.NL;
-        /*
-        $R->doc .= '<h4>'.noNS($id).' ';
-        $R->doc .= ($type == 32 ? 'template':'plugin');
-        $R->doc .= '</h4>';
+
+        /* plugin/template name omitted because each page usually already has an h1 with the same information
+        $R->doc .= '<h4>'.noNS($id).' '.$extensionType.'</h4>';
         */
 
-        $extensionIcon = '<a class="media" href="/'.$extensionType.'s"><img alt="'.$extensionType.'" class="medialeft" src="'.DOKU_BASE.'lib/plugins/pluginrepo/images/dwplugin.png" width="60" height="60" /></a> ';
+        // icon and description
+        $extensionIcon = '<a class="media" href="/'.$extensionType.'s">'.
+            '<img alt="'.$extensionType.'" class="medialeft" src="'.
+            DOKU_BASE.'lib/plugins/pluginrepo/images/dwplugin.png" width="60" height="60" /></a> ';
         $R->doc .= '<p class="description">'.$extensionIcon.hsc($data['description']).'</p>'.NL;
+
+        // screenshot
         if ($data['screenshot_img']) {
             $val = $data['screenshot_img'];
             $R->doc .= '<a href="'.ml($val).'" class="media screenshot" rel="lightbox">';
             $R->doc .= '<img src="'.ml($val,"w=220").'" alt="" width="220" /></a>'.NL;
         }
-        $R->doc .= '</div>';// mainInfo
 
-        /* ===== meta info ==== */
-        $R->doc .= '<div class="metaInfo"><dl>'.NL;
+        $R->doc .= '</div>';
+    }
+
+    function _showMetaInfo(&$R, $data, $type) {
+        global $ID;
         $target = getNS($ID).'s';
+
+        $R->doc .= '<div class="metaInfo"><dl>'.NL;
 
         // last updated
         if(preg_match('/^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/',$data['lastupdate'])){
             $R->doc .= '<dt>'.$this->getLang('last_updated_on').'</dt>'.NL;
             $R->doc .= '<dd>'.$data['lastupdate'].'</dd>'.NL;
         }
-        // type
+
+        // plugin type
         if($type && $type != 32){
             $R->doc .= '<dt>'.$this->getLang('provides').'</dt>'.NL;
             $R->doc .= '<dd>'.$this->hlp->listtype($type,$target).'</dd>'.NL;
         }
 
+        // repository
         if($data['sourcerepo']) {
             $R->doc .= '<dt>'.$this->getLang('sourcerepo').'</dt>'.NL;
             $R->doc .= '<dd><a class="urlextern" href="'.hsc($data['sourcerepo']).'">'.$this->getLang('source').'</a></dd>'.NL;
         }
 
+        // conflicts
         if ($rel['conflicts']) {
             $data['conflicts'] .= ','.join(',',$rel['conflicts']);
         }
@@ -148,28 +180,28 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             $R->doc .= '<dt>'.$this->getLang('conflicts_with').'</dt>'.NL;
             $R->doc .= '<dd>'.$this->hlp->listplugins($data['conflicts'],$R).'</dd>'.NL;
         }
+
+        // dependencies
         if($data['depends']){
             $R->doc .= '<dt>'.$this->getLang('requires').'</dt>'.NL;
             $R->doc .= '<dd>'.$this->hlp->listplugins($data['depends'],$R).'</dd>'.NL;
         }
 
-        $R->doc .= '</dl>'.NL;
+        $R->doc .= '</dl></div>'.NL;
+    }
 
-        $R->doc .= '</div>'.NL;// metaInfo
-
-        /* ===== usage info ==== */
-        $R->doc .= '<div class="usageInfo">'.NL;
-
-        /* compatibility */
+    function _showCompatibility(&$R, $data) {
         $R->doc .= '<div class="compatibility">';
         $R->doc .= '<p class="label">'.$this->hlp->renderCompatibilityHelp().'</p>'.NL;
 
+        // no compatibility data
         if (!$data['compatible']) {
             $R->doc .= '<p class="nothing">';
             $R->doc .= $this->getLang('no_compatibility');
             $R->doc .= '</p>'.NL;
-
+        // compatibility data given
         } else {
+            // get recent compatible releases
             $compatibility = $this->hlp->cleanCompat($data['compatible']);
             $cols = 0;
             $norecentcompat = true;
@@ -188,22 +220,26 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
                 $compatrow .= '&nbsp;<strong><span>'.$value.'</span></strong></li>'.NL;
             }
 
+            // compatible to devel
             if (strpos($data['compatible'],'devel') !== false) {
                 $R->doc .= '<p>';
                 $R->internallink('devel:develonly',$this->getLang('develonly'));
                 $R->doc .= '</p>'.NL;
-
+            // compatible to older releases
             } elseif ($norecentcompat) {
                 $R->doc .= '<p>';
                 $R->doc .= $data['compatible'];
                 $R->doc .= '</p>'.NL;
+            // compatible to recent releases
             } else {
                 $R->doc .= '<div class="versions"><ul>'.NL.$compatrow.'</ul></div>'.NL;
             }
         }
-        $R->doc .= '</div>'.NL;// compatibilityInfo
 
-        /* action links (download, bugs, donate) */
+        $R->doc .= '</div>'.NL;
+    }
+
+    function _showActionLinks(&$R, $data) {
         if ($data['downloadurl'] || $data['bugtracker'] || $data['donationurl']) {
             $R->doc .= '<ul class="actions">'.NL;
             /*
@@ -216,91 +252,73 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             if($data['donationurl']) $R->doc .= '<li><a class="donate" href="'.hsc($data['donationurl']).'">Donate</a></li>'.NL;
             $R->doc .= '</ul><div class="clearer"></div>'.NL;
         }
-
-        $R->doc .= '</div>'.NL;// usageInfo
-
-        /* ===== more info ==== */
-        $hasUnderscoreIssue = (strpos($id,'_') !== false);
-        if($rel['similar'] || $data['tags'] || $data['securitywarning'] || $data['securityissue'] || $hasUnderscoreIssue) {
-            $R->doc .= '<div class="moreInfo">';
-
-            /* security issues */
-            if($data['securitywarning']){
-
-                $R->doc .= '<div class="notify">';
-                $securitylink = $R->internallink('devel:security',$this->getLang('securitylink'),NULL,true);
-                $R->doc .= '<p><strong>'.sprintf($this->getLang('securitywarning'),$securitylink).'</strong> ';
-                if(in_array($data['securitywarning'],$this->hlp->securitywarning)){
-                    $R->doc .= $this->getLang('security_'.$data['securitywarning']);
-                }else{
-                    $R->doc .= hsc($data['securitywarning']);
-                }
-                $R->doc .= '</p></div>';
-            }
-
-            if($data['securityissue']){
-                $R->doc .= '<div class="error">';
-                $R->doc .= '<p><strong>'.$this->getLang('securityissue').'</strong> ';
-                $R->doc .= hsc($data['securityissue']);
-                $securitylink = $R->internallink('devel:security',$this->getLang('securitylink'),NULL,true);
-                $R->doc .= '</p><p>'.sprintf($this->getLang('securityrecommendation'),$securitylink).'</p>';
-                $R->doc .= '</div>';
-            }
-
-            if(strpos($id,'_') !== false) {
-                $R->doc .= '<div class="info"><p>';
-                $R->doc .= $this->getLang('name_underscore');
-                $R->doc .= '</p></div>';
-            }
-
-            /* similar & tags */
-            if ($rel['similar']) {
-                $data['similar'] .= ','.join(',',$rel['similar']);
-            }
-            if($data['similar']){
-                $R->doc .= '<p>'.$this->getLang('similar_to').' ';
-                $R->doc .= $this->hlp->listplugins($data['similar'],$R).'</p>'.NL;
-            }
-
-            if($data['tags']){
-                $R->doc .= '<p>'.$this->getLang('tagged_with').' ';
-                $R->doc .= $this->hlp->listtags($data['tags'],$target).'</p>'.NL;
-            }
-            $R->doc .= '</div>';// moreInfo
-        }
-
-        // author
-        $R->doc .= '<div class="authorInfo">';
-        $R->doc .= '<strong>'.ucfirst($this->getLang('by')).' ';
-        $R->emaillink($data['email'],$data['author']);
-        $R->doc .= '</strong>';
-        $this->_showSameAuthor($R);
-        $R->doc .= '</div>'; // authorInfo
-
-        $R->doc .= '</div>'; // pluginrepo_entry
     }
 
-    function _showSameAuthor(&$R) {
-        global $ID;
-
-        if (curNS($ID) == 'plugin') {
-            $id = noNS($ID);
-        } else {
-            $id = curNS($ID).':'.noNS($ID);
+    function _showWarnings(&$R, $data, $hasUnderscoreIssue) {
+        if($data['securitywarning']){
+            $R->doc .= '<div class="notify">'.NL;
+            $securitylink = $R->internallink('devel:security',$this->getLang('securitylink'),NULL,true);
+            $R->doc .= '<p><strong>'.sprintf($this->getLang('securitywarning'),$securitylink).'</strong> ';
+            if(in_array($data['securitywarning'],$this->hlp->securitywarning)){
+                $R->doc .= $this->getLang('security_'.$data['securitywarning']);
+            }else{
+                $R->doc .= hsc($data['securitywarning']);
+            }
+            $R->doc .= '</p>'.NL.'</div>'.NL;
         }
 
-        $rel = $this->hlp->getPluginRelations($id);
-        if (count($rel) == 0) {
-            $R->doc .= '<p class="nothing">Can\'t find any other plugins</p>'.NL;
-            return;
+        if($data['securityissue']){
+            $R->doc .= '<div class="error">'.NL;
+            $R->doc .= '<p><strong>'.$this->getLang('securityissue').'</strong> ';
+            $R->doc .= hsc($data['securityissue']);
+            $securitylink = $R->internallink('devel:security',$this->getLang('securitylink'),NULL,true);
+            $R->doc .= '</p>'.NL.'<p>'.sprintf($this->getLang('securityrecommendation'),$securitylink).'</p>'.NL;
+            $R->doc .= '</div>'.NL;
         }
 
-        $itr = 0;
-        $R->doc .= '<ul>'.NL;
-        while ($itr < count($rel['sameauthor']) && $itr < 10) {
-            $R->doc .= '<li>'.$this->hlp->pluginlink($R,$rel['sameauthor'][$itr++]).'</li>'.NL;
+        if($hasUnderscoreIssue) {
+            $R->doc .= '<div class="info"><p>';
+            $R->doc .= $this->getLang('name_underscore');
+            $R->doc .= '</p></div>'.NL;
         }
-        $R->doc .= '</ul>'.NL;
+    }
+
+    function _showTaxonomy(&$R, $data, $rel) {
+        // similar extensions
+        if ($rel['similar']) {
+            $data['similar'] .= ','.join(',',$rel['similar']);
+        }
+        if($data['similar']){
+            $R->doc .= '<p class="similar">'.$this->getLang('similar_to').' ';
+            $R->doc .= $this->hlp->listplugins($data['similar'],$R).'</p>'.NL;
+        }
+
+        // tags
+        if($data['tags']){
+            $R->doc .= '<p class="tags">'.$this->getLang('tagged_with').' ';
+            $R->doc .= $this->hlp->listtags($data['tags'],$target).'</p>'.NL;
+        }
+    }
+
+    function _showAuthorInfo(&$R, $data, $rel) {
+        $R->doc .= '<div class="authorInfo">'.NL;
+
+        // author
+        $R->doc .= '<strong>'.ucfirst($this->getLang('by')).' ';
+        $R->emaillink($data['email'],$data['author']);
+        $R->doc .= '</strong>'.NL;
+
+        // other extensions by the same author (10 max)
+        if (count($rel['sameauthor']) > 0) {
+            $itr = 0;
+            $R->doc .= '<ul>'.NL;
+            while ($itr < count($rel['sameauthor']) && $itr < 10) {
+                $R->doc .= '<li>'.$this->hlp->pluginlink($R,$rel['sameauthor'][$itr++]).'</li>'.NL;
+            }
+            $R->doc .= '</ul>'.NL;
+        }
+
+        $R->doc .= '</div>'.NL;
     }
 
     /**
