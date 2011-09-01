@@ -226,19 +226,19 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
             $sort = substr($sort, 1);
         }
         if ($sort == 'a' || $sort == 'author') {
-            $sortsql = 'ORDER BY A.author'.$sortsql;
+            $sortsql = 'ORDER BY author'.$sortsql;
         } elseif ($sort == 'd' || $sort == 'lastupdate') {
-            $sortsql = 'ORDER BY A.lastupdate'.$sortsql;
+            $sortsql = 'ORDER BY lastupdate'.$sortsql;
         } elseif ($sort == 't' || $sort == 'type') {
-            $sortsql = 'ORDER BY A.type'.$sortsql.', simplename';
+            $sortsql = 'ORDER BY type'.$sortsql.', simplename';
         } elseif ($sort == 'v' || $sort == 'compatibility') {
-            $sortsql = 'ORDER BY A.bestcompatible'.$sortsql.', simplename';
+            $sortsql = 'ORDER BY bestcompatible'.$sortsql.', simplename';
         } elseif ($sort == 'c' || $sort == 'popularity') {
             $sortsql = 'ORDER BY cnt'.$sortsql;
         } elseif ($sort == 'p' || $sort == 'plugin') {
             $sortsql = 'ORDER BY simplename'.$sortsql;
         } else {
-            $sortsql = 'ORDER BY A.bestcompatible DESC, simplename'.$sortsql;
+            $sortsql = 'ORDER BY bestcompatible DESC, simplename'.$sortsql;
         }
         return $sortsql;
     }
