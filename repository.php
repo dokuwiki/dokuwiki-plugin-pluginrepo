@@ -69,6 +69,7 @@ function getRepository($opt) {
         $feed .= '<plugin>';
         $feed .= '<id>'.$id.'</id>';
         $feed .= '<dokulink>'.($plugin['type'] == 32 ? $id : 'plugin:'.$id).'</dokulink>';
+        $feed .= '<popularity>'.$plugin['popularity'].'</popularity>';
         $feed .= '<name>'.hsc($plugin['name']).'</name>';
         $feed .= '<description>'.hsc($plugin['description']).'</description>';
         $feed .= '<author>'.hsc($plugin['author']).'</author>'; // mail not exposed as an anti-spam measure

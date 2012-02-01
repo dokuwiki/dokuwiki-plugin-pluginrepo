@@ -15,7 +15,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
     var $hlp = null;
     var $allowedfields = array('plugin','name','description','author','email','compatible',
                                'lastupdate','type','securityissue','securitywarning','screenshot',
-                               'downloadurl','bugtracker','sourcerepo','donationurl','tags','cnt');
+                               'downloadurl','bugtracker','sourcerepo','donationurl','tags','popularity');
 
     /**
      * Constructor. Load helper plugin
@@ -86,18 +86,14 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
             }
         }
         // create ORDER BY sql clause for shown fields, ensure 'plugin' field included
-        $ordersql = 'A.plugin';
+        $ordersql = 'plugin';
         if ($fields) {
-            $ordersql = 'A.'.join(',A.',$fields).','.$ordersql;
+            $ordersql = join(',',$fields).','.$ordersql;
         }
-        $ordersql = str_replace('A.cnt','cnt',$ordersql);
 
         // sanitize WHERE input
         if (!$data['where']) {
             $R->doc .= '<div class="error repoquery"><strong>Repoquery error - Missing WHERE clause</strong></div>';
-            return;
-        } elseif (strpos($data['where'],'cnt') !== false) {
-            $R->doc .= '<div class="error repoquery"><strong>Repoquery error - "cnt" could not be used with WHERE, use HAVING instead</strong></div>';
             return;
         }
 
@@ -112,19 +108,9 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
         }
         $wheresql = $data['where'];
 
-        // sanitize HAVING input
-        if (preg_match('/^cnt\s*[=><]+\s*\d+$/i',$data['having'])) {
-            $havingsql = 'HAVING '.$data['having'];
-        } elseif ($data['having']) {
-            $R->doc .= '<div class="error repoquery"><strong>Repoquery error - Unsupported chars in HAVING clause:</strong> '.hsc($data['having']).'</div>';
-            return;
-        }
-
-        $stmt = $db->prepare("SELECT A.*, COUNT(C.value) as cnt
-                                FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value AND C.key = 'plugin'
+        $stmt = $db->prepare("SELECT *
+                                FROM plugins
                                WHERE $wheresql
-                            GROUP BY A.plugin
-                             $havingsql
                             ORDER BY $ordersql");
 
         // prepare VALUES input and execute query
@@ -137,7 +123,6 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
 
         if (!$values) $values = array('');
         $headline = 'Plugins WHERE '.vsprintf(str_replace('?','%s',$wheresql),$values);
-        $headline .= ($havingsql?' '.$havingsql:'');
 
         $R->doc .= '<div class="pluginrepo_query">';
         if (count($fields) == 0) {

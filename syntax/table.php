@@ -289,7 +289,6 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         global $ID;
 
         $popmax = $this->hlp->getMaxPopularity();
-        $allcnt = $this->hlp->getPopularitySubmitters();
 
         $sort = $_REQUEST['pluginsort'];
         if ($sort{0} == '^') {
@@ -405,8 +404,8 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
                 $R->doc .= hsc($row['lastupdate']);
                 $R->doc .= '</td>'.NL;
                 $R->doc .= '<td class="popularity">'.NL;
-                $progressCount = $row['cnt'].'/'.$allcnt;
-                $progressWidth = sprintf(100*$row['cnt']/$popmax);
+                $progressCount = $row['popularity'];
+                $progressWidth = sprintf(100*$row['popularity']/$popmax);
                 $R->doc .= '<div class="progress" title="'.$progressCount.'"><div style="width: '.$progressWidth.'%;"><span>'.$progressCount.'</span></div></div>';
                 $R->doc .= '</td>'.NL;
             }
@@ -431,7 +430,6 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         global $ID;
 
         $popmax = $this->hlp->getMaxPopularity();
-        $allcnt = $this->hlp->getPopularitySubmitters();
 
         $R->doc .= '<table class="inline">';
         $R->doc .= '<tr><th><a href="'.wl($ID,$linkopt.'pluginsort=p#extension__table').'" title="'.$this->getLang('t_sortname').'">'.$this->getLang('t_name').'</a></th>';
@@ -487,7 +485,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
                 $R->doc .= '<td>';
                 $R->doc .= hsc($row['lastupdate']);
                 $R->doc .= '</td><td>';
-                $R->doc .= '<div class="prog-border" title="'.$row['cnt'].'/'.$allcnt.'"><div class="prog-bar" style="width: '.sprintf(100*$row['cnt']/$popmax).'%;"></div></div>';
+                $R->doc .= '<div class="prog-border" title="'.$row['popularity'].'"><div class="prog-bar" style="width: '.sprintf(100*$row['popularity']/$popmax).'%;"></div></div>';
                 $R->doc .= '</td>';
             }
 

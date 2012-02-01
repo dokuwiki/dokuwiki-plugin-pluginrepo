@@ -154,61 +154,49 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
             $shown .= " AND A.type <> 32";
         }
 
-        if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {
-            $concat = "CONCAT('template:',C.value)";
-        } else {
-            $concat = "('template:'||C.value)";
-        }
-
         if ($tag) {
             if (!$this->types[$type]) {
                 $type = 255;
             }
-            $stmt = $db->prepare("      SELECT A.*, SUBSTR(A.plugin,10) as simplename, COUNT(C.value) as cnt
-                                          FROM plugin_tags B, plugins A LEFT JOIN popularity C ON A.plugin = $concat AND C.key = 'conf_template'
+            $stmt = $db->prepare("      SELECT A.*, SUBSTR(A.plugin,10) as simplename
+                                          FROM plugin_tags B, plugins A
                                          WHERE A.type = 32 AND $shown
                                            AND (A.type & :type)
                                            AND A.plugin = B.plugin
                                            AND B.tag = :tag
-                                         GROUP BY A.plugin
                                  UNION
-                                        SELECT A.*, A.plugin as simplename, COUNT(C.value) as cnt
-                                          FROM plugin_tags B, plugins A LEFT JOIN popularity C ON A.plugin = C.value AND C.key = 'plugin'
+                                        SELECT A.*, A.plugin as simplename
+                                          FROM plugin_tags B, plugins A
                                          WHERE A.type < 32 AND $shown
                                            AND (A.type & :type)
                                            AND A.plugin = B.plugin
                                            AND B.tag = :tag
-                                         GROUP BY A.plugin
                                 $sortsql");
             $stmt->execute(array(':tag' => $tag, ':type' => $type));
 
         } elseif($this->types[$type]) {
-            $stmt = $db->prepare("      SELECT A.*, SUBSTR(A.plugin,10) as simplename, COUNT(C.value) as cnt
-                                          FROM plugins A LEFT JOIN popularity C ON A.plugin = $concat AND C.key = 'conf_template'
+            $stmt = $db->prepare("      SELECT A.*, SUBSTR(A.plugin,10) as simplename
+                                          FROM plugins A
                                          WHERE A.type = 32 AND $shown
                                            AND (A.type & :type)
-                                         GROUP BY A.plugin
                                  UNION
-                                        SELECT A.*, A.plugin as simplename, COUNT(C.value) as cnt
-                                          FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value AND C.key = 'plugin'
+                                        SELECT A.*, A.plugin as simplename
+                                          FROM plugins A
                                          WHERE A.type < 32 AND $shown
                                            AND (A.type & :type)
-                                         GROUP BY A.plugin
                                  $sortsql");
             $stmt->execute(array(':type' => $type));
 
         } else {
-            $stmt = $db->prepare("      SELECT A.*, SUBSTR(A.plugin,10) as simplename, COUNT(C.value) as cnt
-                                          FROM plugins A LEFT JOIN popularity C ON A.plugin = $concat AND C.key = 'conf_template'
+            $stmt = $db->prepare("      SELECT A.*, SUBSTR(A.plugin,10) as simplename
+                                          FROM plugins A
                                          WHERE A.type = 32 AND $shown
                                     $pluginsql
-                                         GROUP BY A.plugin
                                  UNION
-                                        SELECT A.*, A.plugin as simplename, COUNT(C.value) as cnt
-                                          FROM plugins A LEFT JOIN popularity C ON A.plugin = C.value AND C.key = 'plugin'
+                                        SELECT A.*, A.plugin as simplename
+                                          FROM plugins A
                                          WHERE A.type < 32 AND $shown
                                     $pluginsql
-                                         GROUP BY A.plugin
                                  $sortsql");
             $stmt->execute($plugins);
         }
@@ -234,7 +222,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         } elseif ($sort == 'v' || $sort == 'compatibility') {
             $sortsql = 'ORDER BY bestcompatible'.$sortsql.', simplename';
         } elseif ($sort == 'c' || $sort == 'popularity') {
-            $sortsql = 'ORDER BY cnt'.$sortsql;
+            $sortsql = 'ORDER BY popularity'.$sortsql;
         } elseif ($sort == 'p' || $sort == 'plugin') {
             $sortsql = 'ORDER BY simplename'.$sortsql;
         } else {
@@ -329,41 +317,20 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $db = $this->_getPluginsDB();
         if (!$db) return;
 
-        $sql = "SELECT *, COUNT(uid) as cnt
-                  FROM popularity LEFT JOIN plugins ON popularity.value=plugins.plugin
-                 WHERE popularity.key = 'plugin'
-                   AND plugins.tags <> '".$this->obsoleteTag."' ";
+        $sql = "SELECT popularity
+                  FROM plugins
+                 WHERE tags <> '".$this->obsoleteTag."' ";
 
-        $sql .= str_repeat("AND popularity.value != ? ",count($this->bundled));
+        $sql .= str_repeat("AND plugin != ? ",count($this->bundled));
 
-        $sql .= "GROUP BY popularity.value
-                 ORDER BY cnt DESC
+        $sql .= "ORDER BY popularity DESC
                  LIMIT 1";
 
         $stmt = $db->prepare($sql);
         $stmt->execute($this->bundled);
         $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $retval = $res[0]['cnt'];
-        if(!$retval) $retval = 1;
-        return $retval;
-    }
-
-    /**
-     * Return number of installations that has submitted popularity data
-     */
-    function getPopularitySubmitters() {
-        $db = $this->_getPluginsDB();
-        if (!$db) return;
-
-        $stmt = $db->prepare("SELECT COUNT(p.uid) as cnt
-                                FROM popularity p
-                               WHERE p.key = 'plugin'
-                                 AND p.value = 'popularity'");
-        $stmt->execute();
-        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $retval = $res[0]['cnt'];
+        $retval = $res[0]['popularity'];
         if(!$retval) $retval = 1;
         return $retval;
     }
@@ -536,12 +503,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                                 compatible varchar(255) default NULL, lastupdate date default NULL, downloadurl varchar(255) default NULL,
                                 bugtracker varchar(255) default NULL, sourcerepo varchar(255) default NULL, donationurl varchar(255) default NULL, type int(11) NOT NULL default 0,
                                 screenshot varchar(255) default NULL, tags varchar(255) default NULL, securitywarning varchar(255) default NULL, securityissue varchar(255) NOT NULL,
-                                bestcompatible varchar(50) default NULL);');
-        if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {
-            $db->exec('CREATE TABLE popularity (uid varchar(32) NOT NULL, `key` varchar(255) NOT NULL, value varchar(255) NOT NULL);');
-        } else {
-            $db->exec('CREATE TABLE popularity (uid varchar(32) NOT NULL, key varchar(255) NOT NULL, value varchar(255) NOT NULL);');
-        }
+                                bestcompatible varchar(50) default NULL, popularity int default 0);');
     }
 }
 
