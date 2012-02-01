@@ -18,13 +18,13 @@
     padding: .5em;
 }
 .dokuwiki div.pluginrepo_entry div.mainInfo {
-    width: 350px;
+    width: 42%;
 }
 .dokuwiki div.pluginrepo_entry div.metaInfo {
-    width: 200px;
+    width: 20%;
 }
 .dokuwiki div.pluginrepo_entry div.usageInfo {
-    width: 200px;
+    width: 30%;
 }
 .dokuwiki div.pluginrepo_entry div.moreInfo,
 .dokuwiki div.pluginrepo_entry div.authorInfo {
@@ -38,10 +38,12 @@
 }
 .dokuwiki div.pluginrepo_entry ul {
     margin: 0 0 .5em 0;
+    padding: 0;
     list-style: none;
 }
 .dokuwiki div.pluginrepo_entry ul li {
     color: __text__;
+    margin: 0;
 }
 .dokuwiki div.pluginrepo_entry dt {
     font-weight: bold;
@@ -154,8 +156,8 @@
 /* author info */
 .dokuwiki div.pluginrepo_entry div.authorInfo {
     overflow: hidden;
-    background-color: __background_neu__;
-    color: __text_neu__;
+    background-color: __background_alt__;
+    color: __text_alt__;
 }
 .dokuwiki div.pluginrepo_entry div.authorInfo strong {
     float: left;
@@ -164,7 +166,7 @@
     font-weight: normal;
 }
 .dokuwiki div.pluginrepo_entry div.authorInfo strong a.mail {
-    background-position: 0 4px;
+    background-position: 0 2px;
     padding-left: 18px;
 }
 .dokuwiki div.pluginrepo_entry div.authorInfo ul {
@@ -199,7 +201,6 @@
 
 .dokuwiki div.pluginrepo_table h3 {
     margin-left: 0;
-    font-weight: normal;
 }
 
 /* layout */
@@ -218,12 +219,18 @@
 /* search form */
 .dokuwiki div.pluginrepo_table form.search {
     position: relative;
+    margin-bottom: 1.4em;
+    display: block;
+}
+.dokuwiki div.pluginrepo_table form.search input.edit {
+    margin-bottom: .2em;
 }
 /* quick search result AJAX popup */
 #qsearch2__out {
     position: absolute;
     right: auto;
     left: 0;
+    top: 1.4em;
 }
 #qsearch2__out ul {
     margin: 0 0 0 1.5em;
@@ -231,7 +238,7 @@
 
 /* filter by types */
 .dokuwiki div.pluginrepo_table ul.types {
-    margin-left: 1.5em;
+    padding-left: 0;
 }
 .dokuwiki div.pluginrepo_table ul.types li {
     margin-bottom: .5em;
@@ -300,6 +307,7 @@
 
 .dokuwiki div.pluginrepo_table table dl {
     font-size: 79%;
+    margin-bottom: 0;
 }
 .dokuwiki div.pluginrepo_table table dl dt,
 .dokuwiki div.pluginrepo_table table dl dd {
@@ -384,7 +392,7 @@
     padding: .2em .5em .3em;
     text-align: left;
     font-weight: bold;
-    background-color: __background_neu__;
+    background-color: __background_alt__;
     color: __text_neu__;
     font-size: 1em;
 }
@@ -392,7 +400,11 @@
     margin-bottom: .5em;
 }
 .dokuwiki div.pluginrepo_news ul {
-    margin: 0 0 .5em 1.5em;
+    margin: 0;
+    padding: 0;
+}
+.dokuwiki div.pluginrepo_news ul li {
+    margin-left: 1.5em;
 }
 .dokuwiki div.pluginrepo_news p.title {
     font-weight: bold;
