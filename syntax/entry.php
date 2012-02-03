@@ -133,7 +133,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         */
 
         // icon and description
-        $extensionIcon = '<a class="media" href="/'.$extensionType.'s">'.
+        $extensionIcon = '<a class="media" href="'.wl($extensionType.'s').'">'.
             '<img alt="'.$extensionType.'" class="medialeft" src="'.
             DOKU_BASE.'lib/plugins/pluginrepo/images/dwplugin.png" width="60" height="60" /></a> ';
         $R->doc .= '<p class="description">'.$extensionIcon.hsc($data['description']).'</p>'.NL;
@@ -285,6 +285,9 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
     }
 
     function _showTaxonomy(&$R, $data, $rel) {
+        global $ID;
+        $target = getNS($ID).'s';
+
         // similar extensions
         if ($rel['similar']) {
             $data['similar'] .= ','.join(',',$rel['similar']);
@@ -293,7 +296,6 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             $R->doc .= '<p class="similar">'.$this->getLang('similar_to').' ';
             $R->doc .= $this->hlp->listplugins($data['similar'],$R).'</p>'.NL;
         }
-
         // tags
         if($data['tags']){
             $R->doc .= '<p class="tags">'.$this->getLang('tagged_with').' ';

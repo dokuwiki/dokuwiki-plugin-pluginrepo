@@ -13,3 +13,7 @@ UPDATE plugins AS target
 ON target.plugin = source.plugin
 SET target.tags = source.tags;
 
+
+-- 2012-01-31 updates for flattened popularity data
+ALTER TABLE plugins
+    ADD COLUMN popularity int default 0;
