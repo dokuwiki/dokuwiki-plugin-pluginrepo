@@ -133,7 +133,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         */
 
         // icon and description
-        $extensionIcon = '<a class="media" href="/'.$extensionType.'s">'.
+        $extensionIcon = '<a class="media" href="'.wl($extensionType.'s').'">'.
             '<img alt="'.$extensionType.'" class="medialeft" src="'.
             DOKU_BASE.'lib/plugins/pluginrepo/images/dwplugin.png" width="60" height="60" /></a> ';
         $R->doc .= '<p class="description">'.$extensionIcon.hsc($data['description']).'</p>'.NL;
