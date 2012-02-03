@@ -32,12 +32,6 @@
     clear: left;
     padding: .5em;
 }
-.dokuwiki div.pluginrepo_entry div.authorInfo {
-    width: 100%;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-}
 
 
 /* just for the new template */
