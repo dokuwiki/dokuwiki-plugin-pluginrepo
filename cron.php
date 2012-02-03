@@ -2,6 +2,8 @@
 
 $TIMEFRAME = 60*60*24*365; // in seconds
 
+$TIME = time() - $TIMEFRAME;
+
 if(!defined('DOKU_INC')) define('DOKU_INC',dirname(__FILE__).'/../../../');
 define('NOSESSION',true);
 require_once(DOKU_INC.'inc/init.php');
@@ -17,7 +19,7 @@ $sql = "SELECT count(*) as cnt, A.value as plugin
          WHERE A.uid = B.uid
            AND A.`key` = 'plugin'
            AND B.`key` = 'now'
-           AND B.value > UNIX_TIMESTAMP()-$TIMEFRAME
+           AND B.value > $TIME
       GROUP BY A.value";
 $stmt = $db->prepare($sql);
 $stmt->execute();
@@ -32,7 +34,7 @@ $sql = "SELECT count(*) as cnt, A.value as template
          WHERE A.uid = B.uid
            AND A.`key` = 'conf_template'
            AND B.`key` = 'now'
-           AND B.value > UNIX_TIMESTAMP()-$TIMEFRAME
+           AND B.value > $TIME
       GROUP BY A.value";
 $stmt = $db->prepare($sql);
 $stmt->execute();
