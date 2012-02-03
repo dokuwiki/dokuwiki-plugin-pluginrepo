@@ -404,7 +404,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
                 $R->doc .= hsc($row['lastupdate']);
                 $R->doc .= '</td>'.NL;
                 $R->doc .= '<td class="popularity">'.NL;
-                $progressCount = $row['popularity'];
+                $progressCount = $row['popularity'].'/'.$popmax;
                 $progressWidth = sprintf(100*$row['popularity']/$popmax);
                 $R->doc .= '<div class="progress" title="'.$progressCount.'"><div style="width: '.$progressWidth.'%;"><span>'.$progressCount.'</span></div></div>';
                 $R->doc .= '</td>'.NL;
@@ -485,7 +485,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
                 $R->doc .= '<td>';
                 $R->doc .= hsc($row['lastupdate']);
                 $R->doc .= '</td><td>';
-                $R->doc .= '<div class="prog-border" title="'.$row['popularity'].'"><div class="prog-bar" style="width: '.sprintf(100*$row['popularity']/$popmax).'%;"></div></div>';
+                $R->doc .= '<div class="prog-border" title="'.$row['popularity'].'/'.$popmax.'"><div class="prog-bar" style="width: '.sprintf(100*$row['popularity']/$popmax).'%;"></div></div>';
                 $R->doc .= '</td>';
             }
 
