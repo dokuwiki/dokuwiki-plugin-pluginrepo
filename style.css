@@ -187,14 +187,9 @@
 
 /* author info */
 .dokuwiki div.pluginrepo_entry div.authorInfo {
-    overflow: hidden;
-    background-color: __background_alt__;
-    color: __text_alt__;
 }
 .dokuwiki div.pluginrepo_entry div.authorInfo strong {
-    float: left;
     font-size: 120%;
-    margin-right: .5em;
     font-weight: normal;
 }
 .dokuwiki div.pluginrepo_entry div.authorInfo strong a.mail {
@@ -203,7 +198,6 @@
 }
 .dokuwiki div.pluginrepo_entry div.authorInfo ul {
     margin-bottom: 0;
-    line-height: 1.6;
 }
 .dokuwiki div.pluginrepo_entry div.authorInfo ul li {
     display: inline;
