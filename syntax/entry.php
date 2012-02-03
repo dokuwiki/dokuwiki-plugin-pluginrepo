@@ -105,13 +105,13 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
         $R->doc .= '<div class="pluginrepo_entry">'.NL;
 
-        $this->_showMainInfo($R, $data, $extensionType);
-        $this->_showMetaInfo($R, $data, $type);
-
         $R->doc .= '<div class="usageInfo">'.NL;
         $this->_showCompatibility($R, $data);
         $this->_showActionLinks($R, $data);
         $R->doc .= '</div>'.NL;
+
+        $this->_showMainInfo($R, $data, $extensionType);
+        $this->_showMetaInfo($R, $data, $type);
 
         if($rel['similar'] || $data['tags'] || $data['securitywarning'] || $data['securityissue'] || $hasUnderscoreIssue) {
             $R->doc .= '<div class="moreInfo">'.NL;

@@ -25,12 +25,40 @@
 }
 .dokuwiki div.pluginrepo_entry div.usageInfo {
     width: 30%;
+    float: right;
 }
 .dokuwiki div.pluginrepo_entry div.moreInfo,
 .dokuwiki div.pluginrepo_entry div.authorInfo {
     clear: left;
     padding: .5em;
 }
+.dokuwiki div.pluginrepo_entry div.authorInfo {
+    width: 100%;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+
+/* just for the new template */
+.dokuwiki #dokuwiki__content div.pluginrepo_entry div.mainInfo {
+    width: auto;
+    float: none;
+}
+.dokuwiki #dokuwiki__content div.pluginrepo_entry div.metaInfo {
+    width: auto;
+    float: none;
+    clear: left;
+}
+.dokuwiki #dokuwiki__content div.pluginrepo_entry div.metaInfo dt {
+    float: left;
+    clear: left;
+    margin-right: .5em;
+}
+.dokuwiki #dokuwiki__content div.pluginrepo_entry div.metaInfo dd {
+    margin-bottom: .2em;
+}
+
 
 /* general styles within the entry */
 .dokuwiki div.pluginrepo_entry p {
@@ -50,6 +78,7 @@
 }
 .dokuwiki div.pluginrepo_entry dd {
     margin-bottom: .5em;
+    margin-left: 0;
 }
 
 /* mainInfo */
@@ -58,12 +87,14 @@
 }
 .dokuwiki div.pluginrepo_entry div.mainInfo a.screenshot {
     display: block;
-    clear: left;
     margin-left: 1.5em;
 }
 
 /* metaInfo */
 .dokuwiki div.pluginrepo_entry div.metaInfo {
+}
+.dokuwiki div.pluginrepo_entry div.metaInfo dl {
+    margin-bottom: 0;
 }
 
 /* usageInfo */
@@ -96,6 +127,7 @@
 }
 .dokuwiki div.pluginrepo_entry div.compatibility li {
     display: none;
+    color: __text__ !important;
 }
 .dokuwiki div.pluginrepo_entry div.compatibility li:first-child {
     display: block;
@@ -303,6 +335,7 @@
 .dokuwiki div.pluginrepo_table table p.description {
     clear: both;
     margin-bottom: .4em;
+    min-height: 60px; /* plugin logo is 60x60 */
 }
 
 .dokuwiki div.pluginrepo_table table dl {
