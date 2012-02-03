@@ -312,8 +312,10 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     /**
      * Return number of installations for most popular plugin
      * besides the bundled ones
+     *
+     * @param string $type either 'plugins' or 'templates', '' shows all
      */
-    function getMaxPopularity() {
+    function getMaxPopularity($type='') {
         $db = $this->_getPluginsDB();
         if (!$db) return;
 
@@ -322,6 +324,9 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                  WHERE tags <> '".$this->obsoleteTag."' ";
 
         $sql .= str_repeat("AND plugin != ? ",count($this->bundled));
+
+        if($type == 'plugins' || $type == 'plugin')   $sql .= "AND plugin NOT LIKE 'template:%'";
+        if($type == 'templates' || $type == 'template') $sql .= "AND plugin LIKE 'template:%'";
 
         $sql .= "ORDER BY popularity DESC
                  LIMIT 1";

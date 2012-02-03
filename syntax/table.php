@@ -288,7 +288,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
     function _newTable($plugins,$linkopt,$data,$R) {
         global $ID;
 
-        $popmax = $this->hlp->getMaxPopularity();
+        $popmax = $this->hlp->getMaxPopularity($ID);
 
         $sort = $_REQUEST['pluginsort'];
         if ($sort{0} == '^') {
@@ -429,7 +429,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
     function _classicTable($plugins,$linkopt,$data,$R) {
         global $ID;
 
-        $popmax = $this->hlp->getMaxPopularity();
+        $popmax = $this->hlp->getMaxPopularity($ID);
 
         $R->doc .= '<table class="inline">';
         $R->doc .= '<tr><th><a href="'.wl($ID,$linkopt.'pluginsort=p#extension__table').'" title="'.$this->getLang('t_sortname').'">'.$this->getLang('t_name').'</a></th>';
