@@ -133,6 +133,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
                 $plugingroups[$firstchar][] = $row['plugin'];
             }
 
+            $R->doc .= '<div class="table">';
             $R->doc .= '<table class="inline">';
             $R->doc .= '<tr><th colspan="3">'.hsc($headline).'</th></tr>';
             ksort($plugingroups);
@@ -150,6 +151,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
                 $R->doc .= '</tr>'.DOKU_LF;
             }
             $R->doc .= '</table>';
+            $R->doc .= '</div>';
 
         } else {
             // show values for all fields in separate columns
@@ -162,6 +164,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
                 $plugingroups[$groupkey][] = $row['plugin'];
             }
 
+            $R->doc .= '<div class="table">';
             $R->doc .= '<table class="inline">';
             $R->doc .= '<tr>';
             foreach ($fields as $field) {
@@ -209,6 +212,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
                 $R->doc .= '</tr>'.DOKU_LF;
             }
             $R->doc .= '</table>';
+            $R->doc .= '</div>';
         }
         $R->doc .= '<p class="querytotal">∑ '.count($datarows).' plugins matching query</p>';
         $R->doc .= '</div>';
