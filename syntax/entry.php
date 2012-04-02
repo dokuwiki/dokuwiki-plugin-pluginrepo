@@ -308,7 +308,11 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
         // author
         $R->doc .= '<strong>'.ucfirst($this->getLang('by')).' ';
-        $R->emaillink($data['email'],$data['author']);
+        if ($data['email']) {
+            $R->emaillink($data['email'],$data['author']);
+        } else {
+            $R->doc .= $data['author'];
+        }
         $R->doc .= '</strong>'.NL;
 
         // other extensions by the same author (10 max)
