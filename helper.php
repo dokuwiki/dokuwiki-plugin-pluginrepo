@@ -267,7 +267,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
             $meta['depends'][] = $row['other'];
         }
 
-        $stmt = $db->prepare('SELECT plugin FROM plugins WHERE plugin <> ? AND email=(SELECT email FROM plugins WHERE plugin = ?)');
+        $stmt = $db->prepare('SELECT plugin FROM plugins WHERE plugin <> ? AND email <> "" AND email=(SELECT email FROM plugins WHERE plugin = ?)');
         $stmt->execute(array($id,$id));
         foreach ($stmt as $row) {
             $meta['sameauthor'][] = $row['plugin'];
