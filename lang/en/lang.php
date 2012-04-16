@@ -66,7 +66,6 @@ $lang['t_author']            = 'Author';
 $lang['t_sortauthor']        = 'Sort by author';
 $lang['t_type']              = 'Type';
 $lang['t_sorttype']          = 'Sort by type';
-$lang['t_screenshot']        = 'Screenshot';
 $lang['t_date']              = 'Last Update';
 $lang['t_sortdate']          = 'Sort by date';
 $lang['t_popularity']        = 'Popularity';
