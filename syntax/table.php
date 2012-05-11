@@ -87,9 +87,9 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
         // filter and search
         $R->doc .= '<div class="repoFilter">'.NL;
-        $this->_showMainSearch(&$R, $data);
+        $this->_showMainSearch($R, $data);
         if (!$data['plugintype']) {
-            $this->_showPluginTypeFilter(&$R, $data);
+            $this->_showPluginTypeFilter($R, $data);
         }
         $R->doc .= '</div>'.NL;
 
@@ -103,7 +103,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->section_close();
 
         // main table
-        $this->_showPluginTable(&$R, $data);
+        $this->_showPluginTable($R, $data);
     }
 
     /**
