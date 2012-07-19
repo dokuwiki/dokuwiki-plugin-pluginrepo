@@ -236,6 +236,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      *   'conflicts'  array of plugin names
      *   'similar'    array of plugin names
      *   'depends'    array of plugin names
+     *   'needed'     array of plugin names
      *   'sameauthor' array of plugin names
      */
     function getPluginRelations($id) {
@@ -266,6 +267,14 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         foreach ($stmt as $row) {
             $meta['depends'][] = $row['other'];
         }
+
+
+        $stmt = $db->prepare('SELECT plugin FROM plugin_depends WHERE other = ? ');
+        $stmt->execute(array($id));
+        foreach ($stmt as $row) {
+            $meta['needed'][] = $row['plugin'];
+        }
+
 
         $stmt = $db->prepare('SELECT plugin FROM plugins WHERE plugin <> ? AND email <> "" AND email=(SELECT email FROM plugins WHERE plugin = ?)');
         $stmt->execute(array($id,$id));

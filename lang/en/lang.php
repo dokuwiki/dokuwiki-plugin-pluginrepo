@@ -21,6 +21,7 @@ $lang['conflicts_with']      = 'Conflicts with';
 $lang['requires']            = 'Requires';
 $lang['similar_to']          = 'Similar to';
 $lang['tagged_with']         = 'Tagged with';
+$lang['needed_for']          = 'Needed for';
 $lang['securitywarning']     = 'Security warning (please read %s):';
 $lang['security_informationleak'] = 'This plugin expose information that might be valuable to a hacker. It is not recommended in a public installation.';
 $lang['security_allowsscript']    = 'This plugin will allow execution of scripts. It should only be used when you trust ALL editors, best suited in private personal wikis.';
