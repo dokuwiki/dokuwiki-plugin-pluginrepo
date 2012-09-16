@@ -25,7 +25,7 @@ $stmt = $db->prepare($sql);
 $stmt->execute();
 $updt = $db->prepare("UPDATE plugins SET popularity = :pop WHERE plugin = :name");
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-    $updt->execute(array('pop'=>$row['cnt'], 'name'=>$row['plugin']));
+    $updt->execute(array(':pop'=>$row['cnt'], ':name'=>$row['plugin']));
 }
 
 // update all templates
@@ -40,6 +40,6 @@ $stmt = $db->prepare($sql);
 $stmt->execute();
 $updt = $db->prepare("UPDATE plugins SET popularity = :pop WHERE plugin = :name");
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-    $updt->execute(array('pop'=>$row['cnt'], 'name'=> 'template:'.$row['template']));
+    $updt->execute(array(':pop'=>$row['cnt'], ':name'=> 'template:'.$row['template']));
 }
 
