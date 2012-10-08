@@ -1,6 +1,6 @@
 <?php
 
-$TIMEFRAME = 60*60*24*365; // in seconds
+$TIMEFRAME = 60*60*24*365*2; // in seconds
 
 $TIME = time() - $TIMEFRAME;
 
