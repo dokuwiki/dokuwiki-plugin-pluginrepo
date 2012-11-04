@@ -112,7 +112,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $R->doc .= '</div>'.NL;
 
         $this->_showMainInfo($R, $data, $extensionType);
-        $this->_showMetaInfo($R, $data, $type);
+        $this->_showMetaInfo($R, $data, $type, $rel);
 
         if($rel['similar'] || $data['tags'] || $data['securitywarning'] || $data['securityissue'] || $hasUnderscoreIssue) {
             $R->doc .= '<div class="moreInfo">'.NL;
@@ -149,7 +149,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $R->doc .= '</div>';
     }
 
-    function _showMetaInfo(&$R, $data, $type) {
+    function _showMetaInfo(&$R, $data, $type, $rel) {
         global $ID;
         $target = getNS($ID);
         if($target == 'plugin') {
