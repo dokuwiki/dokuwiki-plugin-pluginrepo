@@ -24,7 +24,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     var $securitywarning = array('informationleak','allowsscript','requirespatch','partlyhidden');
 
     function helper_plugin_pluginrepo() {
-        $this->bundled = split(',', $this->getConf('bundled'));
+        $this->bundled = explode(',', $this->getConf('bundled'));
         $this->bundled = array_map('trim', $this->bundled);
         $this->bundled = array_filter($this->bundled);
     }
