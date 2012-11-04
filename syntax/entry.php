@@ -12,6 +12,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
     /**
      * will hold the repository helper plugin
+     * @var $hlp helper_plugin_pluginrepo
      */
     var $hlp = null;
 
@@ -150,7 +151,10 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
     function _showMetaInfo(&$R, $data, $type) {
         global $ID;
-        $target = getNS($ID).'s';
+        $target = getNS($ID);
+        if($target == 'plugin') {
+            $target .= 's';
+        }
 
         $R->doc .= '<div class="metaInfo"><dl>'.NL;
 
@@ -286,7 +290,10 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
     function _showTaxonomy(&$R, $data, $rel) {
         global $ID;
-        $target = getNS($ID).'s';
+        $target = getNS($ID);
+        if($target == 'plugin') {
+            $target .= 's';
+        }
 
         // similar extensions
         if ($rel['similar']) {
