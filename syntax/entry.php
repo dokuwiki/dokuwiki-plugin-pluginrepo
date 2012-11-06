@@ -361,7 +361,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         if (!$data['securityissue']) $data['securityissue'] = "";
         if (!$data['tags']) $data['tags'] = "";
 
-        $stmt = $db->prepare('REPLACE INTO plugins
+        $stmt = $db->prepare('INSERT INTO plugins
                                (plugin, name, description,
                                 author, email,
                                 compatible, bestcompatible, lastupdate, securityissue, securitywarning,
@@ -372,7 +372,26 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
                                 :author, LOWER(:email),
                                 :compatible, :bestcompatible, :lastupdate, :securityissue, :securitywarning,
                                 :downloadurl, :bugtracker, :sourcerepo, :donationurl,
-                                :screenshot, :tags, :type) ');
+                                :screenshot, :tags, :type)
+                              ON DUPLICATE KEY UPDATE
+                                name            = :name,
+                                description     = :description,
+                                author          = :author,
+                                email           = LOWER(:email),
+                                compatible      = :compatible,
+                                bestcompatible  = :bestcompatible,
+                                lastupdate      = :lastupdate,
+                                securityissue   = :securityissue,
+                                securitywarning = :securitywarning,
+                                downloadurl     = :downloadurl,
+                                bugtracker      = :bugtracker,
+                                sourcerepo      = :sourcerepo,
+                                donationurl     = :donationurl,
+                                screenshot      = :screenshot,
+                                tags            = :tags,
+                                type            = :type
+
+                            ');
         $stmt->execute(array(':plugin' =>  $id,
                              ':name' => $name,
                              ':description' => $data['description'],
