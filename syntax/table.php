@@ -354,7 +354,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
             $R->doc .= '<div class="mainInfo">'.NL;
             // extension name and link
             $R->doc .= '<strong>';
-            $R->doc .= $this->hlp->pluginlink($R, $row['plugin'], ucfirst(noNS($row['name'])).($row['type']==32?' template':' plugin'));
+            $R->doc .= $this->hlp->pluginlink($R, $row['plugin'], $row['name'].($row['type']==32?' template':' plugin'));
             $R->doc .= '</strong>'.NL;
             // download
             if($row['downloadurl'] && !$row['securityissue'] && !$row['securitywarning']){
