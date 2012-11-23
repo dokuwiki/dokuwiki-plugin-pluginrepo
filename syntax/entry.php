@@ -213,14 +213,17 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             foreach ($this->hlp->dokuReleases as $release) {
                 if (++$cols > 4) break;
                 $value = $this->getLang('compatible_unknown');
+                $compaticon = "";
                 if (array_key_exists($release['date'], $compatibility)) {
                     $value = $this->getLang('compatible_yes');
+                    $compaticon = "yes";
                     if ($compatibility[$release['date']]['implicit']) {
                         $value = $this->getLang('compatible_probably');
+                        $compaticon = "probably";
                     }
                     $norecentcompat = false;
                 }
-                $compatrow .= '<li class="'.$value.'">'.$release['date'].' '.$release['label'];
+                $compatrow .= '<li class="'.$compaticon.'">'.$release['date'].' '.$release['label'];
                 $compatrow .= '&nbsp;<strong><span>'.$value.'</span></strong></li>'.NL;
             }
 
@@ -366,7 +369,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         if (!$data['securityissue']) $data['securityissue'] = "";
         if (!$data['tags']) $data['tags'] = "";
 
-        $stmt = $db->prepare('REPLACE INTO plugins
+        $stmt = $db->prepare('INSERT INTO plugins
                                (plugin, name, description,
                                 author, email,
                                 compatible, bestcompatible, lastupdate, securityissue, securitywarning,
@@ -377,7 +380,26 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
                                 :author, LOWER(:email),
                                 :compatible, :bestcompatible, :lastupdate, :securityissue, :securitywarning,
                                 :downloadurl, :bugtracker, :sourcerepo, :donationurl,
-                                :screenshot, :tags, :type) ');
+                                :screenshot, :tags, :type)
+                              ON DUPLICATE KEY UPDATE
+                                name            = :name,
+                                description     = :description,
+                                author          = :author,
+                                email           = LOWER(:email),
+                                compatible      = :compatible,
+                                bestcompatible  = :bestcompatible,
+                                lastupdate      = :lastupdate,
+                                securityissue   = :securityissue,
+                                securitywarning = :securitywarning,
+                                downloadurl     = :downloadurl,
+                                bugtracker      = :bugtracker,
+                                sourcerepo      = :sourcerepo,
+                                donationurl     = :donationurl,
+                                screenshot      = :screenshot,
+                                tags            = :tags,
+                                type            = :type
+
+                            ');
         $stmt->execute(array(':plugin' =>  $id,
                              ':name' => $name,
                              ':description' => $data['description'],
