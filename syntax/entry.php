@@ -12,6 +12,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
     /**
      * will hold the repository helper plugin
+     * @var $hlp helper_plugin_pluginrepo
      */
     var $hlp = null;
 
@@ -111,7 +112,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $R->doc .= '</div>'.NL;
 
         $this->_showMainInfo($R, $data, $extensionType);
-        $this->_showMetaInfo($R, $data, $type);
+        $this->_showMetaInfo($R, $data, $type, $rel);
 
         if($rel['similar'] || $data['tags'] || $data['securitywarning'] || $data['securityissue'] || $hasUnderscoreIssue) {
             $R->doc .= '<div class="moreInfo">'.NL;
@@ -148,9 +149,12 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $R->doc .= '</div>';
     }
 
-    function _showMetaInfo(&$R, $data, $type) {
+    function _showMetaInfo(&$R, $data, $type, $rel) {
         global $ID;
-        $target = getNS($ID).'s';
+        $target = getNS($ID);
+        if($target == 'plugin') {
+            $target .= 's';
+        }
 
         $R->doc .= '<div class="metaInfo"><dl>'.NL;
 
@@ -289,7 +293,10 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
     function _showTaxonomy(&$R, $data, $rel) {
         global $ID;
-        $target = getNS($ID).'s';
+        $target = getNS($ID);
+        if($target == 'plugin') {
+            $target .= 's';
+        }
 
         // similar extensions
         if ($rel['similar']) {
