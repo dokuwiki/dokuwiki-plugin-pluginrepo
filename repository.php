@@ -111,10 +111,8 @@ function getRepository($opt) {
             $feed .= '<tag>'.hsc($link).'</tag>';
         }
         $feed .= '</tags>';
-        if($plugin['type'] == 32) {
-            $feed.= '<screenshoturl>'.hsc($plugin['screenshot']).'</screenshoturl>';
-        }
 
+        $feed .= '<screenshoturl>'.hsc($plugin['screenshot']).'</screenshoturl>';
         $feed .= '<downloadurl>'.hsc($plugin['downloadurl']).'</downloadurl>';
         $feed .= '<sourcerepo>'.hsc($plugin['sourcerepo']).'</sourcerepo>';
         $feed .= '<bugtracker>'.hsc($plugin['bugtracker']).'</bugtracker>';
