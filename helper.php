@@ -24,7 +24,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     var $securitywarning = array('informationleak','allowsscript','requirespatch','partlyhidden');
 
     function helper_plugin_pluginrepo() {
-        $this->bundled = split(',', $this->getConf('bundled'));
+        $this->bundled = explode(',', $this->getConf('bundled'));
         $this->bundled = array_map('trim', $this->bundled);
         $this->bundled = array_filter($this->bundled);
     }
@@ -392,13 +392,14 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                 $name = strtolower($name);
                 $rel = array('date' => $date,
                              'name' => $name);
-                $rel['label'] = ($name ? '"'.ucfirst($name).'"' : '');
+                $rel['label'] = ($name ? '"'.ucwords($name).'"' : '');
                 $this->dokuReleases[$date] = $rel;
             }
         }
 
-        preg_match_all('/([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\+?|[a-zA-Z]{4,}\+?)/', $compatible, $matches);
+        preg_match_all('/([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\+?|[a-z A-Z]{4,}\+?)/', $compatible, $matches);
         $matches[0] = array_map('strtolower',$matches[0]);
+        $matches[0] = array_map('trim',$matches[0]);
         $retval = array();
         $implicitCompatible = false;
         $dokuReleases = $this->dokuReleases;
