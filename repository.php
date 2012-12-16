@@ -116,6 +116,7 @@ function getRepository($opt) {
         }
 
         $feed .= '<downloadurl>'.hsc($plugin['downloadurl']).'</downloadurl>';
+        $feed .= '<sourcerepo>'.hsc($plugin['sourcerepo']).'</sourcerepo>';
         $feed .= '<bugtracker>'.hsc($plugin['bugtracker']).'</bugtracker>';
         $feed .= '<donationurl>'.hsc($plugin['donationurl']).'</donationurl>';
 
