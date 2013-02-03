@@ -112,7 +112,18 @@ function getRepository($opt) {
         }
         $feed .= '</tags>';
 
-        $feed .= '<screenshoturl>'.hsc($plugin['screenshot']).'</screenshoturl>';
+        if(empty($plugin['screenshot'])){
+            $feed .= '<screenshoturl></screenshoturl>';
+            $feed .= '<thumbnailurl></thumbnailurl>';
+        }else{
+            if(!preg_match('/^https?:\/\//', $plugin['screenshot'])){
+                $feed .= '<screenshoturl>'.hsc(ml($plugin['screenshot'],array(),true,'&',true)).'</screenshoturl>';
+            }else{
+                $feed .= '<screenshoturl>'.hsc($plugin['screenshot']).'</screenshoturl>';
+            }
+            $feed .= '<thumbnailurl>'.hsc(ml($plugin['screenshot'], array('cache'=>'cache', 'w'=>120, 'h'=>70),true,'&',true)).'</thumbnailurl>';
+        }
+
         $feed .= '<downloadurl>'.hsc($plugin['downloadurl']).'</downloadurl>';
         $feed .= '<sourcerepo>'.hsc($plugin['sourcerepo']).'</sourcerepo>';
         $feed .= '<bugtracker>'.hsc($plugin['bugtracker']).'</bugtracker>';
