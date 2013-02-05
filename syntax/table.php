@@ -156,6 +156,12 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= '<li><div class="li">';
         $R->doc .= sprintf($this->getLang('t_typerender'),$this->hlp->listtype(8,$ID));
         $R->doc .= '</div></li>'.NL;
+        $R->doc .= '<li><div class="li">';
+        $R->doc .= sprintf($this->getLang('t_typeremote'),$this->hlp->listtype(64,$ID));
+        $R->doc .= '</div></li>'.NL;
+        $R->doc .= '<li><div class="li">';
+        $R->doc .= sprintf($this->getLang('t_typeauth'),$this->hlp->listtype(128,$ID));
+        $R->doc .= '</div></li>'.NL;
 
         if ($data['includetemplates']) {
             $R->doc .= '<li><div class="li">';

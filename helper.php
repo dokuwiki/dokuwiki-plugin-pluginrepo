@@ -12,12 +12,14 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     var $dokuReleases;             // array of DokuWiki releases (name & date)
 
     var $types = array(
-                    1  => 'Syntax',
-                    2  => 'Admin',
-                    4  => 'Action',
-                    8  => 'Render',
-                    16 => 'Helper',
-                    32 => 'Template');
+                    1   => 'Syntax',
+                    2   => 'Admin',
+                    4   => 'Action',
+                    8   => 'Render',
+                    16  => 'Helper',
+                    32  => 'Template',
+                    64  => 'Remote',
+                    128 => 'Auth');
 
     var $obsoleteTag = '!obsolete';
     var $bundled;
