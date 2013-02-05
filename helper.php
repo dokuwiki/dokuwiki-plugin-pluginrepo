@@ -169,7 +169,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                                  UNION
                                         SELECT A.*, A.plugin as simplename
                                           FROM plugin_tags B, plugins A
-                                         WHERE A.type < 32 AND $shown
+                                         WHERE A.type <> 32 AND $shown
                                            AND (A.type & :type)
                                            AND A.plugin = B.plugin
                                            AND B.tag = :tag
@@ -184,7 +184,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                                  UNION
                                         SELECT A.*, A.plugin as simplename
                                           FROM plugins A
-                                         WHERE A.type < 32 AND $shown
+                                         WHERE A.type <> 32 AND $shown
                                            AND (A.type & :type)
                                  $sortsql");
             $stmt->execute(array(':type' => $type));
@@ -197,7 +197,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                                  UNION
                                         SELECT A.*, A.plugin as simplename
                                           FROM plugins A
-                                         WHERE A.type < 32 AND $shown
+                                         WHERE A.type <> 32 AND $shown
                                     $pluginsql
                                  $sortsql");
             $stmt->execute($plugins);
