@@ -21,6 +21,7 @@ $lang['conflicts_with']      = 'Conflicteert met';
 $lang['requires']            = 'Vereist';
 $lang['similar_to']          = 'Vergelijkbaar met';
 $lang['tagged_with']         = 'Gelabeld met';
+$lang['needed_for']          = 'Nodig voor';
 $lang['securitywarning']     = 'Veiligheidswaarschuwing (Lees alstublieft %s):';
 $lang['security_informationleak'] = 'Deze plugin onthult informatie die waardevol kan zijn voor hackers. Dus wordt daarom niet aanbevolen voor publieke installaties.';
 $lang['security_allowsscript']    = 'Deze plugin zal het uitvoeren van scripts toestaan. Het zou alleen gebruikt moeten worden wanneer je ALLE schrijvers vertrouwt, dus deze past het beste in persoonlijke prive wiki\'s.';

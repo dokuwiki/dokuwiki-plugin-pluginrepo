@@ -311,6 +311,11 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             $R->doc .= '<p class="tags">'.$this->getLang('tagged_with').' ';
             $R->doc .= $this->hlp->listtags($data['tags'],$target).'</p>'.NL;
         }
+        // Needed for
+        if($rel['needed']){
+            $R->doc .= '<p class="needed">'.$this->getLang('needed_for').' ';
+            $R->doc .= $this->hlp->listplugins($rel['needed'],$R).'</p>'.NL;
+        }
     }
 
     function _showAuthorInfo(&$R, $data, $rel) {
