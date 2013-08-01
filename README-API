@@ -1,5 +1,13 @@
 ====== API Endpoint ======
 
+===== Commands =====
+
+Using the ''cmd'' parameter defines what is returned by the API.
+
+  * ''ping'' -- just returns a single 1 to show the connection is working
+  * ''query'' -- default query action described below
+
+
 ===== Formats =====
 
 Defines the output format and is specified by the ''fmt'' parameter. Can be:
