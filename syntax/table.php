@@ -326,7 +326,8 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $tmpChar = '';
         foreach($plugins as $row) {
             $id = (getNS($row['plugin']) ? $row['plugin'] : ':plugin:'.$row['plugin']);
-            if(!page_exists(cleanID($id))){
+
+            if(!$this->getConf('devmode') && !page_exists(cleanID($id))){
                 $this->hlp->deletePlugin($row['plugin']);
                 continue;
             }
@@ -452,7 +453,8 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
         foreach($plugins as $row) {
             $id = (getNS($row['plugin']) ? $row['plugin'] : ':plugin:'.$row['plugin']);
-            if(!page_exists(cleanID($id))){
+
+            if(!$this->getConf('devmode') && !page_exists(cleanID($id))){
                 $this->hlp->deletePlugin($row['plugin']);
                 continue;
             }
