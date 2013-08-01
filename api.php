@@ -17,7 +17,8 @@ $extensions = $REPO->getFilteredPlugins(
     $INPUT->arr('mail'),
     $INPUT->int('type'),
     $INPUT->arr('tag'),
-    $INPUT->str('order')
+    $INPUT->str('order'),
+    $INPUT->int('limit')
 );
 
 header('Cache-Control: must-revalidate, post-check=0, pre-check=0');

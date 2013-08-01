@@ -65,6 +65,12 @@ Supported fields:
   * lastupdate
   * popularity
   * plugin ('default')
-  * all other DB fields
+  * all other non-derived DB fields
 
 example: ''api.php?order=lastupdate''
+
+===== Limit =====
+
+You can limit the number of results using the ''limit'' parameter.
+
+example: ''api.php?limit=5''

@@ -228,7 +228,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      * @return array
      * @throws Exception
      */
-    function getFilteredPlugins($names = array(), $emailids=array(), $type = 0, $tags = array(), $order = '') {
+    function getFilteredPlugins($names = array(), $emailids=array(), $type = 0, $tags = array(), $order = '', $limit = 0) {
         // default to all extensions
         if($type == 0) {
             foreach(array_keys($this->types) as $t) $type += $t;
@@ -239,6 +239,14 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         if($order == 'popularity') $order .= ' DESC';
         if($order == 'lastupdate') $order .= ' DESC';
         if($order == '') $order = 'plugin';
+
+        // limit
+        $limit = (int) $limit;
+        if($limit){
+            $limit = "LIMIT $limit";
+        }else{
+            $limit = '';
+        }
 
         // name filter
         $namefilter = '';
@@ -297,7 +305,8 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                        $tagfilter
                        $emailfilter
               GROUP BY A.plugin
-              ORDER BY $order";
+              ORDER BY $order
+                       $limit";
 
         $db = $this->_getPluginsDB();
         if(!$db) throw new Exception('Cannot connect to database');
