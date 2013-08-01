@@ -228,7 +228,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      * @return array
      * @throws Exception
      */
-    function getFilteredPlugins($names = array(), $emailids=array(), $type = 0, $tags = array(), $order = 'plugin') {
+    function getFilteredPlugins($names = array(), $emailids=array(), $type = 0, $tags = array(), $order = '') {
         // default to all extensions
         if($type == 0) {
             foreach(array_keys($this->types) as $t) $type += $t;
@@ -238,6 +238,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $order = preg_replace('/[^a-z]+/', '', $order);
         if($order == 'popularity') $order .= ' DESC';
         if($order == 'lastupdate') $order .= ' DESC';
+        if($order == '') $order = 'plugin';
 
         // name filter
         $namefilter = '';
