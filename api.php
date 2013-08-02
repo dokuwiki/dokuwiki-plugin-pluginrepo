@@ -41,6 +41,10 @@ if($INPUT->str('cmd') == 'ping') {
             $xml = xml_encode((object) $extensions, "hash");
             echo $xml;
             break;
+        case 'yaml':
+            header('Content-Type: text/yaml');
+            require('Spyc.php');
+            echo Spyc::YAMLDump($extensions, false, 0);
         case 'php':
             header('Content-Type: application/vnd.php.serialized');
             echo serialize($extensions);

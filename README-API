@@ -14,6 +14,7 @@ Defines the output format and is specified by the ''fmt'' parameter. Can be:
 
   * ''debug'' -- print_r for easy browsing
   * ''xml'' -- XML, should not be used if can be avoided
+  * ''yaml'' -- YAML encoded data
   * ''php'' -- PHP serialized data
   * ''json'' -- JSON encoded data (default)
     * give a callback name as ''cb'' parameter and it's JSONP
