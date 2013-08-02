@@ -228,7 +228,17 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      * @return array
      * @throws Exception
      */
-    function getFilteredPlugins($names = array(), $emailids = array(), $type = 0, $tags = array(), $order = '', $limit = 0) {
+    function getFilteredPlugins(
+        $names = array(),
+        $emailids = array(),
+        $type = 0,
+        $tags = array(),
+        $order = '',
+        $limit = 0,
+        $fulltext = ''
+    ) {
+        $fulltext = trim($fulltext);
+
         // default to all extensions
         if($type == 0) {
             foreach(array_keys($this->types) as $t) $type += $t;
@@ -238,14 +248,24 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $order = preg_replace('/[^a-z]+/', '', $order);
         if($order == 'popularity') $order .= ' DESC';
         if($order == 'lastupdate') $order .= ' DESC';
-        if($order == '') $order = 'plugin';
+        if($order == '') {
+            if($fulltext) {
+                $order = 'score DESC';
+            } else {
+                $order = 'plugin';
+            }
+        }
 
         // limit
         $limit = (int) $limit;
         if($limit) {
             $limit = "LIMIT $limit";
         } else {
-            $limit = '';
+            if($fulltext) {
+                $limit = 'LIMIT 50';
+            } else {
+                $limit = '';
+            }
         }
 
         // name filter
@@ -284,8 +304,21 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
             $tagfilter = 'AND B.tag IN ('.join(',', array_keys($tagparams)).')';
         }
 
+        // fulltext search
+        $fulltextwhere  = '';
+        $fulltextfilter = '';
+        $fulltextparams = array();
+        if($fulltext) {
+            $fulltextwhere  = 'MATCH (A.plugin, A.name, A.description, A.author, A.tags)
+                                 AGAINST (:fulltext WITH QUERY EXPANSION) AS score,';
+            $fulltextfilter = 'AND MATCH (A.plugin, A.name, A.description, A.author, A.tags)
+                                 AGAINST (:fulltext WITH QUERY EXPANSION)';
+            $fulltextparams = array(':fulltext' => $fulltext);
+        }
+
         $sql = "SELECT A.*,
                        MD5(LOWER(A.email)) as emailid,
+                       $fulltextwhere
                        GROUP_CONCAT(DISTINCT B.tag ORDER BY B.tag SEPARATOR '\n') as tags,
                        GROUP_CONCAT(DISTINCT C.other ORDER BY C.other SEPARATOR '\n') as similar,
                        GROUP_CONCAT(DISTINCT D.other ORDER BY D.other SEPARATOR '\n') as depends,
@@ -304,6 +337,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
                        $namefilter
                        $tagfilter
                        $emailfilter
+                       $fulltextfilter
               GROUP BY A.plugin
               ORDER BY $order
                        $limit";
@@ -315,7 +349,8 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
             array(':type' => $type),
             $nameparams,
             $tagparams,
-            $emailparams
+            $emailparams,
+            $fulltextparams
         );
 
         $stmt = $db->prepare($sql);

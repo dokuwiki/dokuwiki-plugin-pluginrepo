@@ -22,6 +22,8 @@ example: ''api.php?fmt=json&cb=my_callback''
 
 ===== Filters =====
 
+All filters can be combined and will be ANDed together.
+
 ==== Extension Name ====
 
 Provide one or multiple names in the ''ext[]'' parameter. Prefix with ''template:''
@@ -30,6 +32,16 @@ for templates.
 Only full matches currently.
 
 example: ''api.php?ext[]=wrap&ext[]=template:ach''
+
+==== Fulltext Search ====
+
+The parameter ''q'' allows to specify a full text query (with query expansion). If
+no ''limit'' was given, the limit is set to ''50''. If no ''order'' was given the
+result is sorted by the result score.
+
+The fulltext index uses the fields plugin, name, description, author and tag.
+
+example: ''api.php?q=wrap''
 
 ==== Type ====
 

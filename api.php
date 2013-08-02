@@ -18,7 +18,8 @@ $extensions = $REPO->getFilteredPlugins(
     $INPUT->int('type'),
     $INPUT->arr('tag'),
     $INPUT->str('order'),
-    $INPUT->int('limit')
+    $INPUT->int('limit'),
+    $INPUT->str('q')
 );
 
 header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
