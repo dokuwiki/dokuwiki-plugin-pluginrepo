@@ -219,16 +219,16 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      *
      * tags, similar, depends, conflicts have newline separated lists
      *
-     * @param array  $names names of wanted extensions (use template: prefix)
+     * @param array  $names    names of wanted extensions (use template: prefix)
      * @param array  $emailids md5s of emails of wanted extension authors
-     * @param int    $type  ANDed types you want, 0 for all
-     * @param array  $tags  show only extensions with these tags
-     * @param string $order order by this column
+     * @param int    $type     ANDed types you want, 0 for all
+     * @param array  $tags     show only extensions with these tags
+     * @param string $order    order by this column
      *
      * @return array
      * @throws Exception
      */
-    function getFilteredPlugins($names = array(), $emailids=array(), $type = 0, $tags = array(), $order = '', $limit = 0) {
+    function getFilteredPlugins($names = array(), $emailids = array(), $type = 0, $tags = array(), $order = '', $limit = 0) {
         // default to all extensions
         if($type == 0) {
             foreach(array_keys($this->types) as $t) $type += $t;
@@ -242,9 +242,9 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
 
         // limit
         $limit = (int) $limit;
-        if($limit){
+        if($limit) {
             $limit = "LIMIT $limit";
-        }else{
+        } else {
             $limit = '';
         }
 
@@ -340,13 +340,13 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
             unset($plugins[$i]['screenshot']);
             unset($plugins[$i]['email']); // no spam
 
-            $plugins[$i]['depends'] = array_filter(explode("\n", $plugins[$i]['depends']));
-            $plugins[$i]['similar'] = array_filter(explode("\n", $plugins[$i]['similar']));
+            $plugins[$i]['depends']   = array_filter(explode("\n", $plugins[$i]['depends']));
+            $plugins[$i]['similar']   = array_filter(explode("\n", $plugins[$i]['similar']));
             $plugins[$i]['conflicts'] = array_filter(explode("\n", $plugins[$i]['conflicts']));
-            $plugins[$i]['tags'] = array_filter(explode("\n", $plugins[$i]['tags']));
+            $plugins[$i]['tags']      = array_filter(explode("\n", $plugins[$i]['tags']));
 
             $plugins[$i]['compatible'] = $this->cleanCompat($plugins[$i]['compatible']);
-            $plugins[$i]['types'] = $this->listtypes($plugins[$i]['type']);
+            $plugins[$i]['types']      = $this->listtypes($plugins[$i]['type']);
 
             ksort($plugins[$i]);
         }
