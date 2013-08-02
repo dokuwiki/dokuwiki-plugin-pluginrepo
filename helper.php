@@ -239,6 +239,8 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     ) {
         $fulltext = trim($fulltext);
 
+        $maxpop = $this->getMaxPopularity();
+
         // default to all extensions
         if($type == 0) {
             foreach(array_keys($this->types) as $t) $type += $t;
@@ -317,6 +319,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         }
 
         $sql = "SELECT A.*,
+                       A.popularity/:maxpop as popularity,
                        MD5(LOWER(A.email)) as emailid,
                        $fulltextwhere
                        GROUP_CONCAT(DISTINCT B.tag ORDER BY B.tag SEPARATOR '\n') as tags,
@@ -346,7 +349,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         if(!$db) throw new Exception('Cannot connect to database');
 
         $parameters = array_merge(
-            array(':type' => $type),
+            array(':type' => $type, ':maxpop' => $maxpop),
             $nameparams,
             $tagparams,
             $emailparams,
