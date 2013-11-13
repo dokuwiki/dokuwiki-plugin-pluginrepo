@@ -20,7 +20,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
      * Constructor. Load helper plugin
      */
     function syntax_plugin_pluginrepo_entry(){
-        $this->hlp =& plugin_load('helper', 'pluginrepo');
+        $this->hlp = plugin_load('helper', 'pluginrepo');
         if(!$this->hlp) msg('Loading the pluginrepo helper failed. Make sure the pluginrepo plugin is installed.',-1);
     }
 
@@ -56,7 +56,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
     /**
      * Handle the match - parse the data
      */
-    function handle($match, $state, $pos, &$handler){
+    function handle($match, $state, $pos, Doku_Handler &$handler){
         global $ID;
 
         $data = $this->hlp->parseData($match);
@@ -69,7 +69,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
     /**
      * Create output or save the data
      */
-    function render($format, &$renderer, $data) {
+    function render($format, Doku_Renderer &$renderer, $data) {
         global $ID;
 
         if (curNS($ID) == 'plugin') {
@@ -80,9 +80,11 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
         switch ($format){
             case 'xhtml':
+                /** @var Doku_Renderer_xhtml $renderer */
                 $this->_showData($data,$id,$renderer);
                 return true;
             case 'metadata':
+                /** @var Doku_Renderer_metadata $renderer */
                 // only save if in first level namespace to ignore translated namespaces
                 if(substr_count($ID,':') == 1){
                     $this->_saveData($data,$id,$renderer->meta['title']);
@@ -369,19 +371,9 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         if (!$data['securityissue']) $data['securityissue'] = "";
         if (!$data['tags']) $data['tags'] = "";
 
-        $stmt = $db->prepare('INSERT INTO plugins
-                               (plugin, name, description,
-                                author, email,
-                                compatible, bestcompatible, lastupdate, securityissue, securitywarning,
-                                downloadurl, bugtracker, sourcerepo, donationurl,
-                                screenshot, tags, type)
-                              VALUES
-                               (:plugin, :name, :description,
-                                :author, LOWER(:email),
-                                :compatible, :bestcompatible, :lastupdate, :securityissue, :securitywarning,
-                                :downloadurl, :bugtracker, :sourcerepo, :donationurl,
-                                :screenshot, :tags, :type)
-                              ON DUPLICATE KEY UPDATE
+        if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {
+            $insert = 'INSERT';
+            $duplicate = 'ON DUPLICATE KEY UPDATE
                                 name            = :name,
                                 description     = :description,
                                 author          = :author,
@@ -399,7 +391,25 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
                                 tags            = :tags,
                                 type            = :type
 
-                            ');
+                            ';
+        } else {
+            $insert = 'INSERT OR REPLACE';
+            $duplicate = '';
+        }
+
+        $stmt = $db->prepare($insert.' INTO plugins
+                               (plugin, name, description,
+                                author, email,
+                                compatible, bestcompatible, lastupdate, securityissue, securitywarning,
+                                downloadurl, bugtracker, sourcerepo, donationurl,
+                                screenshot, tags, type)
+                              VALUES
+                               (:plugin, :name, :description,
+                                :author, LOWER(:email),
+                                :compatible, :bestcompatible, :lastupdate, :securityissue, :securitywarning,
+                                :downloadurl, :bugtracker, :sourcerepo, :donationurl,
+                                :screenshot, :tags, :type)
+                              '.$duplicate);
         $stmt->execute(array(':plugin' =>  $id,
                              ':name' => $name,
                              ':description' => $data['description'],

@@ -12,15 +12,16 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     var $dokuReleases; // array of DokuWiki releases (name & date)
 
     var $types = array(
-        1   => 'Syntax',
-        2   => 'Admin',
-        4   => 'Action',
-        8   => 'Render',
-        16  => 'Helper',
-        32  => 'Template',
-        64  => 'Remote',
+        1 => 'Syntax',
+        2 => 'Admin',
+        4 => 'Action',
+        8 => 'Render',
+        16 => 'Helper',
+        32 => 'Template',
+        64 => 'Remote',
         128 => 'Auth'
     );
+
 
     var $obsoleteTag = '!obsolete';
     var $bundled;
@@ -86,7 +87,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      */
     function _getPluginsDB() {
         global $conf;
-
+        /** @var $db PDO */
         $db = null;
         try {
             $db = new PDO($this->getConf('db_name'), $this->getConf('db_user'), $this->getConf('db_pass'));
@@ -129,11 +130,12 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      */
     function getPlugins($filter = null) {
         $db = $this->_getPluginsDB();
-        if(!$db) return;
+        if(!$db) return array();
 
         // return named plugins OR with certain tag/type
         $plugins = $filter['plugins'];
         $type    = 0;
+        $tag     = '';
         if($plugins) {
             if(!is_array($plugins)) {
                 $plugins = array($plugins);
@@ -224,6 +226,8 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      * @param int    $type     ANDed types you want, 0 for all
      * @param array  $tags     show only extensions with these tags
      * @param string $order    order by this column
+     * @param int    $limit    number of items
+     * @param string $fulltext search term for full text search
      *
      * @return array
      * @throws Exception
@@ -396,6 +400,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      * Translate sort keyword to sql clause
      */
     function _getPluginsSortSql($sort) {
+        $sortsql = '';
         if($sort{0} == '^') {
             $sortsql = ' DESC';
             $sort    = substr($sort, 1);
@@ -419,7 +424,8 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     }
 
     /**
-     * Return array of metadata about plugin
+     * @param string $id of plugin
+     * @return array of metadata about plugin:
      *   'conflicts'  array of plugin names
      *   'similar'    array of plugin names
      *   'depends'    array of plugin names
@@ -428,11 +434,12 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      */
     function getPluginRelations($id) {
         $db = $this->_getPluginsDB();
-        if(!$db) return;
+        if(!$db) return array();
 
         $id   = strtolower($id);
         $meta = array();
 
+        /** @var $stmt PDOStatement */
         $stmt = $db->prepare('SELECT plugin,other FROM plugin_conflicts WHERE plugin = ? OR other = ?');
         $stmt->execute(array($id, $id));
         foreach($stmt as $row) {
@@ -474,7 +481,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      */
     function getTags($minlimit = 0, $filter) {
         $db = $this->_getPluginsDB();
-        if(!$db) return;
+        if(!$db) return array();
 
         if($filter['showall'] == 'yes') {
             $shown = "1";
@@ -487,6 +494,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
             $shown .= ' AND B.type <> 32';
         }
 
+        /** @var $stmt PDOStatement */
         $stmt = $db->prepare(
             "SELECT A.tag, COUNT(A.tag) as cnt
                                 FROM plugin_tags as A, plugins as B
@@ -506,12 +514,14 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     /**
      * Return number of installations for most popular plugin
      * besides the bundled ones
+     * Otherwise 1 is return, to prevent dividing by zero. (and it correspondence with the usage of the author self)
      *
      * @param string $type either 'plugins' or 'templates', '' shows all
+     * @return int
      */
     function getMaxPopularity($type = '') {
         $db = $this->_getPluginsDB();
-        if(!$db) return;
+        if(!$db) return 1;
 
         $sql = "SELECT popularity
                   FROM plugins
@@ -525,13 +535,14 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $sql .= "ORDER BY popularity DESC
                  LIMIT 1";
 
+        /** @var $stmt PDOStatement */
         $stmt = $db->prepare($sql);
         $stmt->execute($this->bundled);
         $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $retval = $res[0]['popularity'];
         if(!$retval) $retval = 1;
-        return $retval;
+        return (int) $retval;
     }
 
     /**
@@ -542,6 +553,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $db = $this->_getPluginsDB();
         if(!$db) return;
 
+        /** @var $stmt PDOStatement */
         $stmt = $db->prepare('DELETE FROM plugins          WHERE plugin = ?');
         $stmt->execute(array($plugin));
 
@@ -560,6 +572,11 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
 
     /**
      * render internallink to plugin/template, templates identified by having namespace
+     *
+     * @param $R Doku_Renderer_xhtml
+     * @param $plugin string pluginname
+     * @param $title string Title of plugin link
+     * @return string rendered internallink
      */
     function pluginlink(&$R, $plugin, $title = null) {
         if(!getNS($plugin)) {
@@ -598,6 +615,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $matches[0]         = array_map('trim', $matches[0]);
         $retval             = array();
         $implicitCompatible = false;
+        $nextImplicitCompatible = false;
         $dokuReleases       = $this->dokuReleases;
         ksort($dokuReleases);
         foreach($dokuReleases as $release) {
@@ -616,6 +634,10 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         return $retval;
     }
 
+    /**
+     * @param bool $addInfolink
+     * @return string rendered
+     */
     function renderCompatibilityHelp($addInfolink = false) {
         $infolink = '<sup><a href="http://www.dokuwiki.org/extension_compatibility" title="'.$this->getLang('compatible_with_info').'">?</a></sup>';
         $infolink = $addInfolink ? $infolink : '';
@@ -705,6 +727,8 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
 
     /**
      * Create tables for repository
+     *
+     * @param $db PDO
      */
     function _initPluginDB($db) {
         msg("Repository plugin: data tables created for plugin repository", -1);
