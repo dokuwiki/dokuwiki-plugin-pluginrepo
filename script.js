@@ -10,6 +10,7 @@ var pr_qsearch = {
     $inObj: null,
     $outObj: null,
     $nsObj: null,
+    $formObj: null,
     timer: null,
 
     init: function () {
@@ -19,10 +20,12 @@ var pr_qsearch = {
         pr_qsearch.$nsObj = jQuery('#dw__ns');
 
         // objects found?
-        if (pr_qsearch.$inObj.length === 0) return;
-        if (pr_qsearch.$outObj.length === 0) return;
-        if (pr_qsearch.$formObj.length === 0) return;
-        if (pr_qsearch.$nsObj.length === 0) return;
+        if (pr_qsearch.$inObj.length === 0 ||
+            pr_qsearch.$outObj.length === 0 ||
+            pr_qsearch.$formObj.length === 0 ||
+            pr_qsearch.$nsObj.length === 0) {
+            return;
+        }
 
         pr_qsearch.$inObj.attr("autocomplete", "off");
 
