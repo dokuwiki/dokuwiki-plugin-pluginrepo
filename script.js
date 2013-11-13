@@ -5,67 +5,77 @@
  * @author   Andreas Gohr <andi@splitbrain.org>
  * @author   Adrian Lang <lang@cosmocode.de>
  */
-jQuery(function () {
-    var timer = null;
 
-    var $inObj = jQuery('#qsearch2__in');
-    var $outObj = jQuery('#qsearch2__out');
-    var $formObj = jQuery('#dw__search2');
-    var $nsObj = jQuery('#dw__ns');
+var pr_qsearch = {
+    $inObj: null,
+    $outObj: null,
+    $nsObj: null,
+    timer: null,
 
-    // objects found?
-    if ($inObj.length === 0) return;
-    if ($outObj.length === 0) return;
-    if ($formObj.length === 0) return;
-    if ($nsObj.length === 0) return;
+    init: function () {
+        pr_qsearch.$inObj = jQuery('#qsearch2__in');
+        pr_qsearch.$outObj = jQuery('#qsearch2__out');
+        pr_qsearch.$formObj = jQuery('#dw__search2');
+        pr_qsearch.$nsObj = jQuery('#dw__ns');
 
+        // objects found?
+        if (pr_qsearch.$inObj.length === 0) return;
+        if (pr_qsearch.$outObj.length === 0) return;
+        if (pr_qsearch.$formObj.length === 0) return;
+        if (pr_qsearch.$nsObj.length === 0) return;
 
-    $inObj.attr("autocomplete", "off");
+        pr_qsearch.$inObj.attr("autocomplete", "off");
 
-    function clear_results() {
-        $outObj.hide();
-        $outObj.html('');
-    }
+        // attach eventhandler to search field
+        pr_qsearch.$inObj.keyup(function () {
+            pr_qsearch.clear_results();
+            if (pr_qsearch.timer) {
+                window.clearTimeout(pr_qsearch.timer);
+                pr_qsearch.timer = null;
+            }
+            pr_qsearch.timer = window.setTimeout(pr_qsearch.performSearch, 500);
+        });
 
-    var onCompletion = function (responseText) {
+        // attach eventhandler to output field
+        pr_qsearch.$outObj.click(function () {
+            pr_qsearch.$outObj.hide();
+        });
+
+        pr_qsearch.$formObj.submit(function () {
+            pr_qsearch.$inObj.val(pr_qsearch.$inObj.val() + ' @' + pr_qsearch.$nsObj.val());
+            return true;
+        });
+    },
+
+    clear_results: function () {
+        pr_qsearch.$outObj.hide();
+        pr_qsearch.$outObj.html('');
+    },
+
+    onCompletion: function (responseText) {
         if (responseText === '') return;
 
-        $outObj.html(responseText);
-        $outObj.show();
-    };
+        pr_qsearch.$outObj.html(responseText);
+        pr_qsearch.$outObj.show();
+    },
 
-    var performSearch = function () {
-        clear_results();
-        var value = $inObj.val();
+    performSearch: function () {
+        pr_qsearch.clear_results();
+        var value = pr_qsearch.$inObj.val();
         if (value === '') return;
 
         jQuery.post(
             DOKU_BASE + 'lib/exe/ajax.php',
             {
                 call: 'qsearch',
-                q: value + ' @' + $nsObj.val()
+                q: value + ' @' + pr_qsearch.$nsObj.val()
             },
-            onCompletion
+            pr_qsearch.onCompletion
         );
-    };
+    }
+};
 
-    // attach eventhandler to search field
-    $inObj.keyup(function () {
-        clear_results();
-        if (timer) {
-            window.clearTimeout(timer);
-            timer = null;
-        }
-        timer = window.setTimeout(performSearch, 500);
-    });
 
-    // attach eventhandler to output field
-    $outObj.click(function () {
-        $outObj.hide();
-    });
-
-    $formObj.submit(function () {
-        $inObj.val($inObj.val() + ' @' + $nsObj.val());
-        return true;
-    });
+jQuery(function () {
+    pr_qsearch.init();
 });
