@@ -8,26 +8,27 @@
 jQuery(function () {
     var timer = null;
 
-    var $inObj  = jQuery('#qsearch2__in');
+    var $inObj = jQuery('#qsearch2__in');
     var $outObj = jQuery('#qsearch2__out');
     var $formObj = jQuery('#dw__search2');
     var $nsObj = jQuery('#dw__ns');
 
     // objects found?
-    if ($inObj.length === 0){ return; }
-    if ($outObj.length === 0){ return; }
-    if ($formObj.length === 0){ return; }
-    if ($nsObj.length === 0){ return; }
+    if ($inObj.length === 0) return;
+    if ($outObj.length === 0) return;
+    if ($formObj.length === 0) return;
+    if ($nsObj.length === 0) return;
+
 
     $inObj.attr("autocomplete", "off");
 
-    function clear_results(){
+    function clear_results() {
         $outObj.hide();
         $outObj.html('');
     }
 
     var onCompletion = function (responseText) {
-        if (responseText === '') { return; }
+        if (responseText === '') return;
 
         $outObj.html(responseText);
         $outObj.show();
@@ -36,7 +37,8 @@ jQuery(function () {
     var performSearch = function () {
         clear_results();
         var value = $inObj.val();
-        if(value === ''){ return; }
+        if (value === '') return;
+
         jQuery.post(
             DOKU_BASE + 'lib/exe/ajax.php',
             {
@@ -50,7 +52,7 @@ jQuery(function () {
     // attach eventhandler to search field
     $inObj.keyup(function () {
         clear_results();
-        if(timer){
+        if (timer) {
             window.clearTimeout(timer);
             timer = null;
         }
