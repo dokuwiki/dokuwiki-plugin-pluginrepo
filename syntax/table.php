@@ -326,13 +326,6 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $compatgroup = 'xx9999-99-99';
         $tmpChar = '';
         foreach($plugins as $row) {
-            $id = (getNS($row['plugin']) ? $row['plugin'] : ':plugin:'.$row['plugin']);
-
-            if(!$this->getConf('devmode') && !page_exists(cleanID($id))){
-                $this->hlp->deletePlugin($row['plugin']);
-                continue;
-            }
-
             if (!$data['compatible'] && !$sort && $row['bestcompatible'] !== $compatgroup) {
                 $R->doc .= '</table>'.NL;
                 $R->doc .= '<table class="inline">'.NL;
@@ -453,13 +446,6 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= '</tr>';
 
         foreach($plugins as $row) {
-            $id = (getNS($row['plugin']) ? $row['plugin'] : ':plugin:'.$row['plugin']);
-
-            if(!$this->getConf('devmode') && !page_exists(cleanID($id))){
-                $this->hlp->deletePlugin($row['plugin']);
-                continue;
-            }
-
             $R->doc .= '<tr>';
             $R->doc .= '<td>';
             $R->doc .= $this->hlp->pluginlink($R, $row['plugin']);

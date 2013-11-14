@@ -10,4 +10,3 @@ $lang['db_user']               = 'Datenbankbenutzer';
 $lang['db_pass']               = 'Datenbankpasswort';
 $lang['bundled']               = 'Gebündelte Plugins in dieser DokuWiki-Version (Komma separiert)';
 $lang['releases']              = 'Liste der DokuWiki-Versionen (yyyy-mm-dd "name") (Komma separiert)';
-$lang['devmode']               = 'Nicht die Plugin-Informationen löschen, wenn die Seite fehlt. (Zur Entwicklung)';
