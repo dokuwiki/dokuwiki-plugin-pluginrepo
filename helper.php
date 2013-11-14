@@ -9,25 +9,25 @@
 
 class helper_plugin_pluginrepo extends DokuWiki_Plugin {
 
-    var $dokuReleases; // array of DokuWiki releases (name & date)
+    public $dokuReleases; // array of DokuWiki releases (name & date)
 
-    var $types = array(
-        1 => 'Syntax',
-        2 => 'Admin',
-        4 => 'Action',
-        8 => 'Render',
-        16 => 'Helper',
-        32 => 'Template',
-        64 => 'Remote',
+    public $types = array(
+        1   => 'Syntax',
+        2   => 'Admin',
+        4   => 'Action',
+        8   => 'Render',
+        16  => 'Helper',
+        32  => 'Template',
+        64  => 'Remote',
         128 => 'Auth'
     );
 
 
-    var $obsoleteTag = '!obsolete';
-    var $bundled;
-    var $securitywarning = array('informationleak', 'allowsscript', 'requirespatch', 'partlyhidden');
+    public $obsoleteTag = '!obsolete';
+    public $bundled;
+    public $securitywarning = array('informationleak', 'allowsscript', 'requirespatch', 'partlyhidden');
 
-    function helper_plugin_pluginrepo() {
+    public function helper_plugin_pluginrepo() {
         $this->bundled = explode(',', $this->getConf('bundled'));
         $this->bundled = array_map('trim', $this->bundled);
         $this->bundled = array_filter($this->bundled);
@@ -41,7 +41,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      *  If you need to enter # as data, escape it with a backslash (\#).
      *  If you need a backslash, escape it as well (\\)
      */
-    function parseData($match) {
+    public function parseData($match) {
         // get lines
         $lines = explode("\n", $match);
         array_pop($lines);
@@ -85,7 +85,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      * Example: 'mysql:dbname=testdb;host=127.0.0.1'
      *      or  'sqlite2:C:\DokuWikiStickNew\dokuwiki\repo.sqlite'
      */
-    function _getPluginsDB() {
+    public function _getPluginsDB() {
         global $conf;
         /** @var $db PDO */
         $db = null;
@@ -128,7 +128,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      *   'showall'    (yes/no) default/unset is 'no' and obsolete plugins and security issues are not returned
      *   'includetemplates' (yes/no) default/unset is 'no' and template data will not be returned
      */
-    function getPlugins($filter = null) {
+    public function getPlugins($filter = null) {
         $db = $this->_getPluginsDB();
         if(!$db) return array();
 
@@ -232,7 +232,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      * @return array
      * @throws Exception
      */
-    function getFilteredPlugins(
+    public function getFilteredPlugins(
         $names = array(),
         $emailids = array(),
         $type = 0,
@@ -399,7 +399,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     /**
      * Translate sort keyword to sql clause
      */
-    function _getPluginsSortSql($sort) {
+    private function _getPluginsSortSql($sort) {
         $sortsql = '';
         if($sort{0} == '^') {
             $sortsql = ' DESC';
@@ -432,7 +432,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      *   'needed'     array of plugin names
      *   'sameauthor' array of plugin names
      */
-    function getPluginRelations($id) {
+    public function getPluginRelations($id) {
         $db = $this->_getPluginsDB();
         if(!$db) return array();
 
@@ -479,7 +479,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     /**
      * Return array of tags and their frequency in the repository
      */
-    function getTags($minlimit = 0, $filter) {
+    public function getTags($minlimit = 0, $filter) {
         $db = $this->_getPluginsDB();
         if(!$db) return array();
 
@@ -519,7 +519,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      * @param string $type either 'plugins' or 'templates', '' shows all
      * @return int
      */
-    function getMaxPopularity($type = '') {
+    public function getMaxPopularity($type = '') {
         $db = $this->_getPluginsDB();
         if(!$db) return 1;
 
@@ -549,7 +549,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      * Delete all information about plugin from repository database
      * (popularity data is left intact)
      */
-    function deletePlugin($plugin) {
+    public function deletePlugin($plugin) {
         $db = $this->_getPluginsDB();
         if(!$db) return;
 
@@ -578,7 +578,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      * @param $title string Title of plugin link
      * @return string rendered internallink
      */
-    function pluginlink(&$R, $plugin, $title = null) {
+    public function pluginlink(&$R, $plugin, $title = null) {
         if(!getNS($plugin)) {
             return $R->internallink(':plugin:'.$plugin, $title, null, true);
         } else {
@@ -592,7 +592,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      * only releases mentioned in config are reported
      * 'newest' supported release at [0]
      */
-    function cleanCompat($compatible) {
+    public function cleanCompat($compatible) {
         if(!$this->dokuReleases) {
             $this->dokuReleases = array();
             $releases           = explode(',', $this->getConf('releases'));
@@ -638,7 +638,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      * @param bool $addInfolink
      * @return string rendered
      */
-    function renderCompatibilityHelp($addInfolink = false) {
+    public function renderCompatibilityHelp($addInfolink = false) {
         $infolink = '<sup><a href="http://www.dokuwiki.org/extension_compatibility" title="'.$this->getLang('compatible_with_info').'">?</a></sup>';
         $infolink = $addInfolink ? $infolink : '';
         return sprintf($this->getLang('compatible_with'), $infolink);
@@ -648,7 +648,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      * Clean list of plugins, return rendered as internallinks
      * input may be comma separated or array
      */
-    function listplugins($plugins, &$R, $sep = ', ') {
+    public function listplugins($plugins, &$R, $sep = ', ') {
         if(!is_array($plugins)) $plugins = explode(',', $plugins);
         $plugins = array_map('trim', $plugins);
         $plugins = array_map('strtolower', $plugins);
@@ -665,7 +665,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     /**
      * Convert comma separated list of tags to filterlinks
      */
-    function listtags($string, $target, $sep = ', ') {
+    public function listtags($string, $target, $sep = ', ') {
         $tags = $this->parsetags($string);
         $out  = array();
         foreach($tags as $tag) {
@@ -678,7 +678,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     /**
      * Clean comma separated list of tags, return as sorted array
      */
-    function parsetags($string) {
+    public function parsetags($string) {
         $tags = preg_split('/[;,\s]/', $string);
         $tags = array_map('strtolower', $tags);
         $tags = array_unique($tags);
@@ -690,7 +690,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     /**
      * Convert $type (int) to list of filterlinks
      */
-    function listtype($type, $target, $sep = ', ') {
+    public function listtype($type, $target, $sep = ', ') {
         $types = array();
         foreach($this->types as $k => $v) {
             if($type & $k) {
@@ -705,7 +705,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     /**
      * Convert $type (int) to array of names
      */
-    function listtypes($type) {
+    public function listtypes($type) {
         $types = array();
         foreach($this->types as $k => $v) {
             if($type & $k) $types[] = $v;
@@ -717,7 +717,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
     /**
      * Convert plugin type name (comma sep. string) to (int)
      */
-    function parsetype($types) {
+    public function parsetype($types) {
         $type = 0;
         foreach($this->types as $k => $v) {
             if(preg_match('/'.$v.'/i', $types)) $type += $k;
@@ -730,7 +730,7 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
      *
      * @param $db PDO
      */
-    function _initPluginDB($db) {
+    private function _initPluginDB($db) {
         msg("Repository plugin: data tables created for plugin repository", -1);
         $db->exec('CREATE TABLE plugin_conflicts (plugin varchar(50) NOT NULL, other varchar(50) NOT NULL);');
         $db->exec('CREATE TABLE plugin_depends (plugin varchar(50) NOT NULL, other varchar(50) NOT NULL);');
@@ -738,11 +738,11 @@ class helper_plugin_pluginrepo extends DokuWiki_Plugin {
         $db->exec('CREATE TABLE plugin_tags (plugin varchar(50) NOT NULL, tag varchar(255) NOT NULL);');
         $db->exec(
             'CREATE TABLE plugins (plugin varchar(50) PRIMARY KEY NOT NULL, name varchar(255) default NULL,
-                                            description varchar(255) default NULL, author varchar(255) default NULL, email varchar(255) default NULL,
-                                            compatible varchar(255) default NULL, lastupdate date default NULL, downloadurl varchar(255) default NULL,
-                                            bugtracker varchar(255) default NULL, sourcerepo varchar(255) default NULL, donationurl varchar(255) default NULL, type int(11) NOT NULL default 0,
-                                            screenshot varchar(255) default NULL, tags varchar(255) default NULL, securitywarning varchar(255) default NULL, securityissue varchar(255) NOT NULL,
-                                            bestcompatible varchar(50) default NULL, popularity int default 0);'
+                                   description varchar(255) default NULL, author varchar(255) default NULL, email varchar(255) default NULL,
+                                   compatible varchar(255) default NULL, lastupdate date default NULL, downloadurl varchar(255) default NULL,
+                                   bugtracker varchar(255) default NULL, sourcerepo varchar(255) default NULL, donationurl varchar(255) default NULL, type int(11) NOT NULL default 0,
+                                   screenshot varchar(255) default NULL, tags varchar(255) default NULL, securitywarning varchar(255) default NULL, securityissue varchar(255) NOT NULL,
+                                   bestcompatible varchar(50) default NULL, popularity int default 0);'
         );
     }
 }
