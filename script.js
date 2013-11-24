@@ -5,54 +5,80 @@
  * @author   Andreas Gohr <andi@splitbrain.org>
  * @author   Adrian Lang <lang@cosmocode.de>
  */
-addInitEvent(function () {
 
-    var inID  = 'qsearch2__in';
-    var outID = 'qsearch2__out';
-    var formID = 'dw__search2';
-    var nsID = 'dw__ns';
+var pr_qsearch = {
+    $inObj: null,
+    $outObj: null,
+    $nsObj: null,
+    $formObj: null,
+    timer: null,
 
-    var inObj  = document.getElementById(inID);
-    var outObj = document.getElementById(outID);
-    var formObj = document.getElementById(formID);
-    var nsObj = document.getElementById(nsID);
+    init: function () {
+        pr_qsearch.$inObj = jQuery('#qsearch2__in');
+        pr_qsearch.$outObj = jQuery('#qsearch2__out');
+        pr_qsearch.$formObj = jQuery('#dw__search2');
+        pr_qsearch.$nsObj = jQuery('#dw__ns');
 
-    // objects found?
-    if (inObj === null){ return; }
-    if (outObj === null){ return; }
-    if (formObj === null){ return; }
-    if (nsObj === null){ return; }
+        // objects found?
+        if (pr_qsearch.$inObj.length === 0 ||
+            pr_qsearch.$outObj.length === 0 ||
+            pr_qsearch.$formObj.length === 0 ||
+            pr_qsearch.$nsObj.length === 0) {
+            return;
+        }
 
-    inObj.setAttribute("autocomplete","off");
+        pr_qsearch.$inObj.attr("autocomplete", "off");
 
-    function clear_results(){
-        outObj.style.display = 'none';
-        outObj.innerHTML = '';
+        // attach eventhandler to search field
+        pr_qsearch.$inObj.keyup(function () {
+            pr_qsearch.clear_results();
+            if (pr_qsearch.timer) {
+                window.clearTimeout(pr_qsearch.timer);
+                pr_qsearch.timer = null;
+            }
+            pr_qsearch.timer = window.setTimeout(pr_qsearch.performSearch, 500);
+        });
+
+        // attach eventhandler to output field
+        pr_qsearch.$outObj.click(function () {
+            pr_qsearch.$outObj.hide();
+        });
+
+        pr_qsearch.$formObj.submit(function () {
+            pr_qsearch.$inObj.val(pr_qsearch.$inObj.val() + ' @' + pr_qsearch.$nsObj.val());
+            return true;
+        });
+    },
+
+    clear_results: function () {
+        pr_qsearch.$outObj.hide();
+        pr_qsearch.$outObj.html('');
+    },
+
+    onCompletion: function (responseText) {
+        if (responseText === '') return;
+
+        pr_qsearch.$outObj.html(responseText);
+        pr_qsearch.$outObj.show();
+    },
+
+    performSearch: function () {
+        pr_qsearch.clear_results();
+        var value = pr_qsearch.$inObj.val();
+        if (value === '') return;
+
+        jQuery.post(
+            DOKU_BASE + 'lib/exe/ajax.php',
+            {
+                call: 'qsearch',
+                q: value + ' @' + pr_qsearch.$nsObj.val()
+            },
+            pr_qsearch.onCompletion
+        );
     }
+};
 
-    var sack_obj = new sack(DOKU_BASE + 'lib/exe/ajax.php');
-    sack_obj.AjaxFailedAlert = '';
-    sack_obj.encodeURIString = false;
-    sack_obj.onCompletion = function () {
-        var data = sack_obj.response;
-        if (data === '') { return; }
 
-        outObj.innerHTML = data;
-        outObj.style.display = 'block';
-    };
-
-    // attach eventhandler to search field
-    var delay = new Delay(function () {
-        clear_results();
-        var value = inObj.value;
-        if(value === ''){ return; }
-        sack_obj.runAJAX('call=qsearch&q=' + encodeURI(value + ' @' + nsObj.value));
-    });
-
-    addEvent(inObj, 'keyup', function () {clear_results(); delay.start(); });
-
-    // attach eventhandler to output field
-    addEvent(outObj, 'click', function () {outObj.style.display = 'none'; });
-
-    addEvent(formObj, 'submit', function () {inObj.value = inObj.value + ' @' + nsObj.value; return true; });
+jQuery(function () {
+    pr_qsearch.init();
 });

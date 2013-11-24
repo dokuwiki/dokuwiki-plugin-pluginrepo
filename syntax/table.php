@@ -12,14 +12,14 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
     /**
      * will hold the repository helper plugin
-     */
+     * @var $hlp helper_plugin_pluginrepo */
     var $hlp = null;
 
     /**
      * Constructor. Load helper plugin
      */
     function syntax_plugin_pluginrepo_table(){
-        $this->hlp =& plugin_load('helper', 'pluginrepo');
+        $this->hlp = plugin_load('helper', 'pluginrepo');
         if(!$this->hlp) msg('Loading the pluginrepo helper failed. Make sure the pluginrepo plugin is installed.',-1);
     }
 
@@ -59,14 +59,14 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
      * This parsing is shared between the multiple different output/control
      * syntaxes
      */
-    function handle($match, $state, $pos, &$handler){
+    function handle($match, $state, $pos, Doku_Handler &$handler){
         return $this->hlp->parseData($match);
     }
 
     /**
      * Create output
      */
-    function render($format, &$renderer, $data) {
+    function render($format, Doku_Renderer &$renderer, $data) {
         if($format == 'xhtml') {
             return $this->_showData($renderer,$data);
         }
@@ -104,6 +104,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
         // main table
         $this->_showPluginTable($R, $data);
+        return true;
     }
 
     /**
@@ -325,13 +326,6 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $compatgroup = 'xx9999-99-99';
         $tmpChar = '';
         foreach($plugins as $row) {
-            $id = (getNS($row['plugin']) ? $row['plugin'] : ':plugin:'.$row['plugin']);
-
-            if(!$this->getConf('devmode') && !page_exists(cleanID($id))){
-                $this->hlp->deletePlugin($row['plugin']);
-                continue;
-            }
-
             if (!$data['compatible'] && !$sort && $row['bestcompatible'] !== $compatgroup) {
                 $R->doc .= '</table>'.NL;
                 $R->doc .= '<table class="inline">'.NL;
@@ -452,13 +446,6 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= '</tr>';
 
         foreach($plugins as $row) {
-            $id = (getNS($row['plugin']) ? $row['plugin'] : ':plugin:'.$row['plugin']);
-
-            if(!$this->getConf('devmode') && !page_exists(cleanID($id))){
-                $this->hlp->deletePlugin($row['plugin']);
-                continue;
-            }
-
             $R->doc .= '<tr>';
             $R->doc .= '<td>';
             $R->doc .= $this->hlp->pluginlink($R, $row['plugin']);
