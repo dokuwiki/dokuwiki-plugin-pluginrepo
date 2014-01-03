@@ -3,8 +3,9 @@
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * 
- * @author  Antoine Turmel <geekshadow@gmail.com>
+ * @author Antoine Turmel <geekshadow@gmail.com>
  * @author NicolasFriedli <nicolas@theologique.ch>
+ * @author Fabrice Dejaigher <fabrice@chtiland.com>
  */
 $lang['by']                    = 'par';
 $lang['last_updated_on']       = 'Dernière mise à jour';
@@ -20,7 +21,7 @@ $lang['conflicts_with']        = 'En conflit avec';
 $lang['requires']              = 'Nécessite';
 $lang['similar_to']            = 'Similaire à';
 $lang['tagged_with']           = 'Tagué avec';
-$lang['needed_for']            = 'Nécessaire à';
+$lang['needed_for']            = 'Requis par';
 $lang['securitywarning']       = 'Avertissement de sécurité (merci de lire %s)&nbsp;:';
 $lang['security_informationleak'] = 'Ce module divulgue des informations qui pourraient être utiles à un pirate. Il n\'est pas recommandé dans une installation publique.';
 $lang['security_allowsscript'] = 'Ce module permet l\'exécution de scripts. Il ne doit être utilisé que si vous faites confiance à TOUS les éditeurs, le plus adapté pour les wikis personnels privés.';
@@ -48,6 +49,8 @@ $lang['t_typeadmin']           = 'Les modules %s fournissent des outils d\'admin
 $lang['t_typerender']          = 'Les modules %s ajoutent de nouveaux modes d\'exportation ou remplacent le moteur de rendu XHTML de base';
 $lang['t_typehelper']          = 'Les modules %s fournissent des fonctionnalités partagées par d\'autres modules';
 $lang['t_typetemplate']        = 'Les %s changent l\'apparence et le comportement de DokuWiki';
+$lang['t_typeremote']          = 'les plugins %s ajoutent des méthodes à l\'API à distance accessibles vis des web services';
+$lang['t_typeauth']            = 'les plugins %s ajoutent des modules d\'authentification';
 $lang['t_filterbytag']         = 'Filtrer par tag';
 $lang['t_availabletype']       = 'Modules %s disponibles';
 $lang['t_availabletagged']     = 'Tagués avec \'%s\'';
@@ -73,4 +76,4 @@ $lang['t_screenshot']          = 'Capture d\'écran';
 $lang['t_download']            = 'Télécharger';
 $lang['t_provides']            = 'Fournit';
 $lang['t_tags']                = 'Tags';
-$lang['t_bundled']             = 'fourni par défaut';
+$lang['t_bundled']             = 'inclus par défaut';
