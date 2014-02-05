@@ -45,6 +45,7 @@ if($INPUT->str('cmd') == 'ping') {
             header('Content-Type: text/yaml');
             require('Spyc.php');
             echo Spyc::YAMLDump($extensions, false, 0);
+            break;
         case 'php':
             header('Content-Type: application/vnd.php.serialized');
             echo serialize($extensions);
