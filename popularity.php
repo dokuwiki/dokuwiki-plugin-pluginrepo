@@ -8,8 +8,8 @@
  * Example: lib/plugins/pluginrepo/popularity.php?key=php_version&output=line&limit=6&w=500
  *
  * Parameters:
- *  - output: rss, pie, line, table
- *  - key: submitted fields by popularity plugin
+ *  - output: rss, pie, line, table(default)
+ *  - key: submitted fields by popularity plugin (required)
  *         e.g. page_size, media_size, webserver, php_version, attic_avg, attic_biggest, attic_count, attic_oldest,
  *          attic_size, attic_smallest, cache_avg, cache_biggest, cache_count, cache_size, cache_smallest, conf_authtype,
  *          conf_template, conf_useacl, edits_per_day, index_avg, index_biggest, index_count, index_size, index_smallest,
@@ -17,16 +17,14 @@
  *          meta_biggest, meta_count, meta_size, meta_smallest, now, os, page_avg, page_biggest, page_count,
  *          page_nscount, page_nsnest, page_oldest, page_smallest, pcre_backtrack, pcre_recursion, pcre_version,
  *          php_exectime, php_extension, php_memory, php_sapi, plugin, popauto, popversion, user_count
- *  - limit: number of results shown, when more the rest is summarized as 'other'. -1 shows all results.
- *  - w:     image width
- *  - h:     image height
- *  - o:     ordered by 'cnt' for counts or 'val' for values (val is only default for line chart)
- *  - p:     if true use percentages, otherwise absolute numbers (absolute numbers is only default for line chart)
- *  - s:     start date, show only submits after this date
- *  - e:     end date, when start date set, show only until this date
- *  - d:     when no start date set, shows the submits of last d days
- *
- *
+ *  - limit: number of results shown, when more the rest is summarized as 'other'. -1 shows all results (default 5)
+ *  - w:     image width  (only charts, default 450px)
+ *  - h:     image height (only charts, default 180px)
+ *  - o:     ordered by 'cnt' for counts (default) or 'val' for values ('val' is only default for line chart)
+ *  - p:     if true use percentages(default), otherwise absolute numbers (absolute numbers is only default for line chart)
+ *  - s:     (optional) start date, show only submits after this date
+ *  - e:     (optional) end date, when start date set, show only until this date
+ *  - d:     (optional) when no start date set, shows the submits of last d days
  *
  */
 if(!defined('DOKU_INC')) define('DOKU_INC', dirname(__FILE__) . '/../../../');
