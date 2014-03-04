@@ -141,52 +141,6 @@ function redirects_googlecharts($counts, $output, $usepercentage, $limit, $w, $h
     header('Location: '.$url);
 }
 
-///**
-// * Redirects to Google charts api, which returns a png image of a line chart
-// *
-// * @param array $counts array with value - count pairs
-// * @param int $limit number of values shown, rest as summarized as 'other'
-// * @param int $w chart image width
-// * @param int $h chart image height
-// */
-//function header_linechart($counts, $limit, $w, $h) {
-//    $data = array();
-//    $label = array();
-//    $other = 0;
-//
-//    $cnt = 0;
-//    foreach($counts as $count) {
-//        if($limit > 0 AND ++$cnt > $limit) {
-//            $other += $count['cnt'];
-//        } else {
-//            $data[] = $count['cnt'];
-//            $label[] = $count['val'];
-//        }
-//    }
-//    if($other > 0) {
-//        $data[] = $other;
-//        $label[] = 'other';
-//    }
-//
-//    $label = array_map('rawurlencode', $label);
-//
-//    // Create query
-//    $query = array(
-//        'cht' => 'lc',                      // Type
-//        'chs' => $w . 'x' . $h,             // Size
-//        'chco'=> '4d89f9',                  // Serie colors
-//        'chf' => 'bg,s,ffffff00',           // 'a,s,ffffff' // Background color  (bg=background, a=transparant, s=solid)
-//        'chxt' =>  true ? 'x,y' : null,     // X & Y axis labels
-//        'chds'=> 'a',                       // scaling: automatically
-//        'chd' => 't:' . join(',', $data),   // Data
-//        'chl' => join('|', $label)          // Data labels
-//    );
-//
-//    $url = 'http://chart.apis.google.com/chart?' . buildUnencodedURLparams($query);
-//
-//    header('Location: ' . $url);
-//}
-
 /**
  * Build an string of URL parameters
  * (Based on buildURLparams())
