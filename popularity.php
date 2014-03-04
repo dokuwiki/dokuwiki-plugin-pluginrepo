@@ -5,6 +5,9 @@ require_once(DOKU_INC . 'inc/init.php');
 
 require_once(DOKU_PLUGIN . 'pluginrepo/helper/repository.php');
 
+//close session
+session_write_close();
+
 $key = $INPUT->str('key'); //e.g. page_size, media_size, webserver, php_version, etc
 if(!$key) {
     echo 'no key given';
@@ -28,17 +31,23 @@ $daysago   = $INPUT->int('d');
 $default = ($output == 'line') ? 'val' : 'cnt';
 $orderby   = $INPUT->str('o', $default, true);
 
+$default = ($output == 'line') ? false : true;
+$usepercentage = $INPUT->bool('p', $default);
+
 //retrieve data
 $counts = $popularity->getCounts($key, $orderby, $startdate, $enddate, $daysago);
-$MAX = $popularity->getNumberOfSubmittingWikis($startdate, $enddate, $daysago);
+if($usepercentage) {
+    $MAX = $popularity->getNumberOfSubmittingWikis($startdate, $enddate, $daysago);
+} else {
+    $MAX = 0;
+}
 
 // build output
 $limit = $INPUT->int('limit', 5, true);
 $w = $INPUT->int('w', 450, true);
 $h = $INPUT->int('h', 180, true);
 
-$default = ($output == 'line') ? false : true;
-$usepercentage = $INPUT->bool('p', $default);
+
 
 output($counts, $output, $usepercentage, $limit, $w, $h);
 
