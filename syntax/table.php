@@ -12,15 +12,15 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
     /**
      * will hold the repository helper plugin
-     * @var $hlp helper_plugin_pluginrepo */
+     * @var $hlp helper_plugin_pluginrepo_repository */
     var $hlp = null;
 
     /**
      * Constructor. Load helper plugin
      */
     function syntax_plugin_pluginrepo_table(){
-        $this->hlp = plugin_load('helper', 'pluginrepo');
-        if(!$this->hlp) msg('Loading the pluginrepo helper failed. Make sure the pluginrepo plugin is installed.',-1);
+        $this->hlp = plugin_load('helper', 'pluginrepo_repository');
+        if(!$this->hlp) msg('Loading the pluginrepo repository helper failed. Make sure the pluginrepo plugin is installed.',-1);
     }
 
     /**

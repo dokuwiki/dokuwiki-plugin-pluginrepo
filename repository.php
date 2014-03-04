@@ -3,14 +3,14 @@
  * DokuWiki plugin/template/popularity data repository API
  *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * @author     Håkan Sandell <hakan.sandell@home.se>
+ * @author     HÃ¥kan Sandell <hakan.sandell@home.se>
  */
 
 
 if(!defined('DOKU_INC')) define('DOKU_INC',dirname(__FILE__).'/../../../');
 require_once(DOKU_INC.'inc/init.php');
 
-require_once(DOKU_PLUGIN.'pluginrepo/helper.php');
+require_once(DOKU_PLUGIN . 'pluginrepo/helper.php');
 
 //close session
 session_write_close();
@@ -59,7 +59,7 @@ function parseOptions() {
  * are only returned if $opt['plugins'] is used to return named plugins
  */
 function getRepository($opt) {
-    $hlp = new helper_plugin_pluginrepo();
+    $hlp = new helper_plugin_pluginrepo_repository();
     $plugins = $hlp->getPlugins($opt);
 
     $feed = '<?xml version="1.0" encoding="utf-8"?>';

@@ -11,6 +11,7 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
 
     /**
      * will hold the repository helper plugin
+     * @var $hlp helper_plugin_pluginrepo_repository
      */
     var $hlp = null;
 
@@ -18,8 +19,8 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
      * Constructor. Load helper plugin
      */
     function syntax_plugin_pluginrepo_news(){
-        $this->hlp = plugin_load('helper', 'pluginrepo');
-        if(!$this->hlp) msg('Loading the pluginrepo helper failed. Make sure the pluginrepo plugin is installed.',-1);
+        $this->hlp = plugin_load('helper', 'pluginrepo_repository');
+        if(!$this->hlp) msg('Loading the pluginrepo repository helper failed. Make sure the pluginrepo plugin is installed.',-1);
     }
 
     /**
@@ -63,9 +64,15 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
 
     /**
      * Create output
+     *
+     * @param string $format
+     * @param Doku_Renderer $R
+     * @param array $data
+     * @return bool
      */
     function render($format, Doku_Renderer &$R, $data) {
         if($format != 'xhtml') return false;
+        /** @var Doku_Renderer_xhtml $R */
 
         $R->doc .= '<div class="pluginrepo_news">'.NL;
         $R->doc .= '<h4>'.hsc($data['headline']).'</h4>'.NL;
@@ -86,6 +93,12 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
         $R->doc .= '</div>';
     }
 
+    /**
+     * Output html for showing plugins/templates of same author
+     *
+     * @param Doku_Renderer_xhtml $R
+     * @param $data
+     */
     function showSameAuthor(&$R, $data) {
         global $ID;
 
@@ -109,6 +122,12 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
         $R->doc .= '</ul>'.NL;
     }
 
+    /**
+     * Output html for showing plugins/templates (eventually randomly)
+     *
+     * @param Doku_Renderer_xhtml $R
+     * @param $data
+     */
     function showDefault(&$R, $data) {
         $limit = (is_numeric($data['entries']) ? $data['entries']: 1);
         $plugins = $this->hlp->getPlugins($data);

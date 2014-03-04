@@ -3,13 +3,13 @@
 if(!defined('DOKU_INC')) define('DOKU_INC', dirname(__FILE__).'/../../../');
 require_once(DOKU_INC.'inc/init.php');
 
-require_once(DOKU_PLUGIN.'pluginrepo/helper.php');
+require_once(DOKU_PLUGIN . 'pluginrepo/helper/repository.php');
 
 //close session
 session_write_close();
 
-/** @var helper_plugin_pluginrepo $REPO */
-$REPO = plugin_load('helper', 'pluginrepo');
+/** @var helper_plugin_pluginrepo_repository $REPO */
+$REPO = plugin_load('helper', 'pluginrepo_repository');
 
 // query the repository
 $extensions = $REPO->getFilteredPlugins(
