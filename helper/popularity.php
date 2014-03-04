@@ -17,17 +17,17 @@ class helper_plugin_pluginrepo_popularity extends DokuWiki_Plugin {
      * Counts the values of the requested key, in given time window
      *
      * @param string $key
-     * @param string $orderby 'cnt' or 'val'
+     * @param string $orderby   'cnt' or 'val'
      * @param string $startdate YYYY-MM-DD only submits after this date
-     * @param string $enddate YYYY-MM-DD only submits until this date
-     * @param int $daysago if $startdate not set, retrieve the submits for this number of days
+     * @param string $enddate   YYYY-MM-DD only submits until this date
+     * @param int    $daysago   if $startdate not set, retrieve the submits for this number of days
      * @return array
      */
     public function getCounts($key, $orderby = 'cnt', $startdate = '', $enddate = '', $daysago = 0) {
         $db = $this->hlp->_getPluginsDB();
         if(!$db) return array();
 
-        $keys = array();
+        $replacements = array();
 
         switch($key) {
             case 'page_size':
@@ -45,27 +45,10 @@ class helper_plugin_pluginrepo_popularity extends DokuWiki_Plugin {
             default:
                 $select = "REPLACE( REPLACE( pop.value, '\\\\\"', '\"') , '&quot;', '\"')";
         }
-        $keys[':key'] = $key;
+        $replacements[':key'] = $key;
 
         // add time restrictions
-        if($startdate OR $daysago) {
-            $join = "LEFT JOIN popularity now ON pop.uid=now.uid";
-            $where = " AND now.key = 'now'";
-            if($startdate) {
-                $where .= " AND now.value > UNIX_TIMESTAMP( :start )";
-                $keys[':start'] = $startdate;
-                if($enddate) {
-                    $where .= "  AND now.value < UNIX_TIMESTAMP( :end )";
-                    $keys[':end'] = $enddate;
-                }
-            } else {
-                $ago = time() - (int)$daysago * 24 * 60 * 60;
-                $where .= " AND now.value > $ago";
-            }
-        } else {
-            $join = '';
-            $where = '';
-        }
+        list($join, $where) = $this->buildJoinWhere($startdate, $enddate, $daysago, $replacements);
 
         $orderbyfields = array('val', 'cnt');
         if(!in_array($orderby, $orderbyfields)) {
@@ -82,7 +65,7 @@ class helper_plugin_pluginrepo_popularity extends DokuWiki_Plugin {
                   ORDER BY $orderby DESC"
         );
 
-        $stmt->execute($keys);
+        $stmt->execute($replacements);
 
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $data;
@@ -91,16 +74,58 @@ class helper_plugin_pluginrepo_popularity extends DokuWiki_Plugin {
     /**
      * Retrieves number of unique wikis which submits statistics
      *
+     * @param string $startdate YYYY-MM-DD only submits after this date
+     * @param string $enddate   YYYY-MM-DD only submits until this date
+     * @param int    $daysago   if $startdate not set, retrieve the submits for this number of days
      * @return int
      */
-    public function getNumberOfSubmittingWikis() {
+    public function getNumberOfSubmittingWikis($startdate = '', $enddate = '', $daysago = 0) {
         $db = $this->hlp->_getPluginsDB();
         if(!$db) return 0;
 
-        $stmt = $db->prepare('SELECT COUNT(DISTINCT uid) AS cnt FROM popularity');
-        $stmt->execute();
+        $replacements = array();
+        list($join, $where) = $this->buildJoinWhere($startdate, $enddate, $daysago, $replacements);
+
+        $stmt = $db->prepare(
+                   "SELECT COUNT(DISTINCT pop.uid) AS cnt
+                      FROM popularity pop
+                     $join
+                     WHERE 1=1
+                           $where"
+        );
+        $stmt->execute($replacements);
 
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $rows[0]['cnt'];
+    }
+
+    /**
+     * Builds the join and where statements
+     *
+     * @param string $startdate     YYYY--MM-DD
+     * @param string $enddate       YYYY--MM-DD
+     * @param int    $daysago       show data back to given days ago
+     * @param array  $replacements  (reference) can be extended with additional keys
+     * @return array
+     */
+    public function buildJoinWhere($startdate, $enddate, $daysago, &$replacements) {
+        $join = '';
+        $where = '';
+        if($startdate OR $daysago) {
+            $join = "LEFT JOIN popularity now ON pop.uid=now.uid";
+            $where = " AND now.key = 'now'";
+            if($startdate) {
+                $where .= " AND now.value > UNIX_TIMESTAMP( :start )";
+                $replacements[':start'] = $startdate;
+                if($enddate) {
+                    $where .= "  AND now.value < UNIX_TIMESTAMP( :end )";
+                    $replacements[':end'] = $enddate;
+                }
+            } else {
+                $ago = time() - (int) $daysago * 24 * 60 * 60;
+                $where .= " AND now.value > $ago";
+            }
+        }
+        return array($join, $where);
     }
 }

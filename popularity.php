@@ -11,9 +11,9 @@ if(!$key) {
     return;
 }
 
-/** @var helper_plugin_pluginrepo_popularity $POPULARITY */
-$POPULARITY = plugin_load('helper', 'pluginrepo_popularity');
-if(!$POPULARITY) {
+/** @var helper_plugin_pluginrepo_popularity $popularity */
+$popularity = plugin_load('helper', 'pluginrepo_popularity');
+if(!$popularity) {
     echo 'no popularity helper available';
     return;
 }
@@ -29,7 +29,8 @@ $default = ($output == 'line') ? 'val' : 'cnt';
 $orderby   = $INPUT->str('o', $default, true);
 
 //retrieve data
-$counts = $POPULARITY->getCounts($key, $orderby, $startdate, $enddate, $daysago);
+$counts = $popularity->getCounts($key, $orderby, $startdate, $enddate, $daysago);
+$MAX = $popularity->getNumberOfSubmittingWikis($startdate, $enddate, $daysago);
 
 // build output
 $limit = $INPUT->int('limit', 5, true);
@@ -80,10 +81,6 @@ function output($counts, $output, $usepercentage, $limit, $w, $h) {
  * @param int $h chart image height
  */
 function redirects_googlecharts($counts, $output, $usepercentage, $limit, $w, $h) {
-    global $POPULARITY;
-
-    $max = $POPULARITY->getNumberOfSubmittingWikis();
-
     $data = array();
     $label = array();
     $other = 0;
@@ -93,20 +90,23 @@ function redirects_googlecharts($counts, $output, $usepercentage, $limit, $w, $h
         if($limit > 0 AND ++$cnt > $limit) {
             $other += $count['cnt'];
         } else {
-            $data[] = formatNumber($count['cnt'], $usepercentage, $max, false);
+            $data[] = formatNumber($count['cnt'], $usepercentage, false);
             $labeltext = $count['val'];
             if($output == 'pie') {
-                $labeltext .= '  ' . formatNumber($count['cnt'], $usepercentage, $max);
+                $labeltext .= '  ' . formatNumber($count['cnt'], $usepercentage);
             }
             $label[] =  $labeltext;
         }
     }
-    $data[] = formatNumber($other, $usepercentage, $max, false);
-    $labeltext = 'other';
-    if($output == 'pie') {
-        $labeltext .= '  ' . formatNumber($other, $usepercentage, $max);
+    if($other > 0) {
+        $data[] = formatNumber($other, $usepercentage, false);
+        $labeltext = 'other';
+        if($output == 'pie') {
+            $labeltext .= '  ' . formatNumber($other, $usepercentage);
+        }
+        $label[] =  $labeltext;
     }
-    $label[] =  $labeltext;
+
     $label = array_map('rawurlencode', $label);
 
     // Create query
@@ -167,14 +167,15 @@ function buildUnencodedURLparams($params, $sep='&') {
  *
  * @param int  $value
  * @param bool $calculatepercentage
- * @param int  $max                the maximum value
  * @param bool $withpercentagechar add % behind number?
  * @return string
  */
-function formatNumber($value, $calculatepercentage = true, $max = null, $withpercentagechar = true) {
-    if($calculatepercentage && $max) {
+function formatNumber($value, $calculatepercentage = true, $withpercentagechar = true) {
+    global $MAX;
+
+    if($calculatepercentage && $MAX) {
         $char = $withpercentagechar ? '%%' : '';
-        return sprintf('%.1f' . $char , $value * 100 / $max);
+        return sprintf('%.1f' . $char , $value * 100 / $MAX);
     } else {
         return $value;
     }
@@ -188,9 +189,6 @@ function formatNumber($value, $calculatepercentage = true, $max = null, $withper
  * @param bool $usepercentage
  */
 function html_table($counts, $usepercentage, $limit) {
-    global $POPULARITY;
-
-    $max = $POPULARITY->getNumberOfSubmittingWikis();
 
     $cnt = 0;
     $other = 0;
@@ -202,14 +200,14 @@ function html_table($counts, $usepercentage, $limit) {
         } else {
             echo '<tr>';
             echo '    <td>' . htmlspecialchars($count['val']) . '</td>';
-            echo '    <td>' . formatNumber($count['cnt'], $usepercentage, $max) . '</td>';
+            echo '    <td>' . formatNumber($count['cnt'], $usepercentage) . '</td>';
             echo '</tr>';
         }
     }
     if($other > 0) {
         echo '<tr>';
         echo '    <td>Other</td>';
-        echo '    <td>' . formatNumber($other, $usepercentage, $max) . '</td>';
+        echo '    <td>' . formatNumber($other, $usepercentage) . '</td>';
         echo '</tr>';
     }
     echo '</table>';
@@ -223,9 +221,6 @@ function html_table($counts, $usepercentage, $limit) {
  * @param bool $usepercentage
  */
 function xml_rss($counts, $usepercentage, $limit) {
-    global $POPULARITY;
-
-    $max = $POPULARITY->getNumberOfSubmittingWikis();
 
     $cnt = 0;
     $other = 0;
@@ -239,13 +234,13 @@ function xml_rss($counts, $usepercentage, $limit) {
             $other += $count['cnt'];
         } else {
             echo '  <item>' . NL;
-            echo '      <title>' . formatNumber($count['cnt'], $usepercentage, $max) . ' ' . htmlspecialchars($count['val']) . '</title>' . NL;
+            echo '      <title>' . formatNumber($count['cnt'], $usepercentage) . ' ' . htmlspecialchars($count['val']) . '</title>' . NL;
             echo '  </item>' . NL;
         }
     }
-    if($other) {
+    if($other > 0) {
         echo '  <item>' . NL;
-        echo '      <title>' . formatNumber($other, $usepercentage, $max) . ' other</title>' . NL;
+        echo '      <title>' . formatNumber($other, $usepercentage) . ' other</title>' . NL;
         echo '  </item>' . NL;
     }
     echo '</channel>';
