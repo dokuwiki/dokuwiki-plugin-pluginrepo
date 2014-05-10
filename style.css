@@ -237,13 +237,14 @@
 }
 
 /* search form */
-.dokuwiki div.pluginrepo_table form.search {
+.dokuwiki div.pluginrepo_table form.plugin-search {
     position: relative;
     margin-bottom: 1.4em;
     display: block;
 }
-.dokuwiki div.pluginrepo_table form.search input.edit {
+.dokuwiki div.pluginrepo_table form.plugin-search input.edit {
     margin-bottom: .2em;
+    max-width: 100%;
 }
 /* quick search result AJAX popup */
 #qsearch2__out {
