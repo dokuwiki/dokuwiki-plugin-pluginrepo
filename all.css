@@ -1,0 +1,23 @@
+
+/* for screen widths in the smartphone range
+********************************************************************/
+@media only screen and (max-width: 480px) {
+
+    .dokuwiki div.pluginrepo_table div.repoFilter,
+    .dokuwiki div.pluginrepo_table div.repoCloud {
+        float: none;
+        width: auto;
+        border-left-width: 0;
+        padding-left: 0;
+    }
+    .dokuwiki div.pluginrepo_table table td,
+    .dokuwiki div.pluginrepo_table table th {
+        display: block;
+        width: auto;
+    }
+    .dokuwiki div.pluginrepo_table table dl dd.author {
+        float: none;
+        display: block;
+    }
+
+} /* /@media */
