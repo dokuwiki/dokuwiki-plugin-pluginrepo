@@ -122,7 +122,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= $this->getLang('t_searchintro_'.noNS($ID));
         $R->doc .= '</p>'.NL;
 
-        $R->doc .= '<form action="'.wl().'" accept-charset="utf-8" class="search" id="dw__search2" method="get"><div class="no">'.NL;
+        $R->doc .= '<form action="'.wl().'" accept-charset="utf-8" class="plugin-search" id="dw__search2" method="get"><div class="no">'.NL;
         $R->doc .= '  <input type="hidden" name="do" value="search" />'.NL;
         $R->doc .= '  <input type="hidden" id="dw__ns" name="ns" value="'.$searchNS.'" />'.NL;
         $R->doc .= '  <input type="text" id="qsearch2__in" accesskey="f" name="id" class="edit" />'.NL;
