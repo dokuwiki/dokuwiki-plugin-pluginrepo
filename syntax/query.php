@@ -11,6 +11,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
 
     /**
      * will hold the repository helper plugin
+     * @var $hlp helper_plugin_pluginrepo_repository
      */
     var $hlp = null;
     var $allowedfields = array('plugin','name','description','author','email','compatible',
@@ -21,7 +22,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
      * Constructor. Load helper plugin
      */
     function syntax_plugin_pluginrepo_query(){
-        $this->hlp = plugin_load('helper', 'pluginrepo');
+        $this->hlp = plugin_load('helper', 'pluginrepo_repository');
         if(!$this->hlp) msg('Loading the pluginrepo helper failed. Make sure the pluginrepo plugin is installed.',-1);
     }
 
@@ -69,6 +70,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
      */
     function render($format, Doku_Renderer &$R, $data) {
         if($format != 'xhtml') return false;
+        /** @var Doku_Renderer_xhtml $R */
 
         $db = $this->hlp->_getPluginsDB();
         if (!$db) return;
@@ -195,7 +197,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
                         $R->doc .= $this->hlp->pluginlink($R,$row['plugin']);
 
                     } elseif ($field == 'email' || $field == 'author') {
-                        $R->doc .= $R->emaillink($row['email'],$row['author']);
+                        $R->emaillink($row['email'],$row['author']);
 
                     } else {
                         $R->doc .= hsc($row[$field]);
