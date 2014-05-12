@@ -24,3 +24,16 @@ CREATE INDEX idx_popularity  ON plugins (popularity);
 CREATE INDEX idx_lastupdate  ON plugins (lastupdate);
 
 CREATE FULLTEXT INDEX idx_search ON plugins(plugin, name, description, author, tags);
+
+-- 2014-05-12 add date to each row for easier filtering
+ALTER TABLE popularity
+    ADD COLUMN dt int default 0;
+
+UPDATE popularity AS target
+    INNER JOIN (
+        SELECT `uid`, `value` FROM popularity WHERE `key` = 'now'
+    ) AS source
+ON target.uid = source.uid
+SET target.dt = source.value;
+
+CREATE INDEX idx_dt ON popularity (dt);

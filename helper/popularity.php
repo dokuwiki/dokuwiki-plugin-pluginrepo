@@ -48,7 +48,7 @@ class helper_plugin_pluginrepo_popularity extends DokuWiki_Plugin {
         $replacements[':key'] = $key;
 
         // add time restrictions
-        list($join, $where) = $this->buildJoinWhere($startdate, $enddate, $daysago, $replacements);
+        $where = $this->buildWhere($startdate, $enddate, $daysago, $replacements);
 
         $orderbyfields = array('val', 'cnt');
         if(!in_array($orderby, $orderbyfields)) {
@@ -58,7 +58,6 @@ class helper_plugin_pluginrepo_popularity extends DokuWiki_Plugin {
         $stmt = $db->prepare(
                    "SELECT $select AS val, COUNT(*) AS cnt
                       FROM popularity pop
-                     $join
                      WHERE pop.key = :key
                            $where
                   GROUP BY val
@@ -84,15 +83,15 @@ class helper_plugin_pluginrepo_popularity extends DokuWiki_Plugin {
         if(!$db) return 0;
 
         $replacements = array();
-        list($join, $where) = $this->buildJoinWhere($startdate, $enddate, $daysago, $replacements);
+        $where = $this->buildWhere($startdate, $enddate, $daysago, $replacements);
 
         $stmt = $db->prepare(
                    "SELECT COUNT(DISTINCT pop.uid) AS cnt
                       FROM popularity pop
-                     $join
                      WHERE 1=1
                            $where"
         );
+
         $stmt->execute($replacements);
 
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -106,26 +105,23 @@ class helper_plugin_pluginrepo_popularity extends DokuWiki_Plugin {
      * @param string $enddate       YYYY--MM-DD
      * @param int    $daysago       show data back to given days ago
      * @param array  $replacements  (reference) can be extended with additional keys
-     * @return array
+     * @return string
      */
-    public function buildJoinWhere($startdate, $enddate, $daysago, &$replacements) {
-        $join = '';
+    public function buildWhere($startdate, $enddate, $daysago, &$replacements) {
         $where = '';
         if($startdate OR $daysago) {
-            $join = "LEFT JOIN popularity now ON pop.uid=now.uid";
-            $where = " AND now.key = 'now'";
             if($startdate) {
-                $where .= " AND now.value > UNIX_TIMESTAMP( :start )";
+                $where .= " AND dt > UNIX_TIMESTAMP( :start )";
                 $replacements[':start'] = $startdate;
                 if($enddate) {
-                    $where .= "  AND now.value < UNIX_TIMESTAMP( :end )";
+                    $where .= "  AND dt < UNIX_TIMESTAMP( :end )";
                     $replacements[':end'] = $enddate;
                 }
             } else {
                 $ago = time() - (int) $daysago * 24 * 60 * 60;
-                $where .= " AND now.value > $ago";
+                $where .= " AND dt > $ago";
             }
         }
-        return array($join, $where);
+        return $where;
     }
 }
