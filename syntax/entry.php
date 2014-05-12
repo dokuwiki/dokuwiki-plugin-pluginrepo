@@ -12,7 +12,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
     /**
      * will hold the repository helper plugin
-     * @var $hlp helper_plugin_pluginrepo
+     * @var $hlp helper_plugin_pluginrepo_repository
      */
     var $hlp = null;
 
@@ -20,8 +20,8 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
      * Constructor. Load helper plugin
      */
     function syntax_plugin_pluginrepo_entry(){
-        $this->hlp = plugin_load('helper', 'pluginrepo');
-        if(!$this->hlp) msg('Loading the pluginrepo helper failed. Make sure the pluginrepo plugin is installed.',-1);
+        $this->hlp = plugin_load('helper', 'pluginrepo_repository');
+        if(!$this->hlp) msg('Loading the pluginrepo repository helper failed. Make sure the pluginrepo plugin is installed.',-1);
     }
 
     /**
@@ -97,6 +97,9 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
     /**
      * Output the data in a table
+     * @param array                $data instructions from handle()
+     * @param string               $id   plugin/template id
+     * @param Doku_Renderer_xhtml &$R
      */
     function _showData($data,$id,&$R){
         global $ID;

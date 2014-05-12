@@ -38,7 +38,8 @@ class action_plugin_pluginrepo extends DokuWiki_Action_Plugin {
         $hastemplateentry = preg_match('/----+ *template *-+/', $data[0][1]); // addSpecialPattern: ----+ *template *-+\n.*?\n----+
         if($haspluginentry || $hastemplateentry) return; // plugin seems still to be there
 
-        $hlp = $this->loadHelper('pluginrepo');
+        /** @var helper_plugin_pluginrepo_repository $hlp */
+        $hlp = $this->loadHelper('pluginrepo_repository');
         if(!$hlp) return;
 
         if(curNS($ID) == 'plugin') {
@@ -50,3 +51,4 @@ class action_plugin_pluginrepo extends DokuWiki_Action_Plugin {
         $hlp->deletePlugin($id);
     }
 }
+
