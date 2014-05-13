@@ -3,7 +3,8 @@
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * 
- * @author  Gerrit Uitslag <klapinklapin@gmail.com>
+ * @author Gerrit Uitslag <klapinklapin@gmail.com>
+ * @author Rene <wllywlnt@yahoo.com>
  */
 $lang['by']                    = 'door';
 $lang['last_updated_on']       = 'Laatste update op';
@@ -31,7 +32,7 @@ $lang['securitylink']          = 'plugin beveiligingsrichtlijnen';
 $lang['name_underscore']       = 'Pluginnaam bevat een lagestreep "_" en zal daarom geen populariteitspunten ontvangen.';
 $lang['downloadurl']           = 'Download';
 $lang['bugtracker']            = 'Meld bugs';
-$lang['sourcerepo']            = 'Repositorie';
+$lang['sourcerepo']            = 'Centrale opslag';
 $lang['source']                = 'Broncode';
 $lang['donationurl']           = 'Doneer';
 $lang['t_search_plugins']      = 'Zoek Plugins';
