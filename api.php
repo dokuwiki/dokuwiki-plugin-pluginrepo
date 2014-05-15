@@ -37,13 +37,13 @@ if($INPUT->str('cmd') == 'ping') {
             break;
         case 'xml':
             header('Content-Type: application/xml; charset=utf-8');
-            require('A2Xml.php');
+            require('classes/A2Xml.php');
             $xml = xml_encode((object) $extensions, "hash");
             echo $xml;
             break;
         case 'yaml':
             header('Content-Type: text/yaml');
-            require('Spyc.php');
+            require('classes/Spyc.php');
             echo Spyc::YAMLDump($extensions, false, 0);
             break;
         case 'php':
