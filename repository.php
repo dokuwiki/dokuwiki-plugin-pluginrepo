@@ -10,7 +10,7 @@
 if(!defined('DOKU_INC')) define('DOKU_INC',dirname(__FILE__).'/../../../');
 require_once(DOKU_INC.'inc/init.php');
 
-require_once(DOKU_PLUGIN . 'pluginrepo/helper.php');
+require_once(DOKU_PLUGIN . 'pluginrepo/helper/repository.php');
 
 //close session
 session_write_close();
