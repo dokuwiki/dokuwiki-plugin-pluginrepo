@@ -44,3 +44,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
     $updt->execute(array(':pop'=>$row['cnt'], ':name'=> 'template:'.$row['template']));
 }
 
+// create info on bad extension versions
+/** @var helper_plugin_pluginrepo_version $version */
+$version = plugin_load('helper', 'pluginrepo_version');
+$version->execute();
