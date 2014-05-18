@@ -59,7 +59,7 @@ class helper_plugin_pluginrepo_version extends DokuWiki_Plugin {
         $date2error = '';
         $nameerror  = '';
         if($plugindata['lastupdate'] != $githubdata['date']) $date1error = ' :!:';
-        if($plugindata['lastupdate'] != $githubdata['gitpush']) $date2error = ' :!:';
+        if($plugindata['lastupdate'] < $githubdata['gitpush']) $date2error = ' :!:';
         if($plugindata['simplename'] != $githubdata['base']) $nameerror = ' :!:';
 
         if(!$date1error && !$date2error && !$nameerror) return '';
@@ -93,26 +93,40 @@ class helper_plugin_pluginrepo_version extends DokuWiki_Plugin {
         $user = $m[1];
         $repo = $m[2];
 
+        // prepare an authenticated HTTP client
+        $http                    = new HTTPClient();
+        $http->headers['Accept'] = 'application/vnd.github.v3+json';
+        $http->user              = $this->getConf('github_user');
+        $http->pass              = $this->getConf('github_key');
+        $json                    = new JSON(JSON_LOOSE_TYPE);
+
+        // get the current version in the *info.txt file
         $infotxt = 'plugin.info.txt';
         if($plugindata['type'] == 32) $infotxt = 'template.info.txt';
+        $url      = 'https://api.github.com/repos/'.$user.'/'.$repo.'/contents/'.$infotxt;
+        $response = $http->get($url);
+        if(!$response) return false;
+        $response = $json->decode($response);
+        $infotxt  = base64_decode($response['content']);
+        $info     = linesToHash(explode("\n", $infotxt));
+        if(empty($info['date'])) return false;
 
-        /* get plugin info file data */
-        $this->http->user = '';
-        $this->http->pass = '';
-        $info             = $this->http->get('https://raw.githubusercontent.com/'.$user.'/'.$repo.'/master/'.$infotxt);
-        if(!$info) return false;
-        $info = linesToHash(explode("\n", $info));
+        // get the latest significant commit
+        $url     = 'https://api.github.com/repos/'.$user.'/'.$repo.'/commits?per_page=100';
+        $commits = $http->get($url);
+        if(!$commits) return false;
+        $commits = $json->decode($commits);
 
-        /* add last push date to info */
-        $this->http->user = $this->getConf('github_user');
-        $this->http->pass = $this->getConf('github_key');
-        $repoinfo         = $this->http->get("https://api.github.com/repos/$user/$repo");
-        if($repoinfo) {
-            $repoinfo = $this->json->decode($repoinfo);
-            if(isset($repoinfo['pushed_at'])) {
-                $info['gitpush'] = substr($repoinfo['pushed_at'], 0, 10);
-            }
+        $comversion = substr($commits[0]['commit']['author']['date'], 0, 10); // default to newest
+        foreach($commits as $commit) {
+            if(preg_match('/^Merge/i', $commit['commit']['message'])) continue; // skip merges
+            if(preg_match('/^Version upped$/i', $commit['commit']['message'])) continue; // skip version tool updates
+            if($commit['commit']['committer']['email'] == 'translate@dokuwiki.org') continue; //skip translations
+
+            $comversion = substr($commit['commit']['author']['date'], 0, 10);
+            break;
         }
+        $info['gitpush'] = $comversion;
 
         return $info;
     }
