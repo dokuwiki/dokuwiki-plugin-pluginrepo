@@ -48,3 +48,8 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 /** @var helper_plugin_pluginrepo_version $version */
 $version = plugin_load('helper', 'pluginrepo_version');
 $version->execute();
+
+// subscribe authors
+/** @var helper_plugin_pluginrepo_newsletter $news */
+$news = plugin_load('helper','pluginrepo_newsletter');
+$news->execute();
