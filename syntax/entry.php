@@ -19,7 +19,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
     /**
      * Constructor. Load helper plugin
      */
-    function syntax_plugin_pluginrepo_entry(){
+    public function syntax_plugin_pluginrepo_entry(){
         $this->hlp = plugin_load('helper', 'pluginrepo_repository');
         if(!$this->hlp) msg('Loading the pluginrepo repository helper failed. Make sure the pluginrepo plugin is installed.',-1);
     }
@@ -27,28 +27,28 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
     /**
      * What kind of syntax are we?
      */
-    function getType(){
+    public function getType(){
         return 'substition';
     }
 
     /**
      * What about paragraphs?
      */
-    function getPType(){
+    public function getPType(){
         return 'block';
     }
 
     /**
      * Where to sort in?
      */
-    function getSort(){
+    public function getSort(){
         return 155;
     }
 
     /**
      * Connect pattern to lexer (actual pattern used doesn't matter, namespace controls plugin type)
      */
-    function connectTo($mode) {
+    public function connectTo($mode) {
         $this->Lexer->addSpecialPattern('----+ *plugin *-+\n.*?\n----+',$mode,'plugin_pluginrepo_entry');
         $this->Lexer->addSpecialPattern('----+ *template *-+\n.*?\n----+',$mode,'plugin_pluginrepo_entry');
     }
@@ -56,7 +56,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
     /**
      * Handle the match - parse the data
      */
-    function handle($match, $state, $pos, Doku_Handler &$handler){
+    public function handle($match, $state, $pos, Doku_Handler &$handler){
         global $ID;
 
         $data = $this->hlp->parseData($match);
@@ -69,7 +69,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
     /**
      * Create output or save the data
      */
-    function render($format, Doku_Renderer &$renderer, $data) {
+    public function render($format, Doku_Renderer &$renderer, $data) {
         global $ID;
 
         if (curNS($ID) == 'plugin') {
@@ -101,9 +101,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
      * @param string               $id   plugin/template id
      * @param Doku_Renderer_xhtml &$R
      */
-    function _showData($data,$id,&$R){
-        global $ID;
-
+    protected function _showData($data,$id,&$R){
         $rel = $this->hlp->getPluginRelations($id);
         $type = $this->hlp->parsetype($data['type']);
         $extensionType = ($type == 32) ? 'template':'plugin';
@@ -131,7 +129,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $R->doc .= '</div>'; // pluginrepo_entry
     }
 
-    function _showMainInfo(&$R, $data, $extensionType) {
+    protected function _showMainInfo(&$R, $data, $extensionType) {
         $R->doc .= '<div class="mainInfo">'.NL;
 
         /* plugin/template name omitted because each page usually already has an h1 with the same information
@@ -154,7 +152,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $R->doc .= '</div>';
     }
 
-    function _showMetaInfo(&$R, $data, $type, $rel) {
+    protected function _showMetaInfo(&$R, $data, $type, $rel) {
         global $ID;
         $target = getNS($ID);
         if($target == 'plugin') {
@@ -199,7 +197,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $R->doc .= '</dl></div>'.NL;
     }
 
-    function _showCompatibility(&$R, $data) {
+    protected function _showCompatibility(&$R, $data) {
         $R->doc .= '<div class="compatibility">';
         $R->doc .= '<p class="label">'.$this->hlp->renderCompatibilityHelp().'</p>'.NL;
 
@@ -251,7 +249,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $R->doc .= '</div>'.NL;
     }
 
-    function _showActionLinks(&$R, $data) {
+    protected function _showActionLinks(&$R, $data) {
         if ($data['downloadurl'] || $data['bugtracker'] || $data['donationurl']) {
             $R->doc .= '<ul class="actions">'.NL;
             if($data['downloadurl'])
@@ -267,7 +265,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         }
     }
 
-    function _showWarnings(&$R, $data, $hasUnderscoreIssue) {
+    protected function _showWarnings(&$R, $data, $hasUnderscoreIssue) {
         if($data['securitywarning']){
             $R->doc .= '<div class="notify">'.NL;
             $securitylink = $R->internallink('devel:security',$this->getLang('securitylink'),NULL,true);
@@ -296,7 +294,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         }
     }
 
-    function _showTaxonomy(&$R, $data, $rel) {
+    protected function _showTaxonomy(&$R, $data, $rel) {
         global $ID;
         $target = getNS($ID);
         if($target == 'plugin') {
@@ -323,7 +321,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         }
     }
 
-    function _showAuthorInfo(&$R, $data, $rel) {
+    protected function _showAuthorInfo(&$R, $data, $rel) {
         $R->doc .= '<div class="authorInfo">'.NL;
 
         // author
@@ -351,7 +349,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
     /**
      * Save date to the database
      */
-    function _saveData($data,$id,$name){
+    protected function _saveData($data,$id,$name){
         $db = $this->hlp->_getPluginsDB();
         if (!$db) return;
 
