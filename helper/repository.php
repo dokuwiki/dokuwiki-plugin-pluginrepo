@@ -716,6 +716,9 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
     /**
      * Convert plugin type name (comma sep. string) to (int)
+     *
+     * @param string $types
+     * @return int
      */
     public function parsetype($types) {
         $type = 0;
