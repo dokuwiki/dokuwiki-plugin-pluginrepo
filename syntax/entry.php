@@ -225,7 +225,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         // compatibility data given
         } else {
             // get recent compatible releases
-            $compatibility = $this->hlp->cleanCompat($data['compatible']);
+            $compatibility = $this->hlp->cleanCompat($data['compatible'], false);
             $cols = 0;
             $norecentcompat = true;
             $compatrow = '';

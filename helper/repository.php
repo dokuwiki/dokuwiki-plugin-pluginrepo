@@ -592,10 +592,11 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      * only releases mentioned in config are reported
      * 'newest' supported release at [0]
      *
-     * @param $compatible
+     * @param string $compatible             raw compatibility text
+     * @param bool   $onlyCompatibleReleases don't include not-compatible releases
      * @return array
      */
-    public function cleanCompat($compatible) {
+    public function cleanCompat($compatible, $onlyCompatibleReleases = true) {
         if(!$this->dokuReleases) {
             $this->dokuReleases = array();
             $releases           = explode(',', $this->getConf('releases'));
@@ -631,9 +632,11 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
                 $nextImplicitCompatible = true;
             }
             if($nextImplicitCompatible || !$isCompatible || in_array($release['date'], $matches[0]) || in_array($release['name'], $matches[0]) || $implicitCompatible) {
-                $retval[$release['date']]['label']    = $release['label'];
-                $retval[$release['date']]['implicit'] = $implicitCompatible;
-                $retval[$release['date']]['isCompatible'] = $isCompatible;
+                if(!$onlyCompatibleReleases || $isCompatible) {
+                    $retval[$release['date']]['label']    = $release['label'];
+                    $retval[$release['date']]['implicit'] = $implicitCompatible;
+                    $retval[$release['date']]['isCompatible'] = $isCompatible;
+                }
             }
             if($nextImplicitCompatible) {
                 $implicitCompatible = true;
