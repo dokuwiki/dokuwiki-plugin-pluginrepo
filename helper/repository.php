@@ -591,6 +591,9 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      * Return array of supported DokuWiki releases
      * only releases mentioned in config are reported
      * 'newest' supported release at [0]
+     *
+     * @param $compatible
+     * @return array
      */
     public function cleanCompat($compatible) {
         if(!$this->dokuReleases) {
@@ -609,8 +612,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
                 $this->dokuReleases[$date] = $rel;
             }
         }
-
-        preg_match_all('/([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\+?|[a-z A-Z]{4,}\+?)/', $compatible, $matches);
+        preg_match_all('/(!?[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\+?|!?[a-z A-Z]{4,}\+?)/', $compatible, $matches);
         $matches[0]         = array_map('strtolower', $matches[0]);
         $matches[0]         = array_map('trim', $matches[0]);
         $retval             = array();
@@ -619,12 +621,19 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
         $dokuReleases       = $this->dokuReleases;
         ksort($dokuReleases);
         foreach($dokuReleases as $release) {
-            if(in_array($release['date'].'+', $matches[0]) || in_array($release['name'].'+', $matches[0])) {
+            $isCompatible = true;
+            if(in_array('!' . $release['date'], $matches[0]) || in_array('!' . $release['name'], $matches[0])) {
+                $isCompatible = false;
+                // stop implicit compatibility
+                $nextImplicitCompatible = false;
+                $implicitCompatible = false;
+            }elseif(in_array($release['date'].'+', $matches[0]) || in_array($release['name'].'+', $matches[0])) {
                 $nextImplicitCompatible = true;
             }
-            if($nextImplicitCompatible || in_array($release['date'], $matches[0]) || in_array($release['name'], $matches[0]) || $implicitCompatible) {
+            if($nextImplicitCompatible || !$isCompatible || in_array($release['date'], $matches[0]) || in_array($release['name'], $matches[0]) || $implicitCompatible) {
                 $retval[$release['date']]['label']    = $release['label'];
                 $retval[$release['date']]['implicit'] = $implicitCompatible;
+                $retval[$release['date']]['isCompatible'] = $isCompatible;
             }
             if($nextImplicitCompatible) {
                 $implicitCompatible = true;

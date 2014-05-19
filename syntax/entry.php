@@ -234,8 +234,9 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
                 $value = $this->getLang('compatible_unknown');
                 $compaticon = "";
                 if(array_key_exists($release['date'], $compatibility)) {
-                    $value = $this->getLang('compatible_yes');
-                    $compaticon = "yes";
+                    $text = ($compatibility[$release['date']]['isCompatible'] ? "yes" : "no");
+                    $value = $this->getLang('compatible_' . $text);
+                    $compaticon = $text;
                     if($compatibility[$release['date']]['implicit']) {
                         $value = $this->getLang('compatible_probably');
                         $compaticon = "probably";

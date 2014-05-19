@@ -140,6 +140,9 @@
 .dokuwiki div.pluginrepo_entry div.compatibility ul li.yes strong {
     background-image: url(../../images/success.png);
 }
+.dokuwiki div.pluginrepo_entry div.compatibility ul li.no strong {
+    background-image: url(images/no.png);
+}
 .dokuwiki div.pluginrepo_entry div.compatibility ul li.probably strong {
     background-image: url(images/exclamation.png);
 }
