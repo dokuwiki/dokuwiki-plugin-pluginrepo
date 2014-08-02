@@ -25,6 +25,7 @@ $lang['security_informationleak'] = 'このプラグインは、ハッカーに�
 公開された場所へのインストールは推奨しません。';
 $lang['security_allowsscript'] = 'このプラグインはスクリプトが実行できるようになります。 編集者全員が信頼できる場合のみ使用すべきです。個人的な wiki には最適です。';
 $lang['security_requirespatch'] = 'プラグインはDokuWikiのコアへのパッチ適用を要求します。手動パッチは他のプラグインとの互換性を壊す可能性があり、最新バージョンにアプグレードすることによるセキュリティ確保を困難にします。';
+$lang['security_partlyhidden'] = 'DokuWiki 本体はDokuWiki ページの一部非表示機能に対応していません。ページの一部分に ACL 制御を導入しようとしても RSS フィード・検索・他の本体機能を通して情報が漏洩するでしょう。';
 $lang['securityissue']         = 'このプラグインには、次のセキュリティ上の問題が報告されています：';
 $lang['securityrecommendation'] = 'この問題が修正されるまで、このプラグインの使用は推奨できません。プラグインの作者は%s を参照して下さい。';
 $lang['securitylink']          = 'プラグインのセキュリティガイドライン';
