@@ -10,3 +10,5 @@ $lang['db_user']               = 'データベースのユーザー名';
 $lang['db_pass']               = 'データベースのパスワード';
 $lang['bundled']               = '最新バージョンに同梱のプラグイン。カンマ区切り。';
 $lang['releases']              = 'リリース一覧（yyyy-mm-dd "name"）。カンマ区切り。';
+$lang['github_user']           = 'API レート制限を回避するための github 認証用ユーザー';
+$lang['github_key']            = '上記ユーザー用の API キー';
