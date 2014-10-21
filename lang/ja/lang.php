@@ -4,6 +4,7 @@
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * 
  * @author Hideaki SAWADA <chuno@live.jp>
+ * @author Nobuyuki Fukuyori <self@spumoni.org>
  */
 $lang['by']                    = '作者';
 $lang['last_updated_on']       = '最終更新日';
@@ -69,6 +70,7 @@ $lang['t_date']                = '最終更新日';
 $lang['t_sortdate']            = '日付順';
 $lang['t_popularity']          = '人気';
 $lang['t_sortpopularity']      = '人気順';
+$lang['t_compatible']          = '最新の互換性';
 $lang['t_sortcompatible']      = '互換性順';
 $lang['t_screenshot']          = 'スクリーンショット';
 $lang['t_download']            = 'ダウンロード';
