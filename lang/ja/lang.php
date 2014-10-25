@@ -9,7 +9,7 @@
 $lang['by']                    = '作者';
 $lang['last_updated_on']       = '最終更新日';
 $lang['provides']              = '種類';
-$lang['compatible_with']       = 'DokuWiki%s 対応';
+$lang['compatible_with']       = '互換性のある DokuWiki バージョン%s';
 $lang['compatible_with_info']  = 'この項目を更新して下さい。';
 $lang['no_compatibility']      = '対応情報がない！';
 $lang['compatible_unknown']    = '不明';
