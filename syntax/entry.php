@@ -108,6 +108,12 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $type = $this->hlp->parsetype($data['type']);
         $extensionType = ($type == 32) ? 'template':'plugin';
         $hasUnderscoreIssue = (strpos($id,'_') !== false);
+        $age = 0;
+        $lastUpdate = $data['lastupdate'];
+        if ($lastUpdate) {
+            $age = DateTime::createFromFormat('Y-m-d', $lastUpdate)->diff(new DateTime('now'))->y;
+        }
+        $isOld = $age >= 2;
 
         $R->doc .= '<div class="pluginrepo_entry">'.NL;
 
@@ -119,9 +125,9 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $this->_showMainInfo($R, $data, $extensionType);
         $this->_showMetaInfo($R, $data, $type, $rel);
 
-        if($rel['similar'] || $data['tags'] || $data['securitywarning'] || $data['securityissue'] || $hasUnderscoreIssue) {
+        if($rel['similar'] || $data['tags'] || $data['securitywarning'] || $data['securityissue'] || $hasUnderscoreIssue || $isOld) {
             $R->doc .= '<div class="moreInfo">'.NL;
-            $this->_showWarnings($R, $data, $hasUnderscoreIssue);
+            $this->_showWarnings($R, $data, $hasUnderscoreIssue, $isOld);
             $this->_showTaxonomy($R, $data, $rel);
             $R->doc .= '</div>'.NL;
         }
@@ -267,7 +273,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         }
     }
 
-    function _showWarnings(&$R, $data, $hasUnderscoreIssue) {
+    function _showWarnings(&$R, $data, $hasUnderscoreIssue, $isOld) {
         if($data['securitywarning']){
             $R->doc .= '<div class="notify">'.NL;
             $securitylink = $R->internallink('devel:security',$this->getLang('securitylink'),NULL,true);
@@ -289,10 +295,15 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             $R->doc .= '</div>'.NL;
         }
 
-        if($hasUnderscoreIssue) {
-            $R->doc .= '<div class="info"><p>';
-            $R->doc .= $this->getLang('name_underscore');
-            $R->doc .= '</p></div>'.NL;
+        if($hasUnderscoreIssue || $isOld) {
+            $R->doc .= '<div class="info">';
+            if($isOld) {
+                $R->doc .= '<p>'.$this->getLang('name_oldage').'</p>';
+            }
+            if($hasUnderscoreIssue) {
+                $R->doc .= '<p>'.$this->getLang('name_underscore').'</p>';
+            }
+            $R->doc .= '</div>'.NL;
         }
     }
 
