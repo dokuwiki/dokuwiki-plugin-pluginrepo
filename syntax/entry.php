@@ -113,17 +113,18 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         if ($lastUpdate) {
             $age = DateTime::createFromFormat('Y-m-d', $lastUpdate)->diff(new DateTime('now'))->y;
         }
-        $isOld = $age >= 2;
 
         $R->doc .= '<div class="pluginrepo_entry">'.NL;
 
         $R->doc .= '<div class="usageInfo">'.NL;
-        $this->_showCompatibility($R, $data);
+        $uptodate = $this->_showCompatibility($R, $data);
         $this->_showActionLinks($R, $data);
         $R->doc .= '</div>'.NL;
 
         $this->_showMainInfo($R, $data, $extensionType);
         $this->_showMetaInfo($R, $data, $type, $rel);
+
+        $isOld = ($age >= 2) && !$uptodate;
 
         if($rel['similar'] || $data['tags'] || $data['securitywarning'] || $data['securityissue'] || $hasUnderscoreIssue || $isOld) {
             $R->doc .= '<div class="moreInfo">'.NL;
@@ -208,6 +209,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
     function _showCompatibility(&$R, $data) {
         $R->doc .= '<div class="compatibility">';
         $R->doc .= '<p class="label">'.$this->hlp->renderCompatibilityHelp().'</p>'.NL;
+        $uptodate = false;
 
         // no compatibility data
         if (!$data['compatible']) {
@@ -219,7 +221,6 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             // get recent compatible releases
             $compatibility = $this->hlp->cleanCompat($data['compatible']);
             $cols = 0;
-            $uptodate = false;
             $compatrow = '';
             foreach ($this->hlp->dokuReleases as $release) {
                 if (++$cols > 4) break;
@@ -243,6 +244,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
                 $R->doc .= '<p>';
                 $R->internallink('devel:develonly',$this->getLang('develonly'));
                 $R->doc .= '</p>'.NL;
+                $uptodate = true;
             // compatible to older releases
             } elseif (!$uptodate) {
                 $R->doc .= '<p>';
@@ -255,6 +257,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         }
 
         $R->doc .= '</div>'.NL;
+        return $uptodate;
     }
 
     function _showActionLinks(&$R, $data) {
@@ -274,6 +277,12 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
     }
 
     function _showWarnings(&$R, $data, $hasUnderscoreIssue, $isOld) {
+        if($isOld) {
+            $R->doc .= '<div class="notify">';
+            $R->doc .= '<p>'.$this->getLang('name_oldage').'</p>';
+            $R->doc .= '</div>'.NL;
+        }
+
         if($data['securitywarning']){
             $R->doc .= '<div class="notify">'.NL;
             $securitylink = $R->internallink('devel:security',$this->getLang('securitylink'),NULL,true);
@@ -295,14 +304,9 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             $R->doc .= '</div>'.NL;
         }
 
-        if($hasUnderscoreIssue || $isOld) {
+        if($hasUnderscoreIssue) {
             $R->doc .= '<div class="info">';
-            if($isOld) {
-                $R->doc .= '<p>'.$this->getLang('name_oldage').'</p>';
-            }
-            if($hasUnderscoreIssue) {
-                $R->doc .= '<p>'.$this->getLang('name_underscore').'</p>';
-            }
+            $R->doc .= '<p>'.$this->getLang('name_underscore').'</p>';
             $R->doc .= '</div>'.NL;
         }
     }
