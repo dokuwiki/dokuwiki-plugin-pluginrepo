@@ -219,7 +219,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             // get recent compatible releases
             $compatibility = $this->hlp->cleanCompat($data['compatible']);
             $cols = 0;
-            $norecentcompat = true;
+            $uptodate = false;
             $compatrow = '';
             foreach ($this->hlp->dokuReleases as $release) {
                 if (++$cols > 4) break;
@@ -232,7 +232,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
                         $value = $this->getLang('compatible_probably');
                         $compaticon = "probably";
                     }
-                    $norecentcompat = false;
+                    $uptodate = true;
                 }
                 $compatrow .= '<li class="'.$compaticon.'">'.$release['date'].' '.$release['label'];
                 $compatrow .= '&nbsp;<strong><span>'.$value.'</span></strong></li>'.NL;
@@ -244,7 +244,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
                 $R->internallink('devel:develonly',$this->getLang('develonly'));
                 $R->doc .= '</p>'.NL;
             // compatible to older releases
-            } elseif ($norecentcompat) {
+            } elseif (!$uptodate) {
                 $R->doc .= '<p>';
                 $R->doc .= $data['compatible'];
                 $R->doc .= '</p>'.NL;
