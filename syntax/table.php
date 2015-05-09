@@ -341,6 +341,11 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
                 $compatgroup = $row['bestcompatible'];
             }
 
+            // exclude entries without a download
+            if (empty($row['downloadurl'])) {
+                continue;
+            }
+
             $R->doc .= '<tr>'.NL;
             $R->doc .= '<td class="info">'.NL;
 
@@ -358,7 +363,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
             $R->doc .= $this->hlp->pluginlink($R, $row['plugin'], $row['name']);
             $R->doc .= '</strong>'.NL;
             // download
-            if($row['downloadurl'] && !$row['securityissue'] && !$row['securitywarning']){
+            if(!$row['securityissue'] && !$row['securitywarning']){
                 $R->doc .= ' <em>';
                 $R->doc .= $R->externallink($row['downloadurl'], $this->getLang('t_download'), null, true);
                 $R->doc .= '</em>'.NL;
