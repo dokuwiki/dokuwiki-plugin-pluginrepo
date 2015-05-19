@@ -390,6 +390,10 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
             $plugins[$i]['compatible'] = $this->cleanCompat($plugins[$i]['compatible']);
             $plugins[$i]['types']      = $this->listtypes($plugins[$i]['type']);
 
+            if(in_array($plugins[$i]['securitywarning'],$this->securitywarning)){
+                $plugins[$i]['securitywarning'] = $this->getLang('security_'.$plugins[$i]['securitywarning']);
+            }
+
             ksort($plugins[$i]);
         }
 
