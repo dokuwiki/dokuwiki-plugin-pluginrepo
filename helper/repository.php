@@ -390,9 +390,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
             $plugins[$i]['compatible'] = $this->cleanCompat($plugins[$i]['compatible']);
             $plugins[$i]['types']      = $this->listtypes($plugins[$i]['type']);
 
-            if(in_array($plugins[$i]['securitywarning'],$this->securitywarning)){
-                $plugins[$i]['securitywarning'] = $this->getLang('security_'.$plugins[$i]['securitywarning']);
-            }
+            $plugins[$i]['securitywarning'] = $this->replaceSecurityWarningShortcut ($plugins[$i]['securitywarning']);
 
             ksort($plugins[$i]);
         }
@@ -748,6 +746,19 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
                                    screenshot varchar(255) default NULL, tags varchar(255) default NULL, securitywarning varchar(255) default NULL, securityissue varchar(255) NOT NULL,
                                    bestcompatible varchar(50) default NULL, popularity int default 0);'
         );
+    }
+
+    /**
+     * Return security warning with replaced shortcut, if any.
+     * If not, return original warning.
+     *
+     * @param $warning Original warning content
+     */
+    public function replaceSecurityWarningShortcut($warning) {
+        if(in_array($warning,$this->securitywarning)){
+            return $this->getLang('security_'.$warning);
+        }
+        return hsc($warning);
     }
 }
 
