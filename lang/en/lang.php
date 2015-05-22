@@ -31,6 +31,7 @@ $lang['securityissue']       = 'The following security issue was reported for th
 $lang['securityrecommendation']   = 'It is not recommended to use this extension until this issue was fixed. Extension authors should read the %s';
 $lang['securitylink']        = 'plugin security guidelines';
 $lang['name_underscore']     = 'Extension name contains underscore, will not generate popularity points.';
+$lang['name_oldage']         = 'This extension has not been updated in over 2 years. It may no longer be maintained or supported and may have compatibility issues.';
 $lang['downloadurl']         = 'Download';
 $lang['bugtracker']          = 'Report bugs';
 $lang['sourcerepo']          = 'Repository';
