@@ -76,6 +76,32 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
     }
 
     /**
+     * Rewrite plugin
+     *
+     * @param array $data (reference) data from entry::handle
+     */
+    public function harmonizeExtensionIDs(&$data) {
+        foreach(array('similar', 'conflict', 'depends') as $key) {
+            $refs = explode(',', $data[$key]);
+            $refs = array_map('trim', $refs);
+            $refs = array_filter($refs);
+
+            $updatedrefs = array();
+            foreach($refs as $ref) {
+                $ns = curNS($ref);
+                $id = noNS($ref);
+                if($ns == 'template' OR ($data['type'] == 'template' AND $ns == '')) {
+                    $ns = 'template';
+                } elseif($ns == 'plugin') {
+                    $ns = '';
+                }
+                $updatedrefs[] = $ns . ':' . $id;
+            }
+            $data[$key] = implode(',', $updatedrefs);
+        }
+    }
+
+    /**
      * Create database connection and return PDO object
      * the config option 'db_name' must contain the
      * DataSourceName, which consists of the PDO driver name,

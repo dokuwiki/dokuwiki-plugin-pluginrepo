@@ -63,6 +63,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         if (curNS($ID) == 'template') {
             $data['type'] = 'template';
         }
+        $this->hlp->harmonizeExtensionIDs($data);
         return $data;
     }
 
