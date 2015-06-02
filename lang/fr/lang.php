@@ -6,8 +6,9 @@
  * @author Antoine Turmel <geekshadow@gmail.com>
  * @author NicolasFriedli <nicolas@theologique.ch>
  * @author Fabrice Dejaigher <fabrice@chtiland.com>
+ * @author Schplurtz le Déboulonné <Schplurtz@laposte.net>
  */
-$lang['by']                    = 'par';
+$lang['by']                    = 'de';
 $lang['last_updated_on']       = 'Dernière mise à jour';
 $lang['provides']              = 'Fournit';
 $lang['compatible_with']       = 'Compatible avec DokuWiki%s';
@@ -20,7 +21,7 @@ $lang['develonly']             = 'Développement seulement';
 $lang['conflicts_with']        = 'En conflit avec';
 $lang['requires']              = 'Nécessite';
 $lang['similar_to']            = 'Similaire à';
-$lang['tagged_with']           = 'Tagué avec';
+$lang['tagged_with']           = 'étiquettes :';
 $lang['needed_for']            = 'Requis par';
 $lang['securitywarning']       = 'Avertissement de sécurité (merci de lire %s)&nbsp;:';
 $lang['security_informationleak'] = 'Ce module divulgue des informations qui pourraient être utiles à un pirate. Il n\'est pas recommandé dans une installation publique.';
@@ -31,6 +32,7 @@ $lang['securityissue']         = 'Le problème de sécurité suivant a été rap
 $lang['securityrecommendation'] = 'Il n\'est pas recommandé d\'utiliser ce module jusqu\'à ce que le problème soit résolu. Les auteurs de modules devraient lire les %s';
 $lang['securitylink']          = 'consignes de sécurité des modules';
 $lang['name_underscore']       = 'Le nom du module contient des «&nbsp;underscore&nbsp;», il ne génèrera pas de points de popularité.';
+$lang['name_oldage']           = 'Cette extension n\'a pas été mise à jour par ses developpeurs depuis plus de deux ans. Elle pourrait ne plus être maintenue ou comporter des problèmes de compatibilité.';
 $lang['downloadurl']           = 'Télécharger';
 $lang['bugtracker']            = 'Rapporter des bugs';
 $lang['sourcerepo']            = 'Dépôt';
