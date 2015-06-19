@@ -349,10 +349,15 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
         // other extensions by the same author (10 max)
         if (count($rel['sameauthor']) > 0) {
+            $maxShow = 10;
             $itr = 0;
             $R->doc .= '<ul>'.NL;
-            while ($itr < count($rel['sameauthor']) && $itr < 10) {
+            while ($itr < count($rel['sameauthor']) && $itr < $maxShow) {
                 $R->doc .= '<li>'.$this->hlp->pluginlink($R,$rel['sameauthor'][$itr++]).'</li>'.NL;
+            }
+            if (count($rel['sameauthor']) > $maxShow) {
+                $remainingExtensions = count($rel['sameauthor'])-$maxShow;
+                $R->doc .= '<li>'.sprintf($this->getLang('more_extensions'), $remainingExtensions).'</li>';
             }
             $R->doc .= '</ul>'.NL;
         }
