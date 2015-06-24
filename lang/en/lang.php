@@ -15,6 +15,7 @@ $lang['compatible_with_info']= 'Please update this field';
 $lang['no_compatibility']    = 'No compatibility info given!';
 $lang['compatible_unknown']  = 'unknown';
 $lang['compatible_yes']      = 'yes';
+$lang['compatible_no']       = 'no';
 $lang['compatible_probably'] = 'probably';
 $lang['develonly']           = 'Devel only';
 $lang['conflicts_with']      = 'Conflicts with';
