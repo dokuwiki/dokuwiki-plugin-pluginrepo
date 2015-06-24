@@ -109,6 +109,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $extensionType = ($type == 32) ? 'template' : 'plugin';
         $hasUnderscoreIssue = (strpos($id, '_') !== false);
         $age = 0;
+        $bundled = $data['compatible'] == '(bundled)';
         $lastUpdate = $data['lastupdate'];
         if ($lastUpdate) {
             $age = DateTime::createFromFormat('Y-m-d', $lastUpdate)->diff(new DateTime('now'))->y;
@@ -124,7 +125,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $this->_showMainInfo($R, $data, $extensionType);
         $this->_showMetaInfo($R, $data, $type, $rel);
 
-        $isOld = ($age >= 2) && !$uptodate;
+        $isOld = ($age >= 2) && !$uptodate && !$bundled;
 
         if($rel['similar'] || $data['tags'] || $data['securitywarning'] || $data['securityissue'] || $hasUnderscoreIssue || $isOld) {
             $R->doc .= '<div class="moreInfo">' . NL;
