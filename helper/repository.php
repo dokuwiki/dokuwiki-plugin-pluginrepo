@@ -241,7 +241,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
                                     $pluginsql
                                  $sortsql"
             );
-            $stmt->execute($plugins);
+            $stmt->execute(array_merge($plugins, $plugins)); //twice the same query
         }
 
         $plugins = $stmt->fetchAll(PDO::FETCH_ASSOC);
