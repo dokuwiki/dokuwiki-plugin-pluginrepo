@@ -176,8 +176,9 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         // screenshot
         if($data['screenshot_img']) {
             $val = $data['screenshot_img'];
+            $title = 'screenshot: '.basename(str_replace(':','/',$val));
             $R->doc .= '<a href="' . ml($val) . '" class="media screenshot" rel="lightbox">';
-            $R->doc .= '<img src="' . ml($val, "w=220") . '" alt="" width="220" /></a>' . NL;
+            $R->doc .= '<img src="' . ml($val, "w=220") . '" alt="' . $title . '" width="220" /></a>' . NL;
         }
 
         $R->doc .= '</div>';
