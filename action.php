@@ -30,10 +30,6 @@ class action_plugin_pluginrepo extends DokuWiki_Action_Plugin {
     public function _cleanOldEntry(Doku_Event $event) {
         global $ID;
 
-        //only in relevant namespaces
-        if(!(curNS($ID) == 'plugin' || curNS($ID) == 'template')) return;
-
-
         $data = $event->data;
         $haspluginentry = preg_match('/----+ *plugin *-+/', $data[0][1]);     // addSpecialPattern: ----+ *plugin *-+\n.*?\n----+
         $hastemplateentry = preg_match('/----+ *template *-+/', $data[0][1]); // addSpecialPattern: ----+ *template *-+\n.*?\n----+
