@@ -128,7 +128,10 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $bundled = $data['compatible'] == '(bundled)';
         $lastUpdate = $data['lastupdate'];
         if ($lastUpdate) {
-            $age = DateTime::createFromFormat('Y-m-d', $lastUpdate)->diff(new DateTime('now'))->y;
+            $lastupdateDateTime = DateTime::createFromFormat('Y-m-d', $lastUpdate);
+            if($lastupdateDateTime) {
+                $age = $lastupdateDateTime->diff(new DateTime('now'))->y;
+            }
         }
 
         $R->doc .= '<div class="pluginrepo_entry">' . NL;
