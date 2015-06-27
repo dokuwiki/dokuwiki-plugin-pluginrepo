@@ -8,6 +8,9 @@
 // must be run within Dokuwiki
 if(!defined('DOKU_INC')) die();
 
+/**
+ * Class syntax_plugin_pluginrepo_table
+ */
 class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
     /**
@@ -46,28 +49,41 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
     /**
      * Connect pattern to lexer
+     *
+     * @param string $mode
      */
     function connectTo($mode) {
         $this->Lexer->addSpecialPattern('~~pluginrepo~~',$mode,'plugin_pluginrepo_table');
         $this->Lexer->addSpecialPattern('----+ *pluginrepo *-+\n.*?\n----+',$mode,'plugin_pluginrepo_table');
     }
 
-
     /**
      * Handle the match - parse the data
      *
      * This parsing is shared between the multiple different output/control
      * syntaxes
+     *
+     * @param   string       $match   The text matched by the patterns
+     * @param   int          $state   The lexer state for the match
+     * @param   int          $pos     The character position of the matched text
+     * @param   Doku_Handler $handler The Doku_Handler object
+     * @return  bool|array Return an array with all data you want to use in render, false don't add an instruction
      */
-    function handle($match, $state, $pos, Doku_Handler &$handler){
+    function handle($match, $state, $pos, Doku_Handler $handler){
         return $this->hlp->parseData($match);
     }
 
     /**
      * Create output
+     *
+     * @param string          $format   output format being rendered
+     * @param Doku_Renderer   $renderer the current renderer object
+     * @param array           $data     data created by handle()
+     * @return  boolean                 rendered correctly? (however, returned value is not used at the moment)
      */
-    function render($format, Doku_Renderer &$renderer, $data) {
+    function render($format, Doku_Renderer $renderer, $data) {
         if($format == 'xhtml') {
+            /** @var Doku_Renderer_xhtml $renderer */
             return $this->_showData($renderer,$data);
         }
         return false;
@@ -75,8 +91,12 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
     /**
      * Output table of plugins with filter and navigation
+     *
+     * @param Doku_Renderer_xhtml $R
+     * @param array               $data
+     * @return bool rendered correctly?
      */
-    function _showData(&$R, $data){
+    function _showData($R, $data){
         global $ID;
 
         $R->info['cache'] = false;
@@ -109,8 +129,11 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
     /**
      * Output repo table overview/intro and search form
+     *
+     * @param Doku_Renderer_xhtml $R
+     * @param array $data
      */
-    function _showMainSearch(&$R, $data){
+    function _showMainSearch($R, $data){
         global $ID;
         if (substr($ID,-1,1) == 's') {
             $searchNS = substr($ID,0,-1);
@@ -133,8 +156,11 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
     /**
      * Output plugin TYPE filter selection
+     *
+     * @param Doku_Renderer_xhtml $R
+     * @param array $data
      */
-    function _showPluginTypeFilter(&$R, $data){
+    function _showPluginTypeFilter($R, $data){
         global $ID;
 
         $R->doc .= '<h3>';
@@ -174,8 +200,11 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
     /**
      * Output plugin tag filter selection (cloud)
+     *
+     * @param Doku_Renderer_xhtml $R
+     * @param array $data
      */
-    function _tagcloud(&$R, $data){
+    function _tagcloud($R, $data){
         global $ID;
 
         $R->doc .= '<h3>';
@@ -214,6 +243,11 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
     /**
      * Assign weight group to each tag in supplied array, use $levels groups
+     *
+     * @param array $tags
+     * @param int   $min
+     * @param int   $max
+     * @param int   $levels
      */
     function _cloud_weight(&$tags,$min,$max,$levels){
         // calculate tresholds
@@ -236,8 +270,12 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
     /**
      * Output plugin table and "jump to A B C.." navigation
+     *
+     * @param Doku_Renderer_xhtml $R
+     * @param array               $data
+     * @return bool
      */
-    function _showPluginTable(&$R, $data){
+    function _showPluginTable($R, $data){
         global $ID;
 
         $plugins = $this->hlp->getPlugins(array_merge($_REQUEST,$data));
@@ -291,6 +329,10 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
     /**
      * Output new table with more dense layout
+     * @param array $plugins
+     * @param $linkopt
+     * @param array $data
+     * @param Doku_Renderer_xhtml $R
      */
     function _newTable($plugins,$linkopt,$data,$R) {
         global $ID;
@@ -395,7 +437,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
                 if ($val) {
                     $title = 'screenshot: '.basename(str_replace(':','/',$val));
                     $R->doc .= '<a href="'.ml($val).'" class="media" rel="lightbox">';
-                    $R->doc .= '<img src="'.ml($val,"w=80").'" alt="" width="80" /></a>';
+                    $R->doc .= '<img src="'.ml($val,"w=80").'" alt="' . $title . '" width="80" /></a>';
                 }
                 $R->doc .= '</td>'.NL;
             }
@@ -431,6 +473,11 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
 
     /**
      * Output classic repository table with only one database field/cell
+     *
+     * @param array               $plugins
+     * @param string              $linkopt url parameters
+     * @param array               $data
+     * @param Doku_Renderer_xhtml $R
      */
     function _classicTable($plugins,$linkopt,$data,$R) {
         global $ID;

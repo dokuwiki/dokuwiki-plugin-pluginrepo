@@ -14,6 +14,8 @@ class action_plugin_pluginrepo extends DokuWiki_Action_Plugin {
 
     /**
      * Registers a callback function for a given event
+     *
+     * @param Doku_Event_Handler $controller
      */
     public function register(Doku_Event_Handler $controller) {
         $controller->register_hook('IO_WIKIPAGE_WRITE', 'BEFORE', $this, '_cleanOldEntry');
@@ -24,9 +26,8 @@ class action_plugin_pluginrepo extends DokuWiki_Action_Plugin {
      * when the plugin or template code is no longer in the source
      *
      * @param Doku_Event $event  event object by reference
-     * @param null $param  empty
      */
-    public function _cleanOldEntry(&$event, $param) {
+    public function _cleanOldEntry(Doku_Event $event) {
         global $ID;
 
         //only in relevant namespaces
@@ -36,7 +37,9 @@ class action_plugin_pluginrepo extends DokuWiki_Action_Plugin {
         $data = $event->data;
         $haspluginentry = preg_match('/----+ *plugin *-+/', $data[0][1]);     // addSpecialPattern: ----+ *plugin *-+\n.*?\n----+
         $hastemplateentry = preg_match('/----+ *template *-+/', $data[0][1]); // addSpecialPattern: ----+ *template *-+\n.*?\n----+
-        if($haspluginentry || $hastemplateentry) return; // plugin seems still to be there
+        if($haspluginentry || $hastemplateentry) {
+            return; // plugin seems still to be there
+        }
 
         /** @var helper_plugin_pluginrepo_repository $hlp */
         $hlp = $this->loadHelper('pluginrepo_repository');

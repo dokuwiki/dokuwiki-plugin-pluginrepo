@@ -57,6 +57,9 @@ function parseOptions() {
 /**
  * Return XML string with repository data, plugin relations (tags, similar, depends)
  * are only returned if $opt['plugins'] is used to return named plugins
+ *
+ * @param array $opt
+ * @return string
  */
 function getRepository($opt) {
     $hlp = new helper_plugin_pluginrepo_repository();

@@ -40,6 +40,9 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      *  Those will be ignored and will neither be displayed nor saved.
      *  If you need to enter # as data, escape it with a backslash (\#).
      *  If you need a backslash, escape it as well (\\)
+     *
+     * @param string $match data block
+     * @return array
      */
     public function parseData($match) {
         // get lines
@@ -146,13 +149,15 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
     /**
      * Return array of plugins with some metadata
-     * available filters passed as array:
+     *
+     * @param array $filter with entries used
      *   'plugins'    (array) returns data of named plugins
      *   'plugintype' (integer)
      *   'plugintag'  (string)
      *   'pluginsort' (string)
      *   'showall'    (yes/no) default/unset is 'no' and obsolete plugins and security issues are not returned
      *   'includetemplates' (yes/no) default/unset is 'no' and template data will not be returned
+     * @return array
      */
     public function getPlugins($filter = null) {
         $db = $this->_getPluginsDB();
@@ -162,6 +167,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
         $plugins = $filter['plugins'];
         $type    = 0;
         $tag     = '';
+        $pluginsql = '';
         if($plugins) {
             if(!is_array($plugins)) {
                 $plugins = array($plugins);
@@ -426,6 +432,8 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
     /**
      * Translate sort keyword to sql clause
+     * @param string $sort keyword in format [^]<columnnames|shortcut columnname>
+     * @return string
      */
     private function _getPluginsSortSql($sort) {
         $sortsql = '';
@@ -506,6 +514,13 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
     /**
      * Return array of tags and their frequency in the repository
+     *
+     * @param int $minlimit
+     * @param array $filter with entries:
+     *                  'showall' => 'yes'|'no',
+     *                  'plugintype' => 32 or different type
+     *                  'includetemplates' => true|false
+     * @return array
      */
     public function getTags($minlimit = 0, $filter) {
         $db = $this->_getPluginsDB();
@@ -576,6 +591,8 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
     /**
      * Delete all information about plugin from repository database
      * (popularity data is left intact)
+     *
+     * @param string $plugin extension id e.g. pluginname or template:templatename
      */
     public function deletePlugin($plugin) {
         $db = $this->_getPluginsDB();
@@ -687,9 +704,16 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
     /**
      * Clean list of plugins, return rendered as internallinks
      * input may be comma separated or array
+     *
+     * @param string|array          $plugins
+     * @param Doku_Renderer_xhtml   $R
+     * @param string                $sep
+     * @return string
      */
-    public function listplugins($plugins, &$R, $sep = ', ') {
-        if(!is_array($plugins)) $plugins = explode(',', $plugins);
+    public function listplugins($plugins, $R, $sep = ', ') {
+        if(!is_array($plugins)) {
+            $plugins = explode(',', $plugins);
+        }
         $plugins = array_map('trim', $plugins);
         $plugins = array_map('strtolower', $plugins);
         $plugins = array_unique($plugins);
@@ -704,6 +728,11 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
     /**
      * Convert comma separated list of tags to filterlinks
+     *
+     * @param string $string comma separated list of tags
+     * @param string $target page id
+     * @param string $sep
+     * @return string
      */
     public function listtags($string, $target, $sep = ', ') {
         $tags = $this->parsetags($string);
@@ -717,6 +746,9 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
     /**
      * Clean comma separated list of tags, return as sorted array
+     *
+     * @param string $string comma separated list of tags
+     * @return array
      */
     public function parsetags($string) {
         $tags = preg_split('/[;,\s]/', $string);
@@ -729,6 +761,11 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
     /**
      * Convert $type (int) to list of filterlinks
+     *
+     * @param int    $type
+     * @param string $target page id
+     * @param string $sep
+     * @return string
      */
     public function listtype($type, $target, $sep = ', ') {
         $types = array();
@@ -744,6 +781,9 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
     /**
      * Convert $type (int) to array of names
+     *
+     * @param int $type
+     * @return array
      */
     public function listtypes($type) {
         $types = array();
@@ -771,7 +811,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
     /**
      * Create tables for repository
      *
-     * @param $db PDO
+     * @param PDO $db
      */
     private function _initPluginDB($db) {
         msg("Repository plugin: data tables created for plugin repository", -1);
@@ -793,7 +833,8 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      * Return security warning with replaced shortcut, if any.
      * If not, return original warning.
      *
-     * @param $warning Original warning content
+     * @param string $warning Original warning content
+     * @return string
      */
     public function replaceSecurityWarningShortcut($warning) {
         if(in_array($warning,$this->securitywarning)){

@@ -7,6 +7,9 @@
 // must be run within Dokuwiki
 if(!defined('DOKU_INC')) die();
 
+/**
+ * Class syntax_plugin_pluginrepo_news
+ */
 class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
 
     /**
@@ -20,7 +23,9 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
      */
     function syntax_plugin_pluginrepo_news(){
         $this->hlp = plugin_load('helper', 'pluginrepo_repository');
-        if(!$this->hlp) msg('Loading the pluginrepo repository helper failed. Make sure the pluginrepo plugin is installed.',-1);
+        if(!$this->hlp) {
+            msg('Loading the pluginrepo repository helper failed. Make sure the pluginrepo plugin is installed.',-1);
+        }
     }
 
     /**
@@ -46,31 +51,38 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
 
     /**
      * Connect pattern to lexer
+     *
+     * @param string $mode
      */
     function connectTo($mode) {
         $this->Lexer->addSpecialPattern('----+ *pluginnews *-+\n.*?\n----+',$mode,'plugin_pluginrepo_news');
     }
-
 
     /**
      * Handle the match - parse the data
      *
      * This parsing is shared between the multiple different output/control
      * syntaxes
+     *
+     * @param   string       $match   The text matched by the patterns
+     * @param   int          $state   The lexer state for the match
+     * @param   int          $pos     The character position of the matched text
+     * @param   Doku_Handler $handler The Doku_Handler object
+     * @return  bool|array Return an array with all data you want to use in render, false don't add an instruction
      */
-    function handle($match, $state, $pos, Doku_Handler &$handler){
+    function handle($match, $state, $pos, Doku_Handler $handler){
         return $this->hlp->parseData($match);
     }
 
     /**
      * Create output
      *
-     * @param string $format
-     * @param Doku_Renderer $R
-     * @param array $data
-     * @return bool
+     * @param string          $format   output format being rendered
+     * @param Doku_Renderer   $R        the current renderer object
+     * @param array           $data     data created by handler()
+     * @return  boolean                 rendered correctly? (however, returned value is not used at the moment)
      */
-    function render($format, Doku_Renderer &$R, $data) {
+    function render($format, Doku_Renderer $R, $data) {
         if($format != 'xhtml') return false;
         /** @var Doku_Renderer_xhtml $R */
 
@@ -79,7 +91,7 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
 
         switch ($data['style']) {
             case 'sameauthor':
-                $this->showSameAuthor($R,$data);
+                $this->showSameAuthor($R);
                 break;
             default:
                 $this->showDefault($R,$data);
@@ -91,15 +103,15 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
             $R->doc .= '</p>'.NL;
         }
         $R->doc .= '</div>';
+        return true;
     }
 
     /**
      * Output html for showing plugins/templates of same author
      *
      * @param Doku_Renderer_xhtml $R
-     * @param $data
      */
-    function showSameAuthor(&$R, $data) {
+    function showSameAuthor($R) {
         global $ID;
 
         if (curNS($ID) == 'plugin') {
