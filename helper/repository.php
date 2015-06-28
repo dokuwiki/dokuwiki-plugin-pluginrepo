@@ -24,6 +24,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
 
     public $obsoleteTag = '!obsolete';
+    public $bundledLabel  = '(bundled)';
     public $bundled;
     public $securitywarning = array('informationleak', 'allowsscript', 'requirespatch', 'partlyhidden');
 
@@ -185,7 +186,8 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
         if($filter['showall'] == 'yes') {
             $shown = "1";
         } else {
-            $shown = "A.tags <> '".$this->obsoleteTag."' AND A.securityissue = ''";
+            $shown = "A.tags <> '" . $this->obsoleteTag . "' AND A.securityissue = ''"
+                . " AND (A.downloadurl <> '' OR A.compatible = '" . $this->bundledLabel . "')";
         }
         if($filter['includetemplates'] != 'yes') {
             $shown .= " AND A.type <> 32";

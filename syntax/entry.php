@@ -125,7 +125,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $extensionType = ($type == 32) ? 'template' : 'plugin';
         $hasUnderscoreIssue = (strpos($id, '_') !== false);
         $age = 0;
-        $bundled = $data['compatible'] == '(bundled)';
+        $bundled = $data['compatible'] == $this->hlp->bundledLabel;
         $lastUpdate = $data['lastupdate'];
         if ($lastUpdate) {
             $lastupdateDateTime = DateTime::createFromFormat('Y-m-d', $lastUpdate);
