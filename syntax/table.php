@@ -435,9 +435,9 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
                 $R->doc .= '<td class="screenshot">';
                 $val = $row['screenshot'];
                 if ($val) {
-                    $title = 'screenshot: '.basename(str_replace(':','/',$val));
-                    $R->doc .= '<a href="'.ml($val).'" class="media" rel="lightbox">';
-                    $R->doc .= '<img src="'.ml($val,"w=80").'" alt="' . $title . '" width="80" /></a>';
+                    $title = sprintf($this->getLang('screenshot_title'), noNS($row['plugin']));
+                    $R->doc .= '<a href="'.ml($val).'" class="media" title="' . $title . '" rel="lightbox">';
+                    $R->doc .= '<img src="'.ml($val,"w=80").'" alt="" width="80" /></a>';
                 }
                 $R->doc .= '</td>'.NL;
             }
