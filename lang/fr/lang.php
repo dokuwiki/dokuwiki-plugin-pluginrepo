@@ -7,6 +7,7 @@
  * @author NicolasFriedli <nicolas@theologique.ch>
  * @author Fabrice Dejaigher <fabrice@chtiland.com>
  * @author Schplurtz le Déboulonné <Schplurtz@laposte.net>
+ * @author Schplurtz le Déboulonné <schplurtz@laposte.net>
  */
 $lang['by']                    = 'de';
 $lang['last_updated_on']       = 'Dernière mise à jour';
@@ -16,6 +17,7 @@ $lang['compatible_with_info']  = 'Merci de mettre à jour ce champ';
 $lang['no_compatibility']      = 'Pas d\'informations de compatibilité disponible !';
 $lang['compatible_unknown']    = 'inconnu';
 $lang['compatible_yes']        = 'oui';
+$lang['compatible_no']         = 'no';
 $lang['compatible_probably']   = 'probablement';
 $lang['develonly']             = 'Développement seulement';
 $lang['conflicts_with']        = 'En conflit avec';
@@ -38,6 +40,7 @@ $lang['bugtracker']            = 'Rapporter des bugs';
 $lang['sourcerepo']            = 'Dépôt';
 $lang['source']                = 'Source';
 $lang['donationurl']           = 'Faire un don';
+$lang['more_extensions']       = 'et %d de plus';
 $lang['t_search_plugins']      = 'Rechercher des modules';
 $lang['t_search_template']     = 'Rechercher des modèles';
 $lang['t_searchintro_plugins'] = 'Filtrer les modules disponibles en tapant ou en utilisant le nuage de tags. Vous pouvez aussi rechercher dans la catégorie des plugins en utilisant la boîte de recherche.';
