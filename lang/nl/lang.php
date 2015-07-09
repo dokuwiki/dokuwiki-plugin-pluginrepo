@@ -5,6 +5,7 @@
  * 
  * @author Gerrit Uitslag <klapinklapin@gmail.com>
  * @author Rene <wllywlnt@yahoo.com>
+ * @author Peter van Diest <peter.van.diest@xs4all.nl>
  */
 $lang['by']                    = 'door';
 $lang['last_updated_on']       = 'Laatste update op';
@@ -14,6 +15,7 @@ $lang['compatible_with_info']  = 'Update alsjeblieft dit veld';
 $lang['no_compatibility']      = 'Geen compatibiliteitsinfo gegeven!';
 $lang['compatible_unknown']    = 'onbekend';
 $lang['compatible_yes']        = 'ja';
+$lang['compatible_no']         = 'nee';
 $lang['compatible_probably']   = 'waarschijnlijk';
 $lang['develonly']             = 'Alleen voor ontwikkelaars';
 $lang['conflicts_with']        = 'Conflicteert met';
@@ -30,11 +32,13 @@ $lang['securityissue']         = 'Het volgende veiligheidsprobleem is gerapporte
 $lang['securityrecommendation'] = 'Het wordt niet aanbevolen om deze plugin te gebruiken tot dat dit probleem is gerepareerd. Pluginauteurs worden dringend aangeraden de %s te lezen';
 $lang['securitylink']          = 'plugin beveiligingsrichtlijnen';
 $lang['name_underscore']       = 'Pluginnaam bevat een lagestreep "_" en zal daarom geen populariteitspunten ontvangen.';
+$lang['name_oldage']           = 'Deze uitbreiding is al meer dan 2 jaar niet meer geupdated. Misschien worden hij niet langer onderhouden of ondersteund. Er kunnen compatibiliteitsproblemen zijn.';
 $lang['downloadurl']           = 'Download';
 $lang['bugtracker']            = 'Meld bugs';
 $lang['sourcerepo']            = 'Centrale opslag';
 $lang['source']                = 'Broncode';
 $lang['donationurl']           = 'Doneer';
+$lang['more_extensions']       = 'en nog %d';
 $lang['t_search_plugins']      = 'Zoek Plugins';
 $lang['t_search_template']     = 'Zoek Templates';
 $lang['t_searchintro_plugins'] = 'Filter de beschikbare plugins op type of gebruik de wolk met labels. Je kunt ook in de plugin-namespace zoeken met het zoekvakje.';
