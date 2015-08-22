@@ -3,17 +3,19 @@
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * 
- * @author  Matthias Schulte <mailinglist@lupo49.de>
+ * @author Matthias Schulte <mailinglist@lupo49.de>
  * @author Dennis Plöger <develop@dieploegers.de>
+ * @author Padhie <develop@padhie.de>
  */
 $lang['by']                    = 'von';
 $lang['last_updated_on']       = 'Letzte Aktualisierung';
 $lang['provides']              = 'Beinhaltet';
-$lang['compatible_with']       = 'Kompatibel zu DokuWiki';
+$lang['compatible_with']       = 'Kompatibel mit DokuWiki%s';
 $lang['compatible_with_info']  = 'Bitte aktualisieren Sie dieses Feld';
 $lang['no_compatibility']      = 'Keine Kompatibilitätsinformationen!';
 $lang['compatible_unknown']    = 'unbekannt';
 $lang['compatible_yes']        = 'ja';
+$lang['compatible_no']         = 'nein';
 $lang['compatible_probably']   = 'wahrscheinlich';
 $lang['develonly']             = 'nur als Entwicklungsversion';
 $lang['conflicts_with']        = 'Kollidiert mit';
@@ -30,11 +32,13 @@ $lang['securityissue']         = 'Folgende Sicherheitslücken sind in diesem Plu
 $lang['securityrecommendation'] = 'Es wird nicht empfohlen das Plugin zu verwenden, solange die Sicherheitslücke existiert. Plugin-Autoren sollten folgendes lesen: %s';
 $lang['securitylink']          = 'Plugin Sicherheitsrichtlinien';
 $lang['name_underscore']       = 'Pluginname enthält Unterstriche. Keine Generierung von Popularitätspunkten.';
+$lang['name_oldage']           = 'Die Erweiterung wurde in den letzten 2 Jahren nicht aktualisiert. Es wird scheinbar nicht mehr weiterentwickelt und könnte Probleme verursachen.';
 $lang['downloadurl']           = 'Herunterladen';
 $lang['bugtracker']            = 'Fehler melden';
 $lang['sourcerepo']            = 'Verwaltung';
 $lang['source']                = 'Quellcode';
 $lang['donationurl']           = 'Spenden';
+$lang['more_extensions']       = 'und %d mehr';
 $lang['t_search_plugins']      = 'Plugins durchsuchen';
 $lang['t_search_template']     = 'Templates durchsuchen';
 $lang['t_searchintro_plugins'] = 'Plugins nach Typ oder mit der Tag-Cloud filtern. Sie können auch innerhalb des Plugin-Namenraums mit Hilfe der Suchbox suchen.';
