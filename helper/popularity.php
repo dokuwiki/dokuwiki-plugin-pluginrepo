@@ -9,7 +9,7 @@ class helper_plugin_pluginrepo_popularity extends DokuWiki_Plugin {
     /** @var helper_plugin_pluginrepo_repository $hlp */
     protected $hlp;
 
-    public function helper_plugin_pluginrepo_popularity() {
+    public function __construct() {
         $this->hlp = $this->loadHelper('pluginrepo_repository');
     }
 

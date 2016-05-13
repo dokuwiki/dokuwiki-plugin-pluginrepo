@@ -19,7 +19,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
     /**
      * Constructor. Load helper plugin
      */
-    public function syntax_plugin_pluginrepo_entry() {
+    public function __construct() {
         $this->hlp = plugin_load('helper', 'pluginrepo_repository');
         if(!$this->hlp) msg('Loading the pluginrepo repository helper failed. Make sure the pluginrepo plugin is installed.', -1);
     }
