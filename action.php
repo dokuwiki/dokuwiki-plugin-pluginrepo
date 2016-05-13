@@ -23,10 +23,10 @@ class action_plugin_pluginrepo extends DokuWiki_Action_Plugin {
      * Handles the page write event and removes the database info
      * when the plugin or template code is no longer in the source
      *
-     * @param Doku_Event $event  event object by reference
+     * @param Doku_Event $event  event object
      * @param null $param  empty
      */
-    public function _cleanOldEntry(&$event, $param) {
+    public function _cleanOldEntry($event, $param) {
         global $ID;
 
         //only in relevant namespaces

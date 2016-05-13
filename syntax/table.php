@@ -59,14 +59,14 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
      * This parsing is shared between the multiple different output/control
      * syntaxes
      */
-    function handle($match, $state, $pos, Doku_Handler &$handler){
+    function handle($match, $state, $pos, Doku_Handler $handler){
         return $this->hlp->parseData($match);
     }
 
     /**
      * Create output
      */
-    function render($format, Doku_Renderer &$renderer, $data) {
+    function render($format, Doku_Renderer $renderer, $data) {
         if($format == 'xhtml') {
             return $this->_showData($renderer,$data);
         }
@@ -76,7 +76,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
     /**
      * Output table of plugins with filter and navigation
      */
-    function _showData(&$R, $data){
+    function _showData($R, $data){
         global $ID;
 
         $R->info['cache'] = false;
@@ -110,7 +110,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
     /**
      * Output repo table overview/intro and search form
      */
-    function _showMainSearch(&$R, $data){
+    function _showMainSearch($R, $data){
         global $ID;
         if (substr($ID,-1,1) == 's') {
             $searchNS = substr($ID,0,-1);
@@ -134,7 +134,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
     /**
      * Output plugin TYPE filter selection
      */
-    function _showPluginTypeFilter(&$R, $data){
+    function _showPluginTypeFilter($R, $data){
         global $ID;
 
         $R->doc .= '<h3>';
@@ -175,7 +175,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
     /**
      * Output plugin tag filter selection (cloud)
      */
-    function _tagcloud(&$R, $data){
+    function _tagcloud($R, $data){
         global $ID;
 
         $R->doc .= '<h3>';
@@ -237,7 +237,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
     /**
      * Output plugin table and "jump to A B C.." navigation
      */
-    function _showPluginTable(&$R, $data){
+    function _showPluginTable($R, $data){
         global $ID;
 
         $plugins = $this->hlp->getPlugins(array_merge($_REQUEST,$data));

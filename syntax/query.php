@@ -61,14 +61,14 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
      * This parsing is shared between the multiple different output/control
      * syntaxes
      */
-    function handle($match, $state, $pos, Doku_Handler &$handler){
+    function handle($match, $state, $pos, Doku_Handler $handler){
         return $this->hlp->parseData($match);
     }
 
     /**
      * Create output
      */
-    function render($format, Doku_Renderer &$R, $data) {
+    function render($format, Doku_Renderer $R, $data) {
         if($format != 'xhtml') return false;
         /** @var Doku_Renderer_xhtml $R */
 
