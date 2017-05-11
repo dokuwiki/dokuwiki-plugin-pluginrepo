@@ -27,6 +27,9 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
     public $bundled;
     public $securitywarning = array('informationleak', 'allowsscript', 'requirespatch', 'partlyhidden');
 
+    /**
+     * helper_plugin_pluginrepo_repository constructor.
+     */
     public function __construct() {
         $this->bundled = explode(',', $this->getConf('bundled'));
         $this->bundled = array_map('trim', $this->bundled);
@@ -165,44 +168,42 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
         if(!$db) return array();
 
         // return named plugins OR with certain tag/type
-        $plugins = $filter['plugins'];
+        $requestedplugins = $filter['plugins'];
         $type    = 0;
         $tag     = '';
-        $in_requested_plugins = '';
-        $in_bundled_values = array();
-        if($plugins) {
-            if(!is_array($plugins)) {
-                $plugins = array($plugins);
+        $where_requested = '';
+        $requestedINvalues = array();
+        if($requestedplugins) {
+            if(!is_array($requestedplugins)) {
+                $requestedplugins = array($requestedplugins);
             }
-            $in_requested_plugins = " AND plugin IN (" . substr(str_repeat("?,", count($plugins)), 0, -1).")";
+            list($requestedINsql, $requestedINvalues) = $this->prepareINstmt('requested', $requestedplugins);
+
+            $where_requested = " AND A.plugin " . $requestedINsql;
             $filter['showissues'] = 'yes';
-            $in_bundled_plugins = "plugin IN (".substr(str_repeat("?,", count($this->bundled)), 0, -1).")";
-            $in_bundled_values = $this->bundled;
+
         } else {
             $type = (int) $filter['plugintype'];
             $tag  = strtolower(trim($filter['plugintag']));
-            $placeholders = ':' . implode(',:', $this->bundled);
-            $in_bundled_plugins = "plugin IN (" . $placeholders . ")";
+        }
 
-            foreach($this->bundled as $plugin) {
-                $in_bundled_values[':' . $plugin] = $plugin;
-            }
+        if($filter['showall'] == 'yes') {
+            $where_filtered = "1";
+            $values = array();
+        } else {
+            list($bundledINsql, $bundledINvalues) = $this->prepareINstmt('bundled', $this->bundled);
+
+            $where_filtered = "A.tags <> '" . $this->obsoleteTag . "'"
+                . " AND A.securityissue = ''"
+                . " AND (A.downloadurl <> '' OR A.plugin " . $bundledINsql . ")";
+            $values = $bundledINvalues;
+        }
+        if($filter['includetemplates'] != 'yes') {
+            $where_filtered .= " AND A.type <> 32";
         }
 
         $sort    = strtolower(trim($filter['pluginsort']));
         $sortsql = $this->_getPluginsSortSql($sort);
-
-        if($filter['showall'] == 'yes') {
-            $shown = "1";
-            $values = array();
-        } else {
-            $shown = "A.tags <> '" . $this->obsoleteTag . "' AND A.securityissue = ''"
-                . " AND (A.downloadurl <> '' OR " . $in_bundled_plugins . ")";
-            $values = $in_bundled_values;
-        }
-        if($filter['includetemplates'] != 'yes') {
-            $shown .= " AND A.type <> 32";
-        }
 
         if($tag) {
             if(!$this->types[$type]) {
@@ -210,14 +211,14 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
             }
             $sql = "      SELECT A.*, SUBSTR(A.plugin,10) as simplename
                                           FROM plugin_tags B, plugins A
-                                         WHERE A.type = 32 AND $shown
+                                         WHERE A.type = 32 AND $where_filtered
                                            AND (A.type & :plugin_type)
                                            AND A.plugin = B.plugin
                                            AND B.tag = :plugin_tag
                                  UNION
                                         SELECT A.*, A.plugin as simplename
                                           FROM plugin_tags B, plugins A
-                                         WHERE A.type <> 32 AND $shown
+                                         WHERE A.type <> 32 AND $where_filtered
                                            AND (A.type & :plugin_type)
                                            AND A.plugin = B.plugin
                                            AND B.tag = :plugin_tag
@@ -231,12 +232,12 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
         } elseif($this->types[$type]) {
             $sql = "      SELECT A.*, SUBSTR(A.plugin,10) as simplename
                                           FROM plugins A
-                                         WHERE A.type = 32 AND $shown
+                                         WHERE A.type = 32 AND $where_filtered
                                            AND (A.type & :plugin_type)
                                  UNION
                                         SELECT A.*, A.plugin as simplename
                                           FROM plugins A
-                                         WHERE A.type <> 32 AND $shown
+                                         WHERE A.type <> 32 AND $where_filtered
                                            AND (A.type & :plugin_type)
                                  $sortsql";
             $values = array_merge(
@@ -247,28 +248,48 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
         } else {
             $sql = "      SELECT A.*, SUBSTR(A.plugin,10) as simplename
                                           FROM plugins A
-                                         WHERE A.type = 32 AND $shown
-                                    $in_requested_plugins
+                                         WHERE A.type = 32 AND $where_filtered
+                                    $where_requested
                                  UNION
                                         SELECT A.*, A.plugin as simplename
                                           FROM plugins A
-                                         WHERE A.type <> 32 AND $shown
-                                    $in_requested_plugins
+                                         WHERE A.type <> 32 AND $where_filtered
+                                    $where_requested
                                  $sortsql";
 
-            //placeholders for twice the same query with question mark placeholders
-            if($plugins) {
-                $values = array_merge($values, $plugins, $values, $plugins);
-            } else {
-                $values = array_merge($values, $values);
-            }
-
+            $values = array_merge(
+                $requestedINvalues,
+                $values
+            );
         }
 
         $stmt = $db->prepare($sql);
         $stmt->execute($values);
         $plugins = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $plugins;
+    }
+
+    /**
+     * Prepares IN statement with placeholders and array with the placeholder values
+     *
+     * @param string $paramlabel
+     * @param array $values
+     * @return array with
+     *      sql as string
+     *      params as associated array
+     */
+    protected function prepareINstmt($paramlabel, $values) {
+        $count = 0;
+        $params  = array();
+        foreach($values as $value) {
+            $params[':' . $paramlabel . $count++] = $value;
+        }
+
+        $sql = 'IN ('.join(',', array_keys($params)).')';
+        return array(
+            $sql,
+            $params
+        );
     }
 
     /**
