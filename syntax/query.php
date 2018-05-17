@@ -7,6 +7,9 @@
 // must be run within Dokuwiki
 if(!defined('DOKU_INC')) die();
 
+/**
+ * Class syntax_plugin_pluginrepo_query
+ */
 class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
 
     /**
@@ -49,31 +52,40 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
 
     /**
      * Connect pattern to lexer
+     *
+     * @param string $mode
      */
     function connectTo($mode) {
         $this->Lexer->addSpecialPattern('----+ *pluginquery *-+\n.*?\n----+',$mode,'plugin_pluginrepo_query');
     }
 
-
     /**
-     * Handle the match - parse the data
+     * Handler to prepare matched data for the rendering process
      *
-     * This parsing is shared between the multiple different output/control
-     * syntaxes
+     * @param   string       $match   The text matched by the patterns
+     * @param   int          $state   The lexer state for the match
+     * @param   int          $pos     The character position of the matched text
+     * @param   Doku_Handler $handler The Doku_Handler object
+     * @return  bool|array Return an array with all data you want to use in render, false don't add an instruction
      */
     function handle($match, $state, $pos, Doku_Handler $handler){
         return $this->hlp->parseData($match);
     }
 
     /**
-     * Create output
+     * Handles the actual output creation.
+     *
+     * @param string          $format   output format being rendered
+     * @param Doku_Renderer   $R        the current renderer object
+     * @param array           $data     data created by handler()
+     * @return  boolean                 rendered correctly? (however, returned value is not used at the moment)
      */
     function render($format, Doku_Renderer $R, $data) {
         if($format != 'xhtml') return false;
         /** @var Doku_Renderer_xhtml $R */
 
         $db = $this->hlp->_getPluginsDB();
-        if (!$db) return;
+        if (!$db) return false;
 
         $R->info['cache'] = false;
 
@@ -84,7 +96,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
         for ($fieldItr = 0; $fieldItr < count($fields); $fieldItr++) {
             if (!in_array($fields[$fieldItr], $this->allowedfields)) {
                 $R->doc .= '<div class="error repoquery"><strong>Repoquery error - Unknown field:</strong> '.hsc($fields[$fieldItr]).'</div>';
-                return;
+                return true;
             }
         }
         // create ORDER BY sql clause for shown fields, ensure 'plugin' field included
@@ -96,7 +108,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
         // sanitize WHERE input
         if (!$data['where']) {
             $R->doc .= '<div class="error repoquery"><strong>Repoquery error - Missing WHERE clause</strong></div>';
-            return;
+            return true;
         }
 
         $error = $data['where'];
@@ -106,7 +118,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
         $error = preg_replace('/(LIKE|AND|OR|NOT|IS|NULL|[<>=\?\(\)])/i','',$error);
         if (trim($error)) {
             $R->doc .= '<div class="error repoquery"><strong>Repoquery error - Unsupported chars in WHERE clause:</strong> '.hsc($error).'</div>';
-            return;
+            return true;
         }
         $wheresql = $data['where'];
 
@@ -128,7 +140,7 @@ class syntax_plugin_pluginrepo_query extends DokuWiki_Syntax_Plugin {
 
         $R->doc .= '<div class="pluginrepo_query">';
         if (count($fields) == 0) {
-            // sort into alpha groups if only displaying plugin links
+            // sort into alpha groups (A, B, C,...) if only displaying plugin links
             $plugingroups = array();
             foreach ($datarows as $row) {
                 $firstchar = substr(noNS($row['plugin']),0,1);

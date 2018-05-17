@@ -84,6 +84,7 @@ $lang['t_download']          = 'Download';
 $lang['t_provides']          = 'Provides';
 $lang['t_tags']              = 'Tags';
 $lang['t_bundled']           = 'bundled';
+$lang['screenshot_title']    = 'Screenshot of %s';
 
 
 //Setup VIM: ex: et ts=2 enc=utf-8 :

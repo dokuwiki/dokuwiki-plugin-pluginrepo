@@ -27,10 +27,14 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
     public $bundled;
     public $securitywarning = array('informationleak', 'allowsscript', 'requirespatch', 'partlyhidden');
 
+    /**
+     * helper_plugin_pluginrepo_repository constructor.
+     */
     public function __construct() {
         $this->bundled = explode(',', $this->getConf('bundled'));
         $this->bundled = array_map('trim', $this->bundled);
         $this->bundled = array_filter($this->bundled);
+        $this->bundled = array_unique($this->bundled);
     }
 
     /**
@@ -40,6 +44,9 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      *  Those will be ignored and will neither be displayed nor saved.
      *  If you need to enter # as data, escape it with a backslash (\#).
      *  If you need a backslash, escape it as well (\\)
+     *
+     * @param string $match data block
+     * @return array
      */
     public function parseData($match) {
         // get lines
@@ -146,100 +153,143 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
     /**
      * Return array of plugins with some metadata
-     * available filters passed as array:
+     *
+     * @param array $filter with entries used
      *   'plugins'    (array) returns data of named plugins
      *   'plugintype' (integer)
      *   'plugintag'  (string)
      *   'pluginsort' (string)
      *   'showall'    (yes/no) default/unset is 'no' and obsolete plugins and security issues are not returned
      *   'includetemplates' (yes/no) default/unset is 'no' and template data will not be returned
+     * @return array
      */
     public function getPlugins($filter = null) {
         $db = $this->_getPluginsDB();
         if(!$db) return array();
 
         // return named plugins OR with certain tag/type
-        $plugins = $filter['plugins'];
+        $requestedplugins = $filter['plugins'];
         $type    = 0;
         $tag     = '';
-        if($plugins) {
-            if(!is_array($plugins)) {
-                $plugins = array($plugins);
+        $where_requested = '';
+        $requestedINvalues = array();
+        if($requestedplugins) {
+            if(!is_array($requestedplugins)) {
+                $requestedplugins = array($requestedplugins);
             }
-            $pluginsql            = substr("AND plugin IN (".str_repeat("?,", count($plugins)), 0, -1).")";
+            list($requestedINsql, $requestedINvalues) = $this->prepareINstmt('requested', $requestedplugins);
+
+            $where_requested = " AND A.plugin " . $requestedINsql;
             $filter['showissues'] = 'yes';
+
         } else {
             $type = (int) $filter['plugintype'];
             $tag  = strtolower(trim($filter['plugintag']));
         }
 
-        $sort    = strtolower(trim($filter['pluginsort']));
-        $sortsql = $this->_getPluginsSortSql($sort);
-
         if($filter['showall'] == 'yes') {
-            $shown = "1";
+            $where_filtered = "1";
+            $values = array();
         } else {
-            $shown = "A.tags <> '".$this->obsoleteTag."' AND A.securityissue = ''";
+            list($bundledINsql, $bundledINvalues) = $this->prepareINstmt('bundled', $this->bundled);
+
+            $where_filtered = "A.tags <> '" . $this->obsoleteTag . "'"
+                . " AND A.securityissue = ''"
+                . " AND (A.downloadurl <> '' OR A.plugin " . $bundledINsql . ")";
+            $values = $bundledINvalues;
         }
         if($filter['includetemplates'] != 'yes') {
-            $shown .= " AND A.type <> 32";
+            $where_filtered .= " AND A.type <> 32";
         }
+
+        $sort    = strtolower(trim($filter['pluginsort']));
+        $sortsql = $this->_getPluginsSortSql($sort);
 
         if($tag) {
             if(!$this->types[$type]) {
                 $type = 255;
             }
-            $stmt = $db->prepare(
-                "      SELECT A.*, SUBSTR(A.plugin,10) as simplename
+            $sql = "      SELECT A.*, SUBSTR(A.plugin,10) as simplename
                                           FROM plugin_tags B, plugins A
-                                         WHERE A.type = 32 AND $shown
-                                           AND (A.type & :type)
+                                         WHERE A.type = 32 AND $where_filtered
+                                           AND (A.type & :plugin_type)
                                            AND A.plugin = B.plugin
-                                           AND B.tag = :tag
+                                           AND B.tag = :plugin_tag
                                  UNION
                                         SELECT A.*, A.plugin as simplename
                                           FROM plugin_tags B, plugins A
-                                         WHERE A.type <> 32 AND $shown
-                                           AND (A.type & :type)
+                                         WHERE A.type <> 32 AND $where_filtered
+                                           AND (A.type & :plugin_type)
                                            AND A.plugin = B.plugin
-                                           AND B.tag = :tag
-                                $sortsql"
+                                           AND B.tag = :plugin_tag
+                                $sortsql";
+            $values = array_merge(
+                array(':plugin_tag' => $tag,
+                      ':plugin_type' => $type),
+                $values
             );
-            $stmt->execute(array(':tag' => $tag, ':type' => $type));
 
         } elseif($this->types[$type]) {
-            $stmt = $db->prepare(
-                "      SELECT A.*, SUBSTR(A.plugin,10) as simplename
+            $sql = "      SELECT A.*, SUBSTR(A.plugin,10) as simplename
                                           FROM plugins A
-                                         WHERE A.type = 32 AND $shown
-                                           AND (A.type & :type)
+                                         WHERE A.type = 32 AND $where_filtered
+                                           AND (A.type & :plugin_type)
                                  UNION
                                         SELECT A.*, A.plugin as simplename
                                           FROM plugins A
-                                         WHERE A.type <> 32 AND $shown
-                                           AND (A.type & :type)
-                                 $sortsql"
+                                         WHERE A.type <> 32 AND $where_filtered
+                                           AND (A.type & :plugin_type)
+                                 $sortsql";
+            $values = array_merge(
+                array(':plugin_type' => $type),
+                $values
             );
-            $stmt->execute(array(':type' => $type));
 
         } else {
-            $stmt = $db->prepare(
-                "      SELECT A.*, SUBSTR(A.plugin,10) as simplename
+            $sql = "      SELECT A.*, SUBSTR(A.plugin,10) as simplename
                                           FROM plugins A
-                                         WHERE A.type = 32 AND $shown
-                                    $pluginsql
+                                         WHERE A.type = 32 AND $where_filtered
+                                    $where_requested
                                  UNION
                                         SELECT A.*, A.plugin as simplename
                                           FROM plugins A
-                                         WHERE A.type <> 32 AND $shown
-                                    $pluginsql
-                                 $sortsql"
+                                         WHERE A.type <> 32 AND $where_filtered
+                                    $where_requested
+                                 $sortsql";
+
+            $values = array_merge(
+                $requestedINvalues,
+                $values
             );
-            $stmt->execute($plugins);
         }
 
+        $stmt = $db->prepare($sql);
+        $stmt->execute($values);
         $plugins = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $plugins;
+    }
+
+    /**
+     * Prepares IN statement with placeholders and array with the placeholder values
+     *
+     * @param string $paramlabel
+     * @param array $values
+     * @return array with
+     *      sql as string
+     *      params as associated array
+     */
+    protected function prepareINstmt($paramlabel, $values) {
+        $count = 0;
+        $params  = array();
+        foreach($values as $value) {
+            $params[':' . $paramlabel . $count++] = $value;
+        }
+
+        $sql = 'IN ('.join(',', array_keys($params)).')';
+        return array(
+            $sql,
+            $params
+        );
     }
 
     /**
@@ -426,6 +476,8 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
     /**
      * Translate sort keyword to sql clause
+     * @param string $sort keyword in format [^]<columnnames|shortcut columnname>
+     * @return string
      */
     private function _getPluginsSortSql($sort) {
         $sortsql = '';
@@ -506,6 +558,13 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
     /**
      * Return array of tags and their frequency in the repository
+     *
+     * @param int $minlimit
+     * @param array $filter with entries:
+     *                  'showall' => 'yes'|'no',
+     *                  'plugintype' => 32 or different type
+     *                  'includetemplates' => true|false
+     * @return array
      */
     public function getTags($minlimit = 0, $filter) {
         $db = $this->_getPluginsDB();
@@ -576,6 +635,8 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
     /**
      * Delete all information about plugin from repository database
      * (popularity data is left intact)
+     *
+     * @param string $plugin extension id e.g. pluginname or template:templatename
      */
     public function deletePlugin($plugin) {
         $db = $this->_getPluginsDB();
@@ -687,9 +748,16 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
     /**
      * Clean list of plugins, return rendered as internallinks
      * input may be comma separated or array
+     *
+     * @param string|array          $plugins
+     * @param Doku_Renderer_xhtml   $R
+     * @param string                $sep
+     * @return string
      */
-    public function listplugins($plugins, &$R, $sep = ', ') {
-        if(!is_array($plugins)) $plugins = explode(',', $plugins);
+    public function listplugins($plugins, $R, $sep = ', ') {
+        if(!is_array($plugins)) {
+            $plugins = explode(',', $plugins);
+        }
         $plugins = array_map('trim', $plugins);
         $plugins = array_map('strtolower', $plugins);
         $plugins = array_unique($plugins);
@@ -704,6 +772,11 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
     /**
      * Convert comma separated list of tags to filterlinks
+     *
+     * @param string $string comma separated list of tags
+     * @param string $target page id
+     * @param string $sep
+     * @return string
      */
     public function listtags($string, $target, $sep = ', ') {
         $tags = $this->parsetags($string);
@@ -717,6 +790,9 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
     /**
      * Clean comma separated list of tags, return as sorted array
+     *
+     * @param string $string comma separated list of tags
+     * @return array
      */
     public function parsetags($string) {
         $tags = preg_split('/[;,\s]/', $string);
@@ -729,6 +805,11 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
     /**
      * Convert $type (int) to list of filterlinks
+     *
+     * @param int    $type
+     * @param string $target page id
+     * @param string $sep
+     * @return string
      */
     public function listtype($type, $target, $sep = ', ') {
         $types = array();
@@ -744,6 +825,9 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
     /**
      * Convert $type (int) to array of names
+     *
+     * @param int $type
+     * @return array
      */
     public function listtypes($type) {
         $types = array();
@@ -771,7 +855,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
     /**
      * Create tables for repository
      *
-     * @param $db PDO
+     * @param PDO $db
      */
     private function _initPluginDB($db) {
         msg("Repository plugin: data tables created for plugin repository", -1);
@@ -793,7 +877,8 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      * Return security warning with replaced shortcut, if any.
      * If not, return original warning.
      *
-     * @param $warning Original warning content
+     * @param string $warning Original warning content
+     * @return string
      */
     public function replaceSecurityWarningShortcut($warning) {
         if(in_array($warning,$this->securitywarning)){

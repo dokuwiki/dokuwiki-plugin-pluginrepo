@@ -8,6 +8,9 @@
 // must be run within Dokuwiki
 if(!defined('DOKU_INC')) die();
 
+/**
+ * Class syntax_plugin_pluginrepo_entry
+ */
 class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
     /**
@@ -47,6 +50,8 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
     /**
      * Connect pattern to lexer (actual pattern used doesn't matter, namespace controls plugin type)
+     *
+     * @param string $mode
      */
     public function connectTo($mode) {
         $this->Lexer->addSpecialPattern('----+ *plugin *-+\n.*?\n----+', $mode, 'plugin_pluginrepo_entry');
@@ -54,7 +59,13 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * Handle the match - parse the data
+     * Handler to prepare matched data for the rendering process
+     *
+     * @param   string       $match   The text matched by the patterns
+     * @param   int          $state   The lexer state for the match
+     * @param   int          $pos     The character position of the matched text
+     * @param   Doku_Handler $handler The Doku_Handler object
+     * @return  bool|array Return an array with all data you want to use in render, false don't add an instruction
      */
     public function handle($match, $state, $pos, Doku_Handler $handler) {
         global $ID;
@@ -69,6 +80,11 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
     /**
      * Create output or save the data
+     *
+     * @param string          $format   output format being rendered
+     * @param Doku_Renderer   $renderer the current renderer object
+     * @param array           $data     data created by handler()
+     * @return  boolean                 rendered correctly? (however, returned value is not used at the moment)
      */
     public function render($format, Doku_Renderer $renderer, $data) {
         global $ID;
@@ -109,10 +125,13 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $extensionType = ($type == 32) ? 'template' : 'plugin';
         $hasUnderscoreIssue = (strpos($id, '_') !== false);
         $age = 0;
-        $bundled = $data['compatible'] == '(bundled)';
+        $bundled = in_array($id, $this->hlp->bundled);
         $lastUpdate = $data['lastupdate'];
         if ($lastUpdate) {
-            $age = DateTime::createFromFormat('Y-m-d', $lastUpdate)->diff(new DateTime('now'))->y;
+            $lastupdateDateTime = DateTime::createFromFormat('Y-m-d', $lastUpdate);
+            if($lastupdateDateTime) {
+                $age = $lastupdateDateTime->diff(new DateTime('now'))->y;
+            }
         }
 
         $R->doc .= '<div class="pluginrepo_entry">' . NL;
@@ -145,6 +164,8 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
      * @param string              $extensionType
      */
     protected function _showMainInfo($R, $data, $extensionType) {
+        global $ID;
+
         $R->doc .= '<div class="mainInfo">' . NL;
 
         /* plugin/template name omitted because each page usually already has an h1 with the same information
@@ -160,7 +181,8 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         // screenshot
         if($data['screenshot_img']) {
             $val = $data['screenshot_img'];
-            $R->doc .= '<a href="' . ml($val) . '" class="media screenshot" rel="lightbox">';
+            $title = sprintf($this->getLang('screenshot_title'), noNS($ID));
+            $R->doc .= '<a href="' . ml($val) . '" class="media screenshot" title="' . $title . '" rel="lightbox">';
             $R->doc .= '<img src="' . ml($val, "w=220") . '" alt="" width="220" /></a>' . NL;
         }
 
@@ -220,7 +242,8 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
     /**
      * @param Doku_Renderer_xhtml $R
-     * @param array               $data instructions from handle()
+     * @param array $data instructions from handle()
+     * @return bool
      */
     protected function _showCompatibility($R, $data) {
         $R->doc .= '<div class="compatibility">';
@@ -299,8 +322,9 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
     /**
      * @param Doku_Renderer_xhtml $R
-     * @param array               $data instructions from handle()
-     * @param bool                $hasUnderscoreIssue
+     * @param array $data instructions from handle()
+     * @param bool $hasUnderscoreIssue
+     * @param bool $isOld
      */
     protected function _showWarnings($R, $data, $hasUnderscoreIssue, $isOld) {
         if($isOld) {

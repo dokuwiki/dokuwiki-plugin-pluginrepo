@@ -59,7 +59,7 @@ Supported:
   * 64  => 'Remote',
   * 128 => 'Auth'
 
-example: ''api.php?type=5''
+example: ''api.php?type=5'' for plugins with Syntax and Action components
 
 ==== Tags ====
 
