@@ -2,7 +2,8 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
+ *
+ * @author HokkaidoPerson <dosankomali@yahoo.co.jp>
  * @author Hideaki SAWADA <chuno@live.jp>
  * @author Nobuyuki Fukuyori <self@spumoni.org>
  */
@@ -79,3 +80,4 @@ $lang['t_download']            = 'ダウンロード';
 $lang['t_provides']            = '種類';
 $lang['t_tags']                = 'タグ';
 $lang['t_bundled']             = '同梱';
+$lang['screenshot_title']      = '%sのスクリーンショット';
