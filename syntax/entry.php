@@ -451,8 +451,6 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         if(!$name) $name = $id;
         if(!preg_match('/^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/', $data['lastupdate'])) {
             $data['lastupdate'] = null;
-        } else {
-            $data['lastupdate'] = $data['lastupdate'];
         }
 
         if(in_array($id, $this->hlp->bundled)) {
