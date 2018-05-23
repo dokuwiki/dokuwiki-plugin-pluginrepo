@@ -335,6 +335,11 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             $R->doc .= '<p>'.$this->getLang('extension_obsoleted').'</p>';
             $R->doc .= '</div>'.NL;
         }
+        if(!$data['downloadurl']) {
+            $R->doc .= '<div class="notify">';
+            $R->doc .= '<p>'.$this->getLang('missing_downloadurl').'</p>';
+            $R->doc .= '</div>'.NL;
+        }
         if($isOld) {
             $R->doc .= '<div class="notify">';
             $R->doc .= '<p>'.$this->getLang('name_oldage').'</p>';

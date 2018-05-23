@@ -34,6 +34,7 @@ $lang['securitylink']        = 'plugin security guidelines';
 $lang['name_underscore']     = 'Extension name contains underscore, will not generate popularity points.';
 $lang['name_oldage']         = 'This extension has not been updated in over 2 years. It may no longer be maintained or supported and may have compatibility issues.';
 $lang['extension_obsoleted'] = '<strong>This extension is marked as obsoleted.</strong> Therefore it is hidden in the Extension Manager and the extension listing. Furthermore, it is candidate for removal.';
+$lang['missing_downloadurl'] = 'The missing download url means that this extension cannot be installed via the Extension Manager. Please see <a href="/devel:plugins#publishing_a_plugin_on_dokuwikiorg" class="wikilink1" title="devel:plugins">Publishing a Plugin on dokuwiki.org</a>. Recommended are public repository hosts like GitHub, GitLab or Bitbucket.';
 $lang['downloadurl']         = 'Download';
 $lang['bugtracker']          = 'Report bugs';
 $lang['sourcerepo']          = 'Repository';
