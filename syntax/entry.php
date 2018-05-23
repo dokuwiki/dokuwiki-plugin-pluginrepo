@@ -126,6 +126,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $hasUnderscoreIssue = (strpos($id, '_') !== false);
         $age = 0;
         $bundled = in_array($id, $this->hlp->bundled);
+        $obsoleted = in_array($this->hlp->obsoleteTag, $this->hlp->parsetags($data['tags']));
         $lastUpdate = $data['lastupdate'];
         if ($lastUpdate) {
             $lastupdateDateTime = DateTime::createFromFormat('Y-m-d', $lastUpdate);
@@ -134,7 +135,8 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             }
         }
 
-        $R->doc .= '<div class="pluginrepo_entry">' . NL;
+        $obsClass = $obsoleted ? ' obsoleted' : '';
+        $R->doc .= "<div class=\"pluginrepo_entry$obsClass\">" . NL;
 
         $R->doc .= '<div class="usageInfo">' . NL;
         $uptodate = $this->_showCompatibility($R, $data);
@@ -146,9 +148,9 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
         $isOld = ($age >= 2) && !$uptodate && !$bundled;
 
-        if($rel['similar'] || $data['tags'] || $data['securitywarning'] || $data['securityissue'] || $hasUnderscoreIssue || $isOld) {
+        if($rel['similar'] || $data['tags'] || $data['securitywarning'] || $data['securityissue'] || $hasUnderscoreIssue || $isOld || $obsoleted) {
             $R->doc .= '<div class="moreInfo">' . NL;
-            $this->_showWarnings($R, $data, $hasUnderscoreIssue, $isOld);
+            $this->_showWarnings($R, $data, $hasUnderscoreIssue, $isOld, $obsoleted);
             $this->_showTaxonomy($R, $data, $rel);
             $R->doc .= '</div>' . NL;
         }
@@ -325,8 +327,14 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
      * @param array $data instructions from handle()
      * @param bool $hasUnderscoreIssue
      * @param bool $isOld
+     * @param bool $obsoleted
      */
-    protected function _showWarnings($R, $data, $hasUnderscoreIssue, $isOld) {
+    protected function _showWarnings($R, $data, $hasUnderscoreIssue, $isOld, $obsoleted) {
+        if($obsoleted) {
+            $R->doc .= '<div class="notify">';
+            $R->doc .= '<p>'.$this->getLang('extension_obsoleted').'</p>';
+            $R->doc .= '</div>'.NL;
+        }
         if($isOld) {
             $R->doc .= '<div class="notify">';
             $R->doc .= '<p>'.$this->getLang('name_oldage').'</p>';

@@ -33,6 +33,7 @@ $lang['securityrecommendation']   = 'It is not recommended to use this extension
 $lang['securitylink']        = 'plugin security guidelines';
 $lang['name_underscore']     = 'Extension name contains underscore, will not generate popularity points.';
 $lang['name_oldage']         = 'This extension has not been updated in over 2 years. It may no longer be maintained or supported and may have compatibility issues.';
+$lang['extension_obsoleted'] = '<strong>This extension is marked as obsoleted.</strong> Therefore it is hidden in the Extension Manager and the extension listing. Furthermore, it is candidate for removal.';
 $lang['downloadurl']         = 'Download';
 $lang['bugtracker']          = 'Report bugs';
 $lang['sourcerepo']          = 'Repository';
