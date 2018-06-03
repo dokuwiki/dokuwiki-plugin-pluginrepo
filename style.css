@@ -6,7 +6,7 @@
     min-width: 230px;
     border: 1px solid __background_alt__;
     border-radius: 2px;
-    margin: 0 1.5em 1.5em 0;
+    margin: 0 0 1.5em;
     text-align: left;
 }
 
@@ -24,7 +24,7 @@
     width: 20%;
 }
 .dokuwiki div.pluginrepo_entry div.usageInfo {
-    width: 30%;
+    width: 18.2em;
     float: right;
 }
 .dokuwiki div.pluginrepo_entry div.moreInfo,
@@ -113,7 +113,7 @@
     top: 0;
     left: 0;
     box-shadow: 0 5px 5px #999;
-    width: 300px;
+    width: 19.2em;
     overflow: visible;
     border: 2px solid __background__;
     margin: -2px -2px 0;
@@ -442,4 +442,3 @@
     text-align: right;
     margin-bottom: 0;
 }
-
