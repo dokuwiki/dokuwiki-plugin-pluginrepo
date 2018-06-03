@@ -113,11 +113,12 @@
     top: 0;
     left: 0;
     box-shadow: 0 5px 5px #999;
-    width: 19.2em;
+    width: 21.2em;
     overflow: visible;
     border: 2px solid __background__;
     margin: -2px -2px 0;
     background: __background__;
+    font-size: 90%;
 }
 .dokuwiki div.pluginrepo_entry div.compatibility li {
     display: none;
