@@ -2,12 +2,11 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
+ *
+ * @author Schplurtz le Déboulonné <schplurtz@laposte.net>
  * @author Antoine Turmel <geekshadow@gmail.com>
  * @author NicolasFriedli <nicolas@theologique.ch>
  * @author Fabrice Dejaigher <fabrice@chtiland.com>
- * @author Schplurtz le Déboulonné <Schplurtz@laposte.net>
- * @author Schplurtz le Déboulonné <schplurtz@laposte.net>
  */
 $lang['by']                    = 'de';
 $lang['last_updated_on']       = 'Dernière mise à jour';
@@ -43,8 +42,8 @@ $lang['donationurl']           = 'Faire un don';
 $lang['more_extensions']       = 'et %d de plus';
 $lang['t_search_plugins']      = 'Rechercher des modules';
 $lang['t_search_template']     = 'Rechercher des modèles';
-$lang['t_searchintro_plugins'] = 'Filtrer les modules disponibles en tapant ou en utilisant le nuage de tags. Vous pouvez aussi rechercher dans la catégorie des plugins en utilisant la boîte de recherche.';
-$lang['t_searchintro_template'] = 'Filtrer les modèles disponibles en utilisant le nuage de tags. Vous pouvez aussi rechercher dans la catégorie des modèles en utilisant la boite de recherche.';
+$lang['t_searchintro_plugins'] = 'Filtrer les modules disponibles en tapant ou en utilisant le nuage d(étiquettes. Vous pouvez aussi rechercher dans la catégorie des modules en utilisant la boîte de recherche.';
+$lang['t_searchintro_template'] = 'Filtrer les modèles disponibles en utilisant le nuage de d\'étiquettes. Vous pouvez aussi rechercher dans la catégorie des modèles en utilisant la boite de recherche.';
 $lang['t_btn_search']          = 'Recherche';
 $lang['t_btn_searchtip']       = 'Rechercher dans la catégorie';
 $lang['t_filterbytype']        = 'Filtrer par type';
@@ -56,9 +55,9 @@ $lang['t_typehelper']          = 'Les modules %s fournissent des fonctionnalité
 $lang['t_typetemplate']        = 'Les %s changent l\'apparence et le comportement de DokuWiki';
 $lang['t_typeremote']          = 'les plugins %s ajoutent des méthodes à l\'API à distance accessibles vis des web services';
 $lang['t_typeauth']            = 'les plugins %s ajoutent des modules d\'authentification';
-$lang['t_filterbytag']         = 'Filtrer par tag';
+$lang['t_filterbytag']         = 'Filtrer par étiquette';
 $lang['t_availabletype']       = 'Modules %s disponibles';
-$lang['t_availabletagged']     = 'Tagués avec \'%s\'';
+$lang['t_availabletagged']     = 'Étiquetés \'%s\'';
 $lang['t_availableplugins']    = 'Tous disponibles';
 $lang['t_jumptoplugins']       = 'Aller au premier module commençant par&nbsp;:';
 $lang['t_resetfilter']         = 'Tout afficher (enlever filtre/tri)';
@@ -80,5 +79,6 @@ $lang['t_sortcompatible']      = 'Trier par compatibilité';
 $lang['t_screenshot']          = 'Capture d\'écran';
 $lang['t_download']            = 'Télécharger';
 $lang['t_provides']            = 'Fournit';
-$lang['t_tags']                = 'Tags';
+$lang['t_tags']                = 'Étiquettes';
 $lang['t_bundled']             = 'inclus par défaut';
+$lang['screenshot_title']      = 'Aperçu de %s';

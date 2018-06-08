@@ -2,7 +2,7 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
+ *
  * @author Nicolas Friedli <nicolas@theologique.ch>
  */
 $lang['db_name']               = 'Chaîne de connexion à la base de données (exemple "mysql:host=localhost;dbname=repo")';
