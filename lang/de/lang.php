@@ -2,7 +2,8 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
+ *
+ * @author Tim Wimmer <twimmer@78h.de>
  * @author Matthias Schulte <mailinglist@lupo49.de>
  * @author Dennis Plöger <develop@dieploegers.de>
  * @author Padhie <develop@padhie.de>
@@ -80,3 +81,4 @@ $lang['t_download']            = 'Download';
 $lang['t_provides']            = 'Bietet';
 $lang['t_tags']                = 'Schlagwörter';
 $lang['t_bundled']             = 'Gebündelt';
+$lang['screenshot_title']      = 'Screenshot von %s';
