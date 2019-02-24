@@ -2,7 +2,7 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
+ *
  * @author Dennis Plöger <develop@dieploegers.de>
  * @author Padhie <develop@padhie.de>
  * @author Dana <dannax3@gmx.de>
