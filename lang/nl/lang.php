@@ -2,7 +2,7 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
+ *
  * @author Gerrit Uitslag <klapinklapin@gmail.com>
  * @author Rene <wllywlnt@yahoo.com>
  * @author Peter van Diest <peter.van.diest@xs4all.nl>
@@ -80,3 +80,4 @@ $lang['t_download']            = 'Download';
 $lang['t_provides']            = 'Levert';
 $lang['t_tags']                = 'Labels';
 $lang['t_bundled']             = 'gebundeld';
+$lang['screenshot_title']      = 'Schermafdruk van %s';
