@@ -113,7 +113,6 @@
     top: 0;
     left: 0;
     box-shadow: 0 5px 5px #999;
-    width: 300px;
     overflow: visible;
     border: 2px solid __background__;
     margin: -2px -2px 0;
@@ -122,6 +121,7 @@
 .dokuwiki div.pluginrepo_entry div.compatibility li {
     display: none;
     color: __text__ !important;
+    clear: both;
 }
 .dokuwiki div.pluginrepo_entry div.compatibility li:first-child {
     display: block;
