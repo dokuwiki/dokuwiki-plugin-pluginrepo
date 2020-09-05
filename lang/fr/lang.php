@@ -3,7 +3,7 @@
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  *
- * @author Schplurtz le Déboulonné <schplurtz@laposte.net>
+ * @author Schplurtz le Déboulonné <Schplurtz@laposte.net>
  * @author Antoine Turmel <geekshadow@gmail.com>
  * @author NicolasFriedli <nicolas@theologique.ch>
  * @author Fabrice Dejaigher <fabrice@chtiland.com>
@@ -41,9 +41,9 @@ $lang['source']                = 'Source';
 $lang['donationurl']           = 'Faire un don';
 $lang['more_extensions']       = 'et %d de plus';
 $lang['t_search_plugins']      = 'Rechercher des modules';
-$lang['t_search_template']     = 'Rechercher des modèles';
+$lang['t_search_template']     = 'Rechercher des thèmes';
 $lang['t_searchintro_plugins'] = 'Filtrer les modules disponibles en tapant ou en utilisant le nuage d(étiquettes. Vous pouvez aussi rechercher dans la catégorie des modules en utilisant la boîte de recherche.';
-$lang['t_searchintro_template'] = 'Filtrer les modèles disponibles en utilisant le nuage de d\'étiquettes. Vous pouvez aussi rechercher dans la catégorie des modèles en utilisant la boite de recherche.';
+$lang['t_searchintro_template'] = 'Filtrer les thèmes disponibles en utilisant le nuage d\'étiquettes. Vous pouvez aussi rechercher dans la catégorie des thèmes en utilisant la boite de recherche.';
 $lang['t_btn_search']          = 'Recherche';
 $lang['t_btn_searchtip']       = 'Rechercher dans la catégorie';
 $lang['t_filterbytype']        = 'Filtrer par type';
@@ -63,7 +63,7 @@ $lang['t_jumptoplugins']       = 'Aller au premier module commençant par&nbsp;:
 $lang['t_resetfilter']         = 'Tout afficher (enlever filtre/tri)';
 $lang['t_oldercompatibility']  = 'Compatible avec les versions plus anciennes de DokuWiki';
 $lang['t_name_plugins']        = 'Module';
-$lang['t_name_template']       = 'Modèle';
+$lang['t_name_template']       = 'Thème';
 $lang['t_sortname']            = 'Trier par nom';
 $lang['t_description']         = 'Description';
 $lang['t_author']              = 'Auteur';
