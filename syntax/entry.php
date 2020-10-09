@@ -100,8 +100,8 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
                 return true;
             case 'metadata':
                 /** @var Doku_Renderer_metadata $renderer */
-                // only save if in first level namespace to ignore translated namespaces
-                if(substr_count($ID, ':') == 1) {
+                // only save if in first level namespace to ignore translated namespaces, and only plugins or templates
+                if(substr_count($ID, ':') == 1 && (curNS($ID) == 'plugin' || curNS($ID) == 'template')) {
                     $this->_saveData($data, $id, $renderer->meta['title']);
                 }
                 return true;
@@ -367,6 +367,18 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         if($hasUnderscoreIssue) {
             $R->doc .= '<div class="info">';
             $R->doc .= '<p>' . $this->getLang('name_underscore') . '</p>';
+            $R->doc .= '</div>' . NL;
+        }
+
+        //notify if outside [plugin|template]:[lang:] namespace
+        $firstns = '';
+        $pos = stripos($ID,':');
+        if($pos !== false){
+            $firstns = substr($ID,0, $pos);
+        }
+        if($firstns !== 'plugin' && $firstns !== 'template') {
+            $R->doc .= '<div class="notify">';
+            $R->doc .= '<p>' . $this->getLang('wrongnamespace') . '</p>';
             $R->doc .= '</div>' . NL;
         }
     }
