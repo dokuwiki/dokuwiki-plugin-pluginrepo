@@ -315,12 +315,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         }
 
         // the main table
-        if ($data['tablelayout'] != 'old') {
-            $this->_newTable($plugins,$linkopt,$data,$R);
-        } else {
-            // @todo: drop the classic look completely?
-            $this->_classicTable($plugins,$linkopt,$data,$R);
-        }
+        $this->_newTable($plugins,$linkopt,$data,$R);
 
         $R->doc .= '</div>'.NL;
         $R->section_close();
@@ -466,76 +461,5 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         }
         $R->doc .= '</table>'.NL;
     }
-
-    /**
-     * Output classic repository table with only one database field/cell
-     *
-     * @param array               $plugins
-     * @param string              $linkopt url parameters
-     * @param array               $data
-     * @param Doku_Renderer_xhtml $R
-     */
-    function _classicTable($plugins,$linkopt,$data,$R) {
-        global $ID;
-
-        $popmax = $this->hlp->getMaxPopularity($ID);
-
-        $R->doc .= '<table class="inline">';
-        $R->doc .= '<tr><th><a href="'.wl($ID,$linkopt.'pluginsort=p#extension__table').'" title="'.$this->getLang('t_sortname').'">'.$this->getLang('t_name').'</a></th>';
-
-        $R->doc .= '<th>'.$this->getLang('t_description').'</th>';
-        $R->doc .= '<th><a href="'.wl($ID,$linkopt.'pluginsort=a#extension__table').'" title="'.$this->getLang('t_sortauthor').'">'.$this->getLang('t_author').'</a></th>';
-        $R->doc .= '<th><a href="'.wl($ID,$linkopt.'pluginsort=t#extension__table').'" title="'.$this->getLang('t_sorttype').  '">'.$this->getLang('t_type').'</a></th>';
-        if ($data['screenshot'] == 'yes') {
-            $R->doc .= '<th>'.$this->getLang('t_screenshot').'</th>';
-        }
-        $R->doc .= '<th><a href="'.wl($ID,$linkopt.'pluginsort=^d#extension__table').'" title="'.$this->getLang('t_sortdate'). '">'.$this->getLang('t_date').'</a></th>';
-        $R->doc .= '<th><a href="'.wl($ID,$linkopt.'pluginsort=^c#extension__table').'" title="'.$this->getLang('t_sortpopularity').'">'.$this->getLang('t_popularity').'</a></th>';
-        $R->doc .= '</tr>';
-
-        foreach($plugins as $row) {
-            $R->doc .= '<tr>';
-            $R->doc .= '<td>';
-            $R->doc .= $this->hlp->pluginlink($R, $row['plugin']);
-            $R->doc .= '</td>';
-            $R->doc .= '<td>';
-            $R->doc .= '<strong>'.hsc($row['name']).'</strong><br />';
-            $R->doc .= hsc($row['description']);
-            $R->doc .= '</td>';
-
-            $R->doc .= '<td>';
-            $R->emaillink($row['email'],$row['author']);
-            $R->doc .= '</td>';
-
-            $R->doc .= '<td>';
-            $R->doc .= $this->hlp->listtype($row['type'],$ID);
-            $R->doc .= '</td>';
-
-            if ($data['screenshot'] == 'yes') {
-                $R->doc .= '<td>';
-                $val = $row['screenshot'];
-                if ($val) {
-                    $title = 'screenshot: '.basename(str_replace(':','/',$val));
-                    $R->doc .= '<a href="'.ml($val).'" class="media" rel="lightbox">';
-                    $R->doc .= '<img src="'.ml($val,"w=80").'" alt="'.hsc($title).'" width="80"/></a>';
-                }
-                $R->doc .= '</td>';
-            }
-
-            if(in_array($row['plugin'], $this->hlp->bundled)){
-                $R->doc .= '<td></td><td><i>'.$this->getLang('t_bundled').'</i></td>';
-            }else{
-                $R->doc .= '<td>';
-                $R->doc .= hsc($row['lastupdate']);
-                $R->doc .= '</td><td>';
-                $R->doc .= '<div class="prog-border" title="'.$row['popularity'].'/'.$popmax.'"><div class="prog-bar" style="width: '.sprintf(100*$row['popularity']/$popmax).'%;"></div></div>';
-                $R->doc .= '</td>';
-            }
-
-            $R->doc .= '</tr>';
-        }
-        $R->doc .= '</table>';
-    }
-
 }
 
