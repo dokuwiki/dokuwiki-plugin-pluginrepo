@@ -22,7 +22,6 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
         128 => 'Auth'
     );
 
-
     public $obsoleteTag = '!obsolete';
     public $bundled;
     public $securitywarning = array('informationleak', 'allowsscript', 'requirespatch', 'partlyhidden');
@@ -186,8 +185,6 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
             list($requestedINsql, $requestedINvalues) = $this->prepareINstmt('requested', $requestedplugins);
 
             $where_requested = " AND A.plugin " . $requestedINsql;
-            $filter['showissues'] = 'yes';
-
         } else {
             $type = (int) $filter['plugintype'];
             $tag  = strtolower(trim($filter['plugintag']));
@@ -199,35 +196,33 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
         } else {
             list($bundledINsql, $bundledINvalues) = $this->prepareINstmt('bundled', $this->bundled);
 
-            $where_filtered = "A.tags <> '" . $this->obsoleteTag . "'"
+            $where_filtered = "'" . $this->obsoleteTag . "' NOT IN(SELECT tag FROM plugin_tags WHERE plugin_tags.plugin = A.plugin)"
                 . " AND A.securityissue = ''"
                 . " AND (A.downloadurl <> '' OR A.plugin " . $bundledINsql . ")";
             $values = $bundledINvalues;
         }
         if($filter['includetemplates'] != 'yes') {
-            $where_filtered .= " AND A.type <> 32";
+            $where_filtered .= " AND A.type <> 32"; // templates are only type=32, has no other type.
         }
 
         $sort    = strtolower(trim($filter['pluginsort']));
         $sortsql = $this->_getPluginsSortSql($sort);
 
         if($tag) {
-            if(!$this->types[$type]) {
+            if($type < 1 or $type > 255) {
                 $type = 255;
             }
             $sql = "      SELECT A.*, SUBSTR(A.plugin,10) as simplename
-                                          FROM plugin_tags B, plugins A
+                                          FROM plugins A
                                          WHERE A.type = 32 AND $where_filtered
                                            AND (A.type & :plugin_type)
-                                           AND A.plugin = B.plugin
-                                           AND B.tag = :plugin_tag
+                                           AND :plugin_tag IN(SELECT tag FROM plugin_tags WHERE plugin_tags.plugin = A.plugin)
                                  UNION
                                         SELECT A.*, A.plugin as simplename
-                                          FROM plugin_tags B, plugins A
+                                          FROM plugins A
                                          WHERE A.type <> 32 AND $where_filtered
                                            AND (A.type & :plugin_type)
-                                           AND A.plugin = B.plugin
-                                           AND B.tag = :plugin_tag
+                                           AND :plugin_tag IN(SELECT tag FROM plugin_tags WHERE plugin_tags.plugin = A.plugin)
                                 $sortsql";
             $values = array_merge(
                 array(':plugin_tag' => $tag,
@@ -235,7 +230,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
                 $values
             );
 
-        } elseif($this->types[$type]) {
+        } elseif($type > 0 and $type <= 255) {
             $sql = "      SELECT A.*, SUBSTR(A.plugin,10) as simplename
                                           FROM plugins A
                                          WHERE A.type = 32 AND $where_filtered
@@ -271,8 +266,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
         $stmt = $db->prepare($sql);
         $stmt->execute($values);
-        $plugins = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $plugins;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -404,6 +398,8 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
             $fulltextparams = array(':fulltext' => $fulltext);
         }
 
+        $obsoletefilter = "AND '" . $this->obsoleteTag . "' NOT IN(SELECT tag FROM plugin_tags WHERE plugin_tags.plugin = A.plugin)";
+
         $sql = "SELECT A.*,
                        A.popularity/:maxpop as popularity,
                        MD5(LOWER(A.email)) as emailid,
@@ -427,6 +423,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
                        $tagfilter
                        $emailfilter
                        $fulltextfilter
+                       $obsoletefilter
               GROUP BY A.plugin
               ORDER BY $order
                        $limit";
@@ -572,14 +569,15 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      *                  'includetemplates' => true|false
      * @return array with tags and counts
      */
-    public function getTags($minlimit = 0, $filter) {
+    public function getTags($minlimit, $filter) {
         $db = $this->_getPluginsDB();
         if(!$db) return array();
 
         if($filter['showall'] == 'yes') {
             $shown = "1";
         } else {
-            $shown = "B.tags <> '".$this->obsoleteTag."' AND B.securityissue = ''";
+            $shown = "'" . $this->obsoleteTag . "' NOT IN(SELECT tag FROM plugin_tags WHERE plugin_tags.plugin = B.plugin)
+                      AND B.securityissue = ''";
         }
         if($filter['plugintype'] == 32) {
             $shown .= ' AND B.type = 32';
@@ -600,8 +598,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
         $stmt->bindParam(':minlimit', $minlimit, PDO::PARAM_INT);
         $stmt->execute();
-        $tags = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $tags;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -616,9 +613,10 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
         $db = $this->_getPluginsDB();
         if(!$db) return 1;
 
-        $sql = "SELECT popularity
-                  FROM plugins
-                 WHERE tags <> '".$this->obsoleteTag."' ";
+        $sql = "SELECT A.popularity
+                  FROM plugins A
+                 WHERE '" . $this->obsoleteTag . "' NOT IN(SELECT tag FROM plugin_tags WHERE plugin_tags.plugin = A.plugin)";
+
 
         $sql .= str_repeat("AND plugin != ? ", count($this->bundled));
 
