@@ -94,7 +94,7 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
 
         switch ($data['style']) {
             case 'sameauthor':
-                $this->showSameAuthor($R);
+                $this->showSameAuthor($R, $data);
                 break;
             default:
                 $this->showDefault($R,$data);
@@ -113,8 +113,10 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
      * Output html for showing a list of plugins/templates of same author
      *
      * @param Doku_Renderer_xhtml $R
+     * @param array $data used entries:
+     *          entries: number of plugins/templates displayed, otherwise 10
      */
-    function showSameAuthor($R) {
+    function showSameAuthor($R, $data) {
         global $ID;
 
         if (curNS($ID) == 'plugin') {
@@ -125,13 +127,14 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
 
         $rel = $this->hlp->getPluginRelations($id);
         if (count($rel) == 0) {
-            $R->doc .= '<p class="nothing">Can\'t find any other plugins</p>'.NL;
+            $R->doc .= '<p class="nothing">Can\'t find any other plugins or templates</p>'.NL;
             return;
         }
 
+        $limit = (is_numeric($data['entries']) ? $data['entries']: 10);
         $itr = 0;
         $R->doc .= '<ul>'.NL;
-        while ($itr < count($rel['sameauthor']) && $itr < 10) {
+        while ($itr < count($rel['sameauthor']) && $itr < $limit) {
             $R->doc .= '<li>'.$this->hlp->pluginlink($R,$rel['sameauthor'][$itr++]).'</li>'.NL;
         }
         $R->doc .= '</ul>'.NL;
