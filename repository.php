@@ -6,6 +6,7 @@
  * @author     Håkan Sandell <hakan.sandell@home.se>
  */
 
+use dokuwiki\Cache\Cache;
 
 if(!defined('DOKU_INC')) define('DOKU_INC',dirname(__FILE__).'/../../../');
 require_once(DOKU_INC.'inc/init.php');
@@ -31,7 +32,8 @@ $string = "pluginrepo";
 foreach($opt as $key => $value) {
     $string .= "|$key:$value|";
 }
-$cache = new cache($string, '.xml');
+
+$cache = new Cache($string, '.xml');
 if($cache->useCache(array('age'=>7200))) {
     $feed = $cache->retrieveCache();
 } else {

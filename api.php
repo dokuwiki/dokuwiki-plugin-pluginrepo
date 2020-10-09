@@ -51,8 +51,7 @@ if($INPUT->str('cmd') == 'ping') {
             echo serialize($extensions);
             break;
         default:
-            $json = new JSON();
-            $data = $json->encode($extensions);
+            $data = json_encode($extensions);
             $cb   = $INPUT->str('cb');
             $cb   = preg_replace('/\W+/', '', $cb);
             if($cb) {

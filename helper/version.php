@@ -1,22 +1,11 @@
 <?php
 
+use dokuwiki\HTTP\HTTPClient;
+
 /**
  * Class helper_plugin_pluginrepo_version
  */
 class helper_plugin_pluginrepo_version extends DokuWiki_Plugin {
-
-    /** @var  DokuHTTPClient */
-    protected $http;
-    /** @var  JSON */
-    protected $json;
-
-    /**
-     * Constructor, initializes helper classes
-     */
-    public function __construct() {
-        $this->http = new DokuHTTPClient();
-        $this->json = new JSON(JSON_LOOSE_TYPE);
-    }
 
     public function execute() {
 
@@ -85,7 +74,7 @@ class helper_plugin_pluginrepo_version extends DokuWiki_Plugin {
      * This fetches the available info about the given extension from the github repository
      *
      * @param array $plugindata all the data about the plugin from plugin repo
-     * @return bool|array the gathered info or fals if not available
+     * @return bool|array the gathered info or false if not available
      */
     protected function getGitHubInfo($plugindata) {
         if(empty($plugindata['sourcerepo'])) return false;
@@ -98,15 +87,16 @@ class helper_plugin_pluginrepo_version extends DokuWiki_Plugin {
         $http->headers['Accept'] = 'application/vnd.github.v3+json';
         $http->user              = $this->getConf('github_user');
         $http->pass              = $this->getConf('github_key');
-        $json                    = new JSON(JSON_LOOSE_TYPE);
 
         // get the current version in the *info.txt file
         $infotxt = 'plugin.info.txt';
         if($plugindata['type'] == 32) $infotxt = 'template.info.txt';
+
         $url      = 'https://api.github.com/repos/'.$user.'/'.$repo.'/contents/'.$infotxt;
         $response = $http->get($url);
         if(!$response) return false;
-        $response = $json->decode($response);
+
+        $response = json_decode($response, true);
         $infotxt  = base64_decode($response['content']);
         $info     = linesToHash(explode("\n", $infotxt));
         if(empty($info['date'])) return false;
@@ -115,7 +105,7 @@ class helper_plugin_pluginrepo_version extends DokuWiki_Plugin {
         $url     = 'https://api.github.com/repos/'.$user.'/'.$repo.'/commits?per_page=100';
         $commits = $http->get($url);
         if(!$commits) return false;
-        $commits = $json->decode($commits);
+        $commits = json_decode($commits, true);
 
         $comversion = substr($commits[0]['commit']['author']['date'], 0, 10); // default to newest
         foreach($commits as $commit) {

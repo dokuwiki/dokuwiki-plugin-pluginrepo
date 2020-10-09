@@ -123,8 +123,8 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $extensionType = ($type == 32) ? 'template' : 'plugin';
         $hasUnderscoreIssue = (strpos($id, '_') !== false);
         $age = 0;
-        $bundled = in_array($id, $this->hlp->bundled);
-        $obsoleted = in_array($this->hlp->obsoleteTag, $this->hlp->parsetags($data['tags']));
+        $isBundled = in_array($id, $this->hlp->bundled);
+        $isObsoleted = in_array($this->hlp->obsoleteTag, $this->hlp->parsetags($data['tags']));
         $lastUpdate = $data['lastupdate'];
         if ($lastUpdate) {
             $lastupdateDateTime = DateTime::createFromFormat('Y-m-d', $lastUpdate);
@@ -133,7 +133,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             }
         }
 
-        $obsClass = $obsoleted ? ' obsoleted' : '';
+        $obsClass = $isObsoleted ? ' obsoleted' : '';
         $R->doc .= "<div class=\"pluginrepo_entry$obsClass\">" . NL;
 
         $R->doc .= '<div class="usageInfo">' . NL;
@@ -144,11 +144,11 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $this->_showMainInfo($R, $data, $extensionType);
         $this->_showMetaInfo($R, $data, $type, $rel);
 
-        $isOld = ($age >= 2) && !$uptodate && !$bundled;
+        $isOld = ($age >= 2) && !$uptodate && !$isBundled;
 
-        if($rel['similar'] || $data['tags'] || $data['securitywarning'] || $data['securityissue'] || $hasUnderscoreIssue || $isOld || $obsoleted) {
+        if($rel['similar'] || $data['tags'] || $data['securitywarning'] || $data['securityissue'] || $hasUnderscoreIssue || $isOld || $isObsoleted) {
             $R->doc .= '<div class="moreInfo">' . NL;
-            $this->_showWarnings($R, $data, $hasUnderscoreIssue, $isOld, $obsoleted);
+            $this->_showWarnings($R, $data, $hasUnderscoreIssue, $isOld, $isObsoleted, $isBundled);
             $this->_showTaxonomy($R, $data, $rel);
             $R->doc .= '</div>' . NL;
         }
@@ -325,15 +325,18 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
      * @param array $data instructions from handle()
      * @param bool $hasUnderscoreIssue
      * @param bool $isOld
-     * @param bool $obsoleted
+     * @param bool $isObsoleted
+     * @param bool $isBundled
      */
-    protected function _showWarnings($R, $data, $hasUnderscoreIssue, $isOld, $obsoleted) {
-        if($obsoleted) {
+    protected function _showWarnings($R, $data, $hasUnderscoreIssue, $isOld, $isObsoleted, $isBundled) {
+        global $ID;
+
+        if($isObsoleted) {
             $R->doc .= '<div class="notify">';
             $R->doc .= '<p>'.$this->getLang('extension_obsoleted').'</p>';
             $R->doc .= '</div>'.NL;
         }
-        if(!$data['downloadurl']) {
+        if(!$data['downloadurl'] && !$isBundled) {
             $R->doc .= '<div class="notify">';
             $R->doc .= '<p>'.$this->getLang('missing_downloadurl').'</p>';
             $R->doc .= '</div>'.NL;
