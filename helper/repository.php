@@ -88,7 +88,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      * @param array $data (reference) data from entry::handle
      */
     public function harmonizeExtensionIDs(&$data) {
-        foreach(array('similar', 'conflict', 'depends') as $key) {
+        foreach(array('similar', 'conflicts', 'depends') as $key) {
             $refs = explode(',', $data[$key]);
             $refs = array_map('trim', $refs);
             $refs = array_filter($refs);
@@ -96,13 +96,18 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
             $updatedrefs = array();
             foreach($refs as $ref) {
                 $ns = curNS($ref);
-                $id = noNS($ref);
-                if($ns == 'template' OR ($data['type'] == 'template' AND $ns == '')) {
-                    $ns = 'template';
-                } elseif($ns == 'plugin') {
+                if($ns === false) {
                     $ns = '';
                 }
-                $updatedrefs[] = $ns . ':' . $id;
+                $id = noNS($ref);
+                if($ns == 'template' OR ($data['type'] == 'template' AND $ns === '')) {
+                    $ns = 'template:';
+                } elseif($ns == 'plugin' OR $ns === '') {
+                    $ns = '';
+                } else {
+                    $ns = $ns . ':';
+                }
+                $updatedrefs[] = $ns . $id;
             }
             $data[$key] = implode(',', $updatedrefs);
         }
