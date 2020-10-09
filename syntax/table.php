@@ -5,8 +5,6 @@
  * @author     Andreas Gohr <andi@splitbrain.org>
  * @author     Hakan Sandell <sandell.hakan@gmail.com>
  */
-// must be run within Dokuwiki
-if(!defined('DOKU_INC')) die();
 
 /**
  * Class syntax_plugin_pluginrepo_table
@@ -224,17 +222,19 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         foreach($tagData as $tag) {
             if ($tag['tag'] == $this->hlp->obsoleteTag) continue; // obsolete plugins are not included in the table
             $tags[$tag['tag']] = $tag['cnt'];
-            if(!$max) $max = $tag['cnt'];
+            if(!$max) {
+                $max = $tag['cnt'];
+            }
             $min = $tag['cnt'];
         }
-        $this->_cloud_weight($tags,$min,$max,5);
+        $this->_cloud_weight($tags, $min, $max,5);
 
         ksort($tags);
         if (count($tags) > 0) {
             $R->doc .= '<div class="cloud">'.NL;
             foreach($tags as $tag => $size){
                 $R->doc .= '<a href="'.wl($ID,array('plugintag'=>$tag)).'#extension__table" '.
-                           'class="wikilink1 cl'.$size.'"'.
+                           'class="wikilink1 cl'.$size.'" '.
                            'title="List all plugins with this tag">'.hsc($tag).'</a> ';
             }
             $R->doc .= '</div>'.NL;
@@ -400,9 +400,10 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
             $R->doc .= $this->hlp->pluginlink($R, $row['plugin'], $row['name']);
             $R->doc .= '</strong>'.NL;
             // download
-            if(!$row['securityissue'] && !$row['securitywarning']){
+            $isObsolete = in_array($this->hlp->obsoleteTag, $this->hlp->parsetags($row['tags']));
+            if(!$row['securityissue'] && !$row['securitywarning'] && !$isObsolete && $row['downloadurl']){
                 $R->doc .= ' <em>';
-                $R->doc .= $R->externallink($row['downloadurl'], $this->getLang('t_download'), null, true);
+                $R->doc .= $R->externallink($row['downloadurl'], $this->getLang('t_download'), true);
                 $R->doc .= '</em>'.NL;
             }
             // description
