@@ -192,9 +192,9 @@ class Spyc {
      * @access public
      * @return string
      * @param array $array PHP array
-     * @param int $indent Pass in false to use the default, which is 2
-     * @param int $wordwrap Pass in 0 for no wordwrap, false for default (40)
-     * @param int $no_opening_dashes Do not start YAML file with "---\n"
+     * @param false|int $indent Pass in false to use the default, which is 2
+     * @param false|int $wordwrap Pass in 0 for no wordwrap, false for default (40)
+     * @param bool $no_opening_dashes Do not start YAML file with "---\n"
      */
   public static function YAMLDump($array, $indent = false, $wordwrap = false, $no_opening_dashes = false) {
     $spyc = new Spyc;
@@ -219,10 +219,11 @@ class Spyc {
      * @access public
      * @return string
      * @param array $array PHP array
-     * @param int $indent Pass in false to use the default, which is 2
-     * @param int $wordwrap Pass in 0 for no wordwrap, false for default (40)
+     * @param false|int $indent Pass in false to use the default, which is 2
+     * @param false|int $wordwrap Pass in 0 for no wordwrap, false for default (40)
+     * @param bool $no_opening_dashes Do not start YAML file with "---\n"
      */
-  public function dump($array,$indent = false,$wordwrap = false, $no_opening_dashes = false) {
+  public function dump($array, $indent = false, $wordwrap = false, $no_opening_dashes = false) {
     // Dumps to some very clean YAML.  We'll have to add some more features
     // and options soon.  And better support for folding.
 
@@ -256,25 +257,29 @@ class Spyc {
     return $string;
   }
 
-  /**
+    /**
      * Attempts to convert a key / value array item to YAML
      * @access private
+     * @param string $key The name of the key
+     * @param mixed $value The value of the item
+     * @param int $indent The indent of the current node
+     * @param int $previous_key
+     * @param int $first_key
+     * @param null|array $source_array
      * @return string
-     * @param $key The name of the key
-     * @param $value The value of the item
-     * @param $indent The indent of the current node
      */
   private function _yamlize($key,$value,$indent, $previous_key = -1, $first_key = 0, $source_array = null) {
     if (is_array($value)) {
-      if (empty ($value))
-        return $this->_dumpNode($key, array(), $indent, $previous_key, $first_key, $source_array);
+      if (empty ($value)) {
+          return $this->_dumpNode($key, array(), $indent, $previous_key, $first_key, $source_array);
+      }
       // It has children.  What to do?
       // Make it the right kind of item
       $string = $this->_dumpNode($key, self::REMPTY, $indent, $previous_key, $first_key, $source_array);
       // Add the indent
       $indent += $this->_dumpIndent;
       // Yamlize the array
-      $string .= $this->_yamlizeArray($value,$indent);
+      $string .= $this->_yamlizeArray($value, $indent);
     } elseif (!is_array($value)) {
       // It doesn't have children.  Yip.
       $string = $this->_dumpNode($key, $value, $indent, $previous_key, $first_key, $source_array);
@@ -286,10 +291,10 @@ class Spyc {
      * Attempts to convert an array to YAML
      * @access private
      * @return string
-     * @param $array The array you want to convert
-     * @param $indent The indent of the current level
+     * @param array $array The array you want to convert
+     * @param int $indent The indent of the current level
      */
-  private function _yamlizeArray($array,$indent) {
+  private function _yamlizeArray($array, $indent) {
     if (is_array($array)) {
       $string = '';
       $previous_key = -1;
@@ -304,13 +309,16 @@ class Spyc {
     }
   }
 
-  /**
+    /**
      * Returns YAML from a key and a value
      * @access private
+     * @param string $key The name of the key
+     * @param mixed $value The value of the item
+     * @param int $indent The indent of the current node
+     * @param int $previous_key
+     * @param int $first_key
+     * @param null $source_array
      * @return string
-     * @param $key The name of the key
-     * @param $value The value of the item
-     * @param $indent The indent of the current node
      */
   private function _dumpNode($key, $value, $indent, $previous_key = -1, $first_key = 0, $source_array = null) {
     // do some folding here, for blocks
@@ -379,13 +387,14 @@ class Spyc {
     return $newValue;
   }
 
-  /**
+    /**
      * Folds a string of text, if necessary
      * @access private
+     * @param mixed $value The string you wish to fold
+     * @param int $indent
      * @return string
-     * @param $value The string you wish to fold
      */
-  private function _doFolding($value,$indent) {
+  private function _doFolding($value, $indent) {
     // Don't do anything if wordwrap is set to 0
 
     if ($this->_dumpWordWrap !== 0 && is_string ($value) && strlen($value) > $this->_dumpWordWrap) {
@@ -625,9 +634,10 @@ class Spyc {
     return $value;
   }
 
-  /**
+    /**
      * Used in inlines to check for more inlines or quoted strings
      * @access private
+     * @param $inline
      * @return array
      */
   private function _inlineEscape($inline) {

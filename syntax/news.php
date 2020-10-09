@@ -4,8 +4,6 @@
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Hakan Sandell <sandell.hakan@gmail.com>
  */
-// must be run within Dokuwiki
-if(!defined('DOKU_INC')) die();
 
 /**
  * Class syntax_plugin_pluginrepo_news
@@ -79,7 +77,12 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
      *
      * @param string          $format   output format being rendered
      * @param Doku_Renderer   $R        the current renderer object
-     * @param array           $data     data created by handler()
+     * @param array           $data     data created by handler() used entries:
+     *          headline: headline of new block
+     *          link:     link shown at the bottom of the news block
+     *          linktext: text for the link
+     *          style:    'sameauthor' shows extensions of the same author (only on extension page), otherwise random picked
+     *        ..more see functions below
      * @return  boolean                 rendered correctly? (however, returned value is not used at the moment)
      */
     function render($format, Doku_Renderer $R, $data) {
@@ -107,7 +110,7 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * Output html for showing plugins/templates of same author
+     * Output html for showing a list of plugins/templates of same author
      *
      * @param Doku_Renderer_xhtml $R
      */
@@ -138,7 +141,12 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
      * Output html for showing plugins/templates (eventually randomly)
      *
      * @param Doku_Renderer_xhtml $R
-     * @param $data
+     * @param array $data used entries:
+     *         entries: number of plugins/templates displayed, otherwise 1
+     *         random: if 'no' the plugin/template is not selected randomly
+     *         screenshot: if 'yes' a screenshot is shown
+     *      and used by the filtering:
+     *
      */
     function showDefault(&$R, $data) {
         $limit = (is_numeric($data['entries']) ? $data['entries']: 1);

@@ -153,15 +153,16 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
     /**
      * Return array of plugins with some metadata
+     * Note: used by repository.php (e.g. for translation tool) and repo table
      *
      * @param array $filter with entries used
-     *   'plugins'    (array) returns data of named plugins
-     *   'plugintype' (integer)
-     *   'plugintag'  (string)
-     *   'pluginsort' (string)
+     *   'plugins'    (array) returns only data of named plugins
+     *   'plugintype' (integer) filter by type, binary-code decimal so you can combine types
+     *   'plugintag'  (string) filter by one tag
+     *   'pluginsort' (string) sort by some specific columns (also shortcuts available)
      *   'showall'    (yes/no) default/unset is 'no' and obsolete plugins and security issues are not returned
      *   'includetemplates' (yes/no) default/unset is 'no' and template data will not be returned
-     * @return array
+     * @return array data per plugin
      */
     public function getPlugins($filter = null) {
         $db = $this->_getPluginsDB();
@@ -564,7 +565,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      *                  'showall' => 'yes'|'no',
      *                  'plugintype' => 32 or different type
      *                  'includetemplates' => true|false
-     * @return array
+     * @return array with tags and counts
      */
     public function getTags($minlimit = 0, $filter) {
         $db = $this->_getPluginsDB();

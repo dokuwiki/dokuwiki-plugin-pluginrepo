@@ -4,8 +4,6 @@
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Hakan Sandell <sandell.hakan@gmail.com>
  */
-// must be run within Dokuwiki
-if(!defined('DOKU_INC')) die();
 
 /**
  * Class syntax_plugin_pluginrepo_query
