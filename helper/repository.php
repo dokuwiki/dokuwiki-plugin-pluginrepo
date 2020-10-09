@@ -293,6 +293,24 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
     }
 
     /**
+     * Returns all plugins and templates from the database
+     *
+     * @return array extensions same as above, but without 'simplename' column
+     */
+    public function getAllExtensions() {
+        $db = $this->_getPluginsDB();
+        if(!$db) return array();
+
+        $sql = "SELECT A.*
+                  FROM plugins A
+                  ORDER BY A.plugin";
+
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
      * Gives all available info on plugins. Used for API
      *
      * tags, similar, depends, conflicts have newline separated lists

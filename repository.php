@@ -2,6 +2,9 @@
 /**
  * DokuWiki plugin/template/popularity data repository API
  *
+ * The API repository.php is (only?) used for the Translation Tool, which just need all extensions
+ * Filtering does not reduce collection significant for this application, so is skipped since October 2020.
+ *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Håkan Sandell <hakan.sandell@home.se>
  */
@@ -16,29 +19,23 @@ require_once(DOKU_PLUGIN . 'pluginrepo/helper/repository.php');
 //close session
 session_write_close();
 
-// get params
-$opt = parseOptions();
-
 // check cache
 
 header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 header('Pragma: public');
 header('Content-Type: application/xml; charset=utf-8');
 header('X-Robots-Tag: noindex');
-    http_conditionalRequest(time());
+http_conditionalRequest(time());
 
-ksort($opt);
+
 $string = "pluginrepo";
-foreach($opt as $key => $value) {
-    $string .= "|$key:$value|";
-}
 
 $cache = new Cache($string, '.xml');
 if($cache->useCache(array('age'=>7200))) {
     $feed = $cache->retrieveCache();
 } else {
     // create new feed
-    $feed = getRepository($opt);
+    $feed = getRepository();
 
     // save cachefile
     $cache->storeCache($feed);
@@ -49,23 +46,14 @@ print $feed;
 // ---------------------------------------------------------------- //
 
 /**
- * Get URL parameters and config options and return a initialized option array
- */
-function parseOptions() {
-    // no config options right now
-    return  $_REQUEST;
-}
-
-/**
  * Return XML string with repository data, plugin relations (tags, similar, depends)
  * are only returned if $opt['plugins'] is used to return named plugins
  *
- * @param array $opt
  * @return string
  */
-function getRepository($opt) {
+function getRepository() {
     $hlp = new helper_plugin_pluginrepo_repository();
-    $plugins = $hlp->getPlugins($opt);
+    $plugins = $hlp->getAllExtensions();
 
     $feed = '<?xml version="1.0" encoding="utf-8"?>';
     $feed .= '<repository>';
