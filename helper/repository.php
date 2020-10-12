@@ -871,7 +871,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
     public function parsetype($types) {
         $type = 0;
         foreach($this->types as $k => $v) {
-            if(preg_match('/'.$v.'/i', $types)) {
+            if(preg_match('#' . preg_quote($v) . '#i', $types)) {
                 $type += $k;
             }
         }
