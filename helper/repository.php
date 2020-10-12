@@ -19,7 +19,9 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
         16  => 'Helper',
         32  => 'Template',
         64  => 'Remote',
-        128 => 'Auth'
+        128 => 'Auth',
+        256 => 'CLI',
+        512 => 'CSS/JS-only'
     );
 
     public $obsoleteTag = '!obsolete';
@@ -209,8 +211,8 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
         $sortsql = $this->_getPluginsSortSql($sort);
 
         if($tag) {
-            if($type < 1 or $type > 255) {
-                $type = 255;
+            if($type < 1 or $type > 1023) {
+                $type = 1023;
             }
             $sql = "      SELECT A.*, SUBSTR(A.plugin,10) as simplename
                                           FROM plugins A
@@ -230,7 +232,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
                 $values
             );
 
-        } elseif($type > 0 and $type <= 255) {
+        } elseif($type > 0 and $type <= 1023) {
             $sql = "      SELECT A.*, SUBSTR(A.plugin,10) as simplename
                                           FROM plugins A
                                          WHERE A.type = 32 AND $where_filtered
@@ -869,7 +871,12 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
     public function parsetype($types) {
         $type = 0;
         foreach($this->types as $k => $v) {
-            if(preg_match('/'.$v.'/i', $types)) $type += $k;
+            if(preg_match('/'.$v.'/i', $types)) {
+                $type += $k;
+            }
+        }
+        if($type === 0 AND $types === '') {
+            $type = 512; // CSS/JS-only
         }
         return $type;
     }

@@ -59,6 +59,7 @@ $lang['t_typehelper']        = '%s plugins provide functionality shared by other
 $lang['t_typetemplate']      = '%s changes the look and feel of DokuWiki';
 $lang['t_typeremote']        = '%s plugins add methods to the RemoteAPI accessible via web services';
 $lang['t_typeauth']          = '%s plugins add authentication modules';
+$lang['t_typecli']           = '%s plugins add commands to use at the Command Line Interface';
 $lang['t_filterbytag']       = 'Filter by tag';
 $lang['t_availabletype']     = 'Available %s plugins';
 $lang['t_availabletagged']   = 'Tagged with \'%s\'';
