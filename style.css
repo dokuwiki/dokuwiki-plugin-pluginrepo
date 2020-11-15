@@ -111,7 +111,7 @@
 .dokuwiki div.pluginrepo_entry div.compatibility ul:hover {
     position: absolute;
     top: 0;
-    left: 0;
+    right: 0;
     box-shadow: 0 5px 5px #999;
     width: 300px;
     overflow: visible;
