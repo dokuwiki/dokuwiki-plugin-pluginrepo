@@ -5,8 +5,6 @@
  * @author     Andreas Gohr <andi@splitbrain.org>
  * @author     Hakan Sandell <sandell.hakan@gmail.com>
  */
-// must be run within Dokuwiki
-if(!defined('DOKU_INC')) die();
 
 /**
  * Class syntax_plugin_pluginrepo_entry
@@ -102,8 +100,8 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
                 return true;
             case 'metadata':
                 /** @var Doku_Renderer_metadata $renderer */
-                // only save if in first level namespace to ignore translated namespaces
-                if(substr_count($ID, ':') == 1) {
+                // only save if in first level namespace to ignore translated namespaces, and only plugins or templates
+                if(substr_count($ID, ':') == 1 && (curNS($ID) == 'plugin' || curNS($ID) == 'template')) {
                     $this->_saveData($data, $id, $renderer->meta['title']);
                 }
                 return true;
@@ -125,7 +123,8 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $extensionType = ($type == 32) ? 'template' : 'plugin';
         $hasUnderscoreIssue = (strpos($id, '_') !== false);
         $age = 0;
-        $bundled = in_array($id, $this->hlp->bundled);
+        $isBundled = in_array($id, $this->hlp->bundled);
+        $isObsoleted = in_array($this->hlp->obsoleteTag, $this->hlp->parsetags($data['tags']));
         $lastUpdate = $data['lastupdate'];
         if ($lastUpdate) {
             $lastupdateDateTime = DateTime::createFromFormat('Y-m-d', $lastUpdate);
@@ -134,7 +133,8 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
             }
         }
 
-        $R->doc .= '<div class="pluginrepo_entry">' . NL;
+        $obsClass = $isObsoleted ? ' obsoleted' : '';
+        $R->doc .= "<div class=\"pluginrepo_entry$obsClass\">" . NL;
 
         $R->doc .= '<div class="usageInfo">' . NL;
         $uptodate = $this->_showCompatibility($R, $data);
@@ -144,11 +144,11 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $this->_showMainInfo($R, $data, $extensionType);
         $this->_showMetaInfo($R, $data, $type, $rel);
 
-        $isOld = ($age >= 2) && !$uptodate && !$bundled;
+        $isOld = ($age >= 2) && !$uptodate && !$isBundled;
 
-        if($rel['similar'] || $data['tags'] || $data['securitywarning'] || $data['securityissue'] || $hasUnderscoreIssue || $isOld) {
+        if($rel['similar'] || $data['tags'] || $data['securitywarning'] || $data['securityissue'] || $hasUnderscoreIssue || $isOld || $isObsoleted) {
             $R->doc .= '<div class="moreInfo">' . NL;
-            $this->_showWarnings($R, $data, $hasUnderscoreIssue, $isOld);
+            $this->_showWarnings($R, $data, $hasUnderscoreIssue, $isOld, $isObsoleted, $isBundled);
             $this->_showTaxonomy($R, $data, $rel);
             $R->doc .= '</div>' . NL;
         }
@@ -325,8 +325,22 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
      * @param array $data instructions from handle()
      * @param bool $hasUnderscoreIssue
      * @param bool $isOld
+     * @param bool $isObsoleted
+     * @param bool $isBundled
      */
-    protected function _showWarnings($R, $data, $hasUnderscoreIssue, $isOld) {
+    protected function _showWarnings($R, $data, $hasUnderscoreIssue, $isOld, $isObsoleted, $isBundled) {
+        global $ID;
+
+        if($isObsoleted) {
+            $R->doc .= '<div class="notify">';
+            $R->doc .= '<p>'.$this->getLang('extension_obsoleted').'</p>';
+            $R->doc .= '</div>'.NL;
+        }
+        if(!$data['downloadurl'] && !$isBundled) {
+            $R->doc .= '<div class="notify">';
+            $R->doc .= '<p>'.$this->getLang('missing_downloadurl').'</p>';
+            $R->doc .= '</div>'.NL;
+        }
         if($isOld) {
             $R->doc .= '<div class="notify">';
             $R->doc .= '<p>'.$this->getLang('name_oldage').'</p>';
@@ -353,6 +367,18 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         if($hasUnderscoreIssue) {
             $R->doc .= '<div class="info">';
             $R->doc .= '<p>' . $this->getLang('name_underscore') . '</p>';
+            $R->doc .= '</div>' . NL;
+        }
+
+        //notify if outside [plugin|template]:[lang:] namespace
+        $firstns = '';
+        $pos = stripos($ID,':');
+        if($pos !== false){
+            $firstns = substr($ID,0, $pos);
+        }
+        if($firstns !== 'plugin' && $firstns !== 'template') {
+            $R->doc .= '<div class="notify">';
+            $R->doc .= '<p>' . $this->getLang('wrongnamespace') . '</p>';
             $R->doc .= '</div>' . NL;
         }
     }
@@ -438,8 +464,6 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         if(!$name) $name = $id;
         if(!preg_match('/^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/', $data['lastupdate'])) {
             $data['lastupdate'] = null;
-        } else {
-            $data['lastupdate'] = $data['lastupdate'];
         }
 
         if(in_array($id, $this->hlp->bundled)) {
