@@ -29,7 +29,7 @@ class helper_plugin_pluginrepo_version extends DokuWiki_Plugin {
         $repo = plugin_load('helper', 'pluginrepo_repository');
 
         $list1 = $list2 = '';
-        $extensions = $repo->getPlugins(array('showall' => true, 'includetemplates' => true));
+        $extensions = $repo->getAllExtensions();
         foreach($extensions as $extension) {
             $github = $this->getGitHubInfo($extension);
             if($github) {
@@ -56,12 +56,17 @@ class helper_plugin_pluginrepo_version extends DokuWiki_Plugin {
      * @return string[]
      */
     protected function getDiscrepancies($plugindata, $githubdata) {
+        $basename = $plugindata['plugin'];
+        if($plugindata['type'] == 32) {
+            $basename = substr($plugindata['plugin'], 0, 10);
+        }
+
         $date1error = '';
         $date2error = '';
         $nameerror  = '';
         if($plugindata['lastupdate'] != $githubdata['date']) $date1error = ' :!:';
         if($plugindata['lastupdate'] < $githubdata['gitpush']) $date2error = ' :!:';
-        if($plugindata['simplename'] != $githubdata['base']) $nameerror = ' :!:';
+        if($basename != $githubdata['base']) $nameerror = ' :!:';
 
         if(!$date1error && !$date2error && !$nameerror) return ['', ''];
 

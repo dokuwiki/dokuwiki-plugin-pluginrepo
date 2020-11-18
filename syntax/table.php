@@ -5,8 +5,6 @@
  * @author     Andreas Gohr <andi@splitbrain.org>
  * @author     Hakan Sandell <sandell.hakan@gmail.com>
  */
-// must be run within Dokuwiki
-if(!defined('DOKU_INC')) die();
 
 /**
  * Class syntax_plugin_pluginrepo_table
@@ -189,6 +187,9 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $R->doc .= '<li><div class="li">';
         $R->doc .= sprintf($this->getLang('t_typeauth'),$this->hlp->listtype(128,$ID));
         $R->doc .= '</div></li>'.NL;
+        $R->doc .= '<li><div class="li">';
+        $R->doc .= sprintf($this->getLang('t_typecli'),$this->hlp->listtype(256,$ID));
+        $R->doc .= '</div></li>'.NL;
 
         if ($data['includetemplates']) {
             $R->doc .= '<li><div class="li">';
@@ -224,17 +225,19 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         foreach($tagData as $tag) {
             if ($tag['tag'] == $this->hlp->obsoleteTag) continue; // obsolete plugins are not included in the table
             $tags[$tag['tag']] = $tag['cnt'];
-            if(!$max) $max = $tag['cnt'];
+            if(!$max) {
+                $max = $tag['cnt'];
+            }
             $min = $tag['cnt'];
         }
-        $this->_cloud_weight($tags,$min,$max,5);
+        $this->_cloud_weight($tags, $min, $max,5);
 
         ksort($tags);
         if (count($tags) > 0) {
             $R->doc .= '<div class="cloud">'.NL;
             foreach($tags as $tag => $size){
                 $R->doc .= '<a href="'.wl($ID,array('plugintag'=>$tag)).'#extension__table" '.
-                           'class="wikilink1 cl'.$size.'"'.
+                           'class="wikilink1 cl'.$size.'" '.
                            'title="List all plugins with this tag">'.hsc($tag).'</a> ';
             }
             $R->doc .= '</div>'.NL;
@@ -315,12 +318,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         }
 
         // the main table
-        if ($data['tablelayout'] != 'old') {
-            $this->_newTable($plugins,$linkopt,$data,$R);
-        } else {
-            // @todo: drop the classic look completely?
-            $this->_classicTable($plugins,$linkopt,$data,$R);
-        }
+        $this->_newTable($plugins,$linkopt,$data,$R);
 
         $R->doc .= '</div>'.NL;
         $R->section_close();
@@ -400,9 +398,10 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
             $R->doc .= $this->hlp->pluginlink($R, $row['plugin'], $row['name']);
             $R->doc .= '</strong>'.NL;
             // download
-            if(!$row['securityissue'] && !$row['securitywarning']){
+            $isObsolete = in_array($this->hlp->obsoleteTag, $this->hlp->parsetags($row['tags']));
+            if(!$row['securityissue'] && !$row['securitywarning'] && !$isObsolete && $row['downloadurl']){
                 $R->doc .= ' <em>';
-                $R->doc .= $R->externallink($row['downloadurl'], $this->getLang('t_download'), null, true);
+                $R->doc .= $R->externallink($row['downloadurl'], $this->getLang('t_download'), true);
                 $R->doc .= '</em>'.NL;
             }
             // description
@@ -465,76 +464,5 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         }
         $R->doc .= '</table>'.NL;
     }
-
-    /**
-     * Output classic repository table with only one database field/cell
-     *
-     * @param array               $plugins
-     * @param string              $linkopt url parameters
-     * @param array               $data
-     * @param Doku_Renderer_xhtml $R
-     */
-    function _classicTable($plugins,$linkopt,$data,$R) {
-        global $ID;
-
-        $popmax = $this->hlp->getMaxPopularity($ID);
-
-        $R->doc .= '<table class="inline">';
-        $R->doc .= '<tr><th><a href="'.wl($ID,$linkopt.'pluginsort=p#extension__table').'" title="'.$this->getLang('t_sortname').'">'.$this->getLang('t_name').'</a></th>';
-
-        $R->doc .= '<th>'.$this->getLang('t_description').'</th>';
-        $R->doc .= '<th><a href="'.wl($ID,$linkopt.'pluginsort=a#extension__table').'" title="'.$this->getLang('t_sortauthor').'">'.$this->getLang('t_author').'</a></th>';
-        $R->doc .= '<th><a href="'.wl($ID,$linkopt.'pluginsort=t#extension__table').'" title="'.$this->getLang('t_sorttype').  '">'.$this->getLang('t_type').'</a></th>';
-        if ($data['screenshot'] == 'yes') {
-            $R->doc .= '<th>'.$this->getLang('t_screenshot').'</th>';
-        }
-        $R->doc .= '<th><a href="'.wl($ID,$linkopt.'pluginsort=^d#extension__table').'" title="'.$this->getLang('t_sortdate'). '">'.$this->getLang('t_date').'</a></th>';
-        $R->doc .= '<th><a href="'.wl($ID,$linkopt.'pluginsort=^c#extension__table').'" title="'.$this->getLang('t_sortpopularity').'">'.$this->getLang('t_popularity').'</a></th>';
-        $R->doc .= '</tr>';
-
-        foreach($plugins as $row) {
-            $R->doc .= '<tr>';
-            $R->doc .= '<td>';
-            $R->doc .= $this->hlp->pluginlink($R, $row['plugin']);
-            $R->doc .= '</td>';
-            $R->doc .= '<td>';
-            $R->doc .= '<strong>'.hsc($row['name']).'</strong><br />';
-            $R->doc .= hsc($row['description']);
-            $R->doc .= '</td>';
-
-            $R->doc .= '<td>';
-            $R->emaillink($row['email'],$row['author']);
-            $R->doc .= '</td>';
-
-            $R->doc .= '<td>';
-            $R->doc .= $this->hlp->listtype($row['type'],$ID);
-            $R->doc .= '</td>';
-
-            if ($data['screenshot'] == 'yes') {
-                $R->doc .= '<td>';
-                $val = $row['screenshot'];
-                if ($val) {
-                    $title = 'screenshot: '.basename(str_replace(':','/',$val));
-                    $R->doc .= '<a href="'.ml($val).'" class="media" rel="lightbox">';
-                    $R->doc .= '<img src="'.ml($val,"w=80").'" alt="'.hsc($title).'" width="80"/></a>';
-                }
-                $R->doc .= '</td>';
-            }
-
-            if(in_array($row['plugin'], $this->hlp->bundled)){
-                $R->doc .= '<td></td><td><i>'.$this->getLang('t_bundled').'</i></td>';
-            }else{
-                $R->doc .= '<td>';
-                $R->doc .= hsc($row['lastupdate']);
-                $R->doc .= '</td><td>';
-                $R->doc .= '<div class="prog-border" title="'.$row['popularity'].'/'.$popmax.'"><div class="prog-bar" style="width: '.sprintf(100*$row['popularity']/$popmax).'%;"></div></div>';
-                $R->doc .= '</td>';
-            }
-
-            $R->doc .= '</tr>';
-        }
-        $R->doc .= '</table>';
-    }
-
 }
 

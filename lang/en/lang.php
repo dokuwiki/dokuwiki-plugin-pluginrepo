@@ -33,6 +33,9 @@ $lang['securityrecommendation']   = 'It is not recommended to use this extension
 $lang['securitylink']        = 'plugin security guidelines';
 $lang['name_underscore']     = 'Extension name contains underscore, will not generate popularity points.';
 $lang['name_oldage']         = 'This extension has not been updated in over 2 years. It may no longer be maintained or supported and may have compatibility issues.';
+$lang['extension_obsoleted'] = '<strong>This extension is marked as obsoleted.</strong> Therefore it is hidden in the Extension Manager and the extension listing. Furthermore, it is candidate for removal.';
+$lang['missing_downloadurl'] = 'The missing download url means that this extension cannot be installed via the Extension Manager. Please see <a href="/devel:plugins#publishing_a_plugin_on_dokuwikiorg" class="wikilink1" title="devel:plugins">Publishing a Plugin on dokuwiki.org</a>. Recommended are public repository hosts like GitHub, GitLab or Bitbucket.';
+$lang['wrongnamespace']      = 'This extension is not in the \'plugin\' or \'template\' namespace and is therefore ignored.';
 $lang['downloadurl']         = 'Download';
 $lang['bugtracker']          = 'Report bugs';
 $lang['sourcerepo']          = 'Repository';
@@ -56,6 +59,7 @@ $lang['t_typehelper']        = '%s plugins provide functionality shared by other
 $lang['t_typetemplate']      = '%s changes the look and feel of DokuWiki';
 $lang['t_typeremote']        = '%s plugins add methods to the RemoteAPI accessible via web services';
 $lang['t_typeauth']          = '%s plugins add authentication modules';
+$lang['t_typecli']           = '%s plugins add commands to use at the Command Line Interface';
 $lang['t_filterbytag']       = 'Filter by tag';
 $lang['t_availabletype']     = 'Available %s plugins';
 $lang['t_availabletagged']   = 'Tagged with \'%s\'';

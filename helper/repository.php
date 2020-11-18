@@ -19,9 +19,10 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
         16  => 'Helper',
         32  => 'Template',
         64  => 'Remote',
-        128 => 'Auth'
+        128 => 'Auth',
+        256 => 'CLI',
+        512 => 'CSS/JS-only'
     );
-
 
     public $obsoleteTag = '!obsolete';
     public $bundled;
@@ -88,7 +89,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      * @param array $data (reference) data from entry::handle
      */
     public function harmonizeExtensionIDs(&$data) {
-        foreach(array('similar', 'conflict', 'depends') as $key) {
+        foreach(array('similar', 'conflicts', 'depends') as $key) {
             $refs = explode(',', $data[$key]);
             $refs = array_map('trim', $refs);
             $refs = array_filter($refs);
@@ -96,13 +97,18 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
             $updatedrefs = array();
             foreach($refs as $ref) {
                 $ns = curNS($ref);
-                $id = noNS($ref);
-                if($ns == 'template' OR ($data['type'] == 'template' AND $ns == '')) {
-                    $ns = 'template';
-                } elseif($ns == 'plugin') {
+                if($ns === false) {
                     $ns = '';
                 }
-                $updatedrefs[] = $ns . ':' . $id;
+                $id = noNS($ref);
+                if($ns == 'template' OR ($data['type'] == 'template' AND $ns === '')) {
+                    $ns = 'template:';
+                } elseif($ns == 'plugin' OR $ns === '') {
+                    $ns = '';
+                } else {
+                    $ns = $ns . ':';
+                }
+                $updatedrefs[] = $ns . $id;
             }
             $data[$key] = implode(',', $updatedrefs);
         }
@@ -153,15 +159,16 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
     /**
      * Return array of plugins with some metadata
+     * Note: used by repository.php (e.g. for translation tool) and repo table
      *
      * @param array $filter with entries used
-     *   'plugins'    (array) returns data of named plugins
-     *   'plugintype' (integer)
-     *   'plugintag'  (string)
-     *   'pluginsort' (string)
+     *   'plugins'    (array) returns only data of named plugins
+     *   'plugintype' (integer) filter by type, binary-code decimal so you can combine types
+     *   'plugintag'  (string) filter by one tag
+     *   'pluginsort' (string) sort by some specific columns (also shortcuts available)
      *   'showall'    (yes/no) default/unset is 'no' and obsolete plugins and security issues are not returned
      *   'includetemplates' (yes/no) default/unset is 'no' and template data will not be returned
-     * @return array
+     * @return array data per plugin
      */
     public function getPlugins($filter = null) {
         $db = $this->_getPluginsDB();
@@ -180,8 +187,6 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
             list($requestedINsql, $requestedINvalues) = $this->prepareINstmt('requested', $requestedplugins);
 
             $where_requested = " AND A.plugin " . $requestedINsql;
-            $filter['showissues'] = 'yes';
-
         } else {
             $type = (int) $filter['plugintype'];
             $tag  = strtolower(trim($filter['plugintag']));
@@ -193,35 +198,33 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
         } else {
             list($bundledINsql, $bundledINvalues) = $this->prepareINstmt('bundled', $this->bundled);
 
-            $where_filtered = "A.tags <> '" . $this->obsoleteTag . "'"
+            $where_filtered = "'" . $this->obsoleteTag . "' NOT IN(SELECT tag FROM plugin_tags WHERE plugin_tags.plugin = A.plugin)"
                 . " AND A.securityissue = ''"
                 . " AND (A.downloadurl <> '' OR A.plugin " . $bundledINsql . ")";
             $values = $bundledINvalues;
         }
         if($filter['includetemplates'] != 'yes') {
-            $where_filtered .= " AND A.type <> 32";
+            $where_filtered .= " AND A.type <> 32"; // templates are only type=32, has no other type.
         }
 
         $sort    = strtolower(trim($filter['pluginsort']));
         $sortsql = $this->_getPluginsSortSql($sort);
 
         if($tag) {
-            if(!$this->types[$type]) {
-                $type = 255;
+            if($type < 1 or $type > 1023) {
+                $type = 1023;
             }
             $sql = "      SELECT A.*, SUBSTR(A.plugin,10) as simplename
-                                          FROM plugin_tags B, plugins A
+                                          FROM plugins A
                                          WHERE A.type = 32 AND $where_filtered
                                            AND (A.type & :plugin_type)
-                                           AND A.plugin = B.plugin
-                                           AND B.tag = :plugin_tag
+                                           AND :plugin_tag IN(SELECT tag FROM plugin_tags WHERE plugin_tags.plugin = A.plugin)
                                  UNION
                                         SELECT A.*, A.plugin as simplename
-                                          FROM plugin_tags B, plugins A
+                                          FROM plugins A
                                          WHERE A.type <> 32 AND $where_filtered
                                            AND (A.type & :plugin_type)
-                                           AND A.plugin = B.plugin
-                                           AND B.tag = :plugin_tag
+                                           AND :plugin_tag IN(SELECT tag FROM plugin_tags WHERE plugin_tags.plugin = A.plugin)
                                 $sortsql";
             $values = array_merge(
                 array(':plugin_tag' => $tag,
@@ -229,7 +232,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
                 $values
             );
 
-        } elseif($this->types[$type]) {
+        } elseif($type > 0 and $type <= 1023) {
             $sql = "      SELECT A.*, SUBSTR(A.plugin,10) as simplename
                                           FROM plugins A
                                          WHERE A.type = 32 AND $where_filtered
@@ -265,8 +268,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
         $stmt = $db->prepare($sql);
         $stmt->execute($values);
-        $plugins = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $plugins;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -290,6 +292,24 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
             $sql,
             $params
         );
+    }
+
+    /**
+     * Returns all plugins and templates from the database
+     *
+     * @return array extensions same as above, but without 'simplename' column
+     */
+    public function getAllExtensions() {
+        $db = $this->_getPluginsDB();
+        if(!$db) return array();
+
+        $sql = "SELECT A.*
+                  FROM plugins A
+                  ORDER BY A.plugin";
+
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -398,6 +418,8 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
             $fulltextparams = array(':fulltext' => $fulltext);
         }
 
+        $obsoletefilter = "AND '" . $this->obsoleteTag . "' NOT IN(SELECT tag FROM plugin_tags WHERE plugin_tags.plugin = A.plugin)";
+
         $sql = "SELECT A.*,
                        A.popularity/:maxpop as popularity,
                        MD5(LOWER(A.email)) as emailid,
@@ -421,6 +443,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
                        $tagfilter
                        $emailfilter
                        $fulltextfilter
+                       $obsoletefilter
               GROUP BY A.plugin
               ORDER BY $order
                        $limit";
@@ -564,16 +587,17 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      *                  'showall' => 'yes'|'no',
      *                  'plugintype' => 32 or different type
      *                  'includetemplates' => true|false
-     * @return array
+     * @return array with tags and counts
      */
-    public function getTags($minlimit = 0, $filter) {
+    public function getTags($minlimit, $filter) {
         $db = $this->_getPluginsDB();
         if(!$db) return array();
 
         if($filter['showall'] == 'yes') {
             $shown = "1";
         } else {
-            $shown = "B.tags <> '".$this->obsoleteTag."' AND B.securityissue = ''";
+            $shown = "'" . $this->obsoleteTag . "' NOT IN(SELECT tag FROM plugin_tags WHERE plugin_tags.plugin = B.plugin)
+                      AND B.securityissue = ''";
         }
         if($filter['plugintype'] == 32) {
             $shown .= ' AND B.type = 32';
@@ -594,8 +618,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
         $stmt->bindParam(':minlimit', $minlimit, PDO::PARAM_INT);
         $stmt->execute();
-        $tags = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $tags;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -610,9 +633,10 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
         $db = $this->_getPluginsDB();
         if(!$db) return 1;
 
-        $sql = "SELECT popularity
-                  FROM plugins
-                 WHERE tags <> '".$this->obsoleteTag."' ";
+        $sql = "SELECT A.popularity
+                  FROM plugins A
+                 WHERE '" . $this->obsoleteTag . "' NOT IN(SELECT tag FROM plugin_tags WHERE plugin_tags.plugin = A.plugin)";
+
 
         $sql .= str_repeat("AND plugin != ? ", count($this->bundled));
 
@@ -847,7 +871,12 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
     public function parsetype($types) {
         $type = 0;
         foreach($this->types as $k => $v) {
-            if(preg_match('/'.$v.'/i', $types)) $type += $k;
+            if(preg_match('#' . preg_quote($v) . '#i', $types)) {
+                $type += $k;
+            }
+        }
+        if($type === 0 AND $types === '') {
+            $type = 512; // CSS/JS-only
         }
         return $type;
     }
