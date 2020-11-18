@@ -407,7 +407,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         $R->doc .= '</strong>' . NL;
 
         // other extensions by the same author (10 max)
-        if (count($rel['sameauthor']) > 0) {
+        if (isset($rel['sameauthor']) && count($rel['sameauthor']) > 0) {
             $maxShow = 10;
             $itr = 0;
             $R->doc .= '<ul>'.NL;
