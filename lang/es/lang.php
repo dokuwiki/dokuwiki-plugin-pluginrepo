@@ -2,7 +2,8 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
+ *
+ * @author Davit Amunarriz <urrats@gmail.com>
  * @author monica <may.dorado@gmail.com>
  */
 $lang['by']                    = 'por';
@@ -13,6 +14,7 @@ $lang['compatible_with_info']  = 'Por favor, actualice este campo';
 $lang['no_compatibility']      = 'No hay compatibilidad sobre la información dada!';
 $lang['compatible_unknown']    = 'desconocido';
 $lang['compatible_yes']        = 'si';
+$lang['compatible_no']         = 'no';
 $lang['compatible_probably']   = 'problablemente';
 $lang['develonly']             = 'Sólo desarrollo';
 $lang['conflicts_with']        = 'Conflictos con';
@@ -29,11 +31,16 @@ $lang['securityissue']         = 'El siguiente problema de seguridad se informó
 $lang['securityrecommendation'] = 'No se recomienda el uso de este plugin hasta que el problema este solucionado. Los autores deben leer el %s';
 $lang['securitylink']          = 'plugin directrices de seguridad';
 $lang['name_underscore']       = 'El Nombre contiene subrayado, no generarán puntos de popularidad.';
+$lang['name_oldage']           = 'La extensión no ha sido actualizada en al menos 2 años. Puede que ya no tenga soporte o no sea mantenida y tenga problemas de compatibilidad.';
+$lang['extension_obsoleted']   = '<strong>Esta extensión está marcada como obsoleta.</strong>. Por lo tanto, está oculta en el Gestor de Extensiones y en la lista de extensiones. Además, es candidata a eliminación. ';
+$lang['missing_downloadurl']   = 'El hecho de que falte la URL de descarga, significa que esta extensión no se puede instalar mediante el Gestor de Extensiones. Consulta <a href="/devel:plugins#publishing_a_plugin_on_dokuwikiorg" class="wikilink1" title="devel:plugins">Publicar un plugin en Dokuwiki.org</a>. Se recomienda el uso de hosts de repositorios públicos como GitHub, GitLab o Bitbucket.';
+$lang['wrongnamespace']        = 'Esta extensión no está en el espacio de nombres \'complemento\' o \'plantilla\' y, por lo tanto, se ignora.';
 $lang['downloadurl']           = 'Descargar';
 $lang['bugtracker']            = 'Informar de los errores';
 $lang['sourcerepo']            = 'Repositorio';
 $lang['source']                = 'Fuente';
 $lang['donationurl']           = 'Donar';
+$lang['more_extensions']       = 'y %d más';
 $lang['t_search_plugins']      = 'Buscar Plugins';
 $lang['t_search_template']     = 'Buscar Plantillas';
 $lang['t_searchintro_plugins'] = 'Filtrar plugins disponibles por tipo o por el uso de etiquetas en la nube. También puede buscar en el plugin espacio de nombres (namespace), usando el cuadro de búsqueda.';
