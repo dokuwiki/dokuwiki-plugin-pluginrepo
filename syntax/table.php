@@ -338,7 +338,7 @@ class syntax_plugin_pluginrepo_table extends DokuWiki_Syntax_Plugin {
         $popmax = $this->hlp->getMaxPopularity($ID);
 
         $sort = $_REQUEST['pluginsort'];
-        if ($sort{0} == '^') {
+        if ($sort[0] == '^') {
             $sortcol = substr($sort, 1);
             $sortarr = '<span>&uarr;</span>';
         } else {

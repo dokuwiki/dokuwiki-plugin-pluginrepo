@@ -504,7 +504,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      */
     private function _getPluginsSortSql($sort) {
         $sortsql = '';
-        if($sort{0} == '^') {
+        if($sort[0] == '^') {
             $sortsql = ' DESC';
             $sort    = substr($sort, 1);
         }
