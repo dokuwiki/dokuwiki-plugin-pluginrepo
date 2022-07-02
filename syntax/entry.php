@@ -13,7 +13,7 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
 
     /**
      * will hold the repository helper plugin
-     * @var $hlp helper_plugin_pluginrepo_repository
+     * @var helper_plugin_pluginrepo_repository $hlp
      */
     var $hlp = null;
 
@@ -469,7 +469,8 @@ class syntax_plugin_pluginrepo_entry extends DokuWiki_Syntax_Plugin {
         if(in_array($id, $this->hlp->bundled)) {
             $compatible = 'xx9999-99-99';
         } else {
-            $compatible = array_shift(array_keys($this->hlp->cleanCompat($data['compatible'])));
+            $array = array_keys($this->hlp->cleanCompat($data['compatible']));
+            $compatible = array_shift($array);
         }
 
         $type = $this->hlp->parsetype($data['type']);

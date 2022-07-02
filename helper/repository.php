@@ -126,8 +126,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      */
     public function _getPluginsDB() {
         global $conf;
-        /** @var $db PDO */
-        $db = null;
+        /** @var PDO $db */
         try {
             $db = new PDO($this->getConf('db_name'), $this->getConf('db_user'), $this->getConf('db_pass'));
             $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -542,7 +541,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
         $id   = strtolower($id);
         $meta = array();
 
-        /** @var $stmt PDOStatement */
+        /** @var PDOStatement $stmt */
         $stmt = $db->prepare('SELECT plugin,other FROM plugin_conflicts WHERE plugin = ? OR other = ?');
         $stmt->execute(array($id, $id));
         foreach($stmt as $row) {
@@ -605,7 +604,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
             $shown .= ' AND B.type <> 32';
         }
 
-        /** @var $stmt PDOStatement */
+        /** @var PDOStatement $stmt */
         $stmt = $db->prepare(
             "SELECT A.tag, COUNT(A.tag) as cnt
                                 FROM plugin_tags as A, plugins as B
@@ -646,7 +645,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
         $sql .= "ORDER BY popularity DESC
                  LIMIT 1";
 
-        /** @var $stmt PDOStatement */
+        /** @var PDOStatement $stmt */
         $stmt = $db->prepare($sql);
         $stmt->execute($this->bundled);
         $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -666,7 +665,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
         $db = $this->_getPluginsDB();
         if(!$db) return;
 
-        /** @var $stmt PDOStatement */
+        /** @var PDOStatement $stmt */
         $stmt = $db->prepare('DELETE FROM plugins          WHERE plugin = ?');
         $stmt->execute(array($plugin));
 
@@ -686,12 +685,13 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
     /**
      * render internallink to plugin/template, templates identified by having namespace
      *
-     * @param $R Doku_Renderer_xhtml
-     * @param $plugin string pluginname
-     * @param $title string Title of plugin link
+     * @param Doku_Renderer_xhtml $R
+     * @param string $plugin pluginname
+     * @param string|null $title Title of plugin link
      * @return string rendered internallink
      */
-    public function pluginlink(&$R, $plugin, $title = null) {
+    public function pluginlink(Doku_Renderer_xhtml $R, string $plugin, string $title = null): string
+    {
         if(!getNS($plugin)) {
             return $R->internallink(':plugin:'.$plugin, $title, null, true);
         } else {
@@ -764,7 +764,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      * @return string rendered
      */
     public function renderCompatibilityHelp($addInfolink = false) {
-        $infolink = '<sup><a href="http://www.dokuwiki.org/extension_compatibility" title="'.$this->getLang('compatible_with_info').'">?</a></sup>';
+        $infolink = '<sup><a href="https://www.dokuwiki.org/extension_compatibility" title="'.$this->getLang('compatible_with_info').'">?</a></sup>';
         $infolink = $addInfolink ? $infolink : '';
         return sprintf($this->getLang('compatible_with'), $infolink);
     }

@@ -12,7 +12,7 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
 
     /**
      * will hold the repository helper plugin
-     * @var $hlp helper_plugin_pluginrepo_repository
+     * @var helper_plugin_pluginrepo_repository $hlp
      */
     var $hlp = null;
 
@@ -76,7 +76,7 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
      * Create output
      *
      * @param string          $format   output format being rendered
-     * @param Doku_Renderer   $R        the current renderer object
+     * @param Doku_Renderer   $renderer        the current renderer object
      * @param array           $data     data created by handler() used entries:
      *          headline: headline of new block
      *          link:     link shown at the bottom of the news block
@@ -85,27 +85,27 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
      *        ..more see functions below
      * @return  boolean                 rendered correctly? (however, returned value is not used at the moment)
      */
-    function render($format, Doku_Renderer $R, $data) {
+    function render($format, Doku_Renderer $renderer, $data) {
         if($format != 'xhtml') return false;
-        /** @var Doku_Renderer_xhtml $R */
+        /** @var Doku_Renderer_xhtml $renderer */
 
-        $R->doc .= '<div class="pluginrepo_news">'.NL;
-        $R->doc .= '<h4>'.hsc($data['headline']).'</h4>'.NL;
+        $renderer->doc .= '<div class="pluginrepo_news">'.NL;
+        $renderer->doc .= '<h4>'.hsc($data['headline']).'</h4>'.NL;
 
         switch ($data['style']) {
             case 'sameauthor':
-                $this->showSameAuthor($R, $data);
+                $this->showSameAuthor($renderer, $data);
                 break;
             default:
-                $this->showDefault($R,$data);
+                $this->showDefault($renderer,$data);
         }
 
         if ($data['link']) {
-            $R->doc .= '<p class="more">';
-            $R->internallink($data['link'],$data['linktext']);
-            $R->doc .= '</p>'.NL;
+            $renderer->doc .= '<p class="more">';
+            $renderer->internallink($data['link'],$data['linktext']);
+            $renderer->doc .= '</p>'.NL;
         }
-        $R->doc .= '</div>';
+        $renderer->doc .= '</div>';
         return true;
     }
 
@@ -151,7 +151,7 @@ class syntax_plugin_pluginrepo_news extends DokuWiki_Syntax_Plugin {
      *      and used by the filtering:
      *
      */
-    function showDefault(&$R, $data) {
+    function showDefault($R, $data) {
         $limit = (is_numeric($data['entries']) ? $data['entries']: 1);
         $plugins = $this->hlp->getPlugins($data);
         if ($data['random'] == 'no') {

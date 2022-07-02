@@ -66,8 +66,7 @@ class helper_plugin_pluginrepo_popularity extends DokuWiki_Plugin {
 
         $stmt->execute($replacements);
 
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $data;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
