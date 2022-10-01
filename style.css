@@ -196,10 +196,6 @@
     font-size: 120%;
     font-weight: normal;
 }
-.dokuwiki div.pluginrepo_entry div.authorInfo strong a.mail {
-    background-position: 0 2px;
-    padding-left: 18px;
-}
 .dokuwiki div.pluginrepo_entry div.authorInfo ul {
     margin-bottom: 0;
 }
