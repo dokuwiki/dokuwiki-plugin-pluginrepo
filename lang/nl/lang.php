@@ -3,7 +3,7 @@
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  *
- * @author Gerrit Uitslag <klapinklapin@gmail.com>
+ * @author Gerrit <klapinklapin@gmail.com>
  * @author Rene <wllywlnt@yahoo.com>
  * @author Peter van Diest <peter.van.diest@xs4all.nl>
  */
@@ -33,6 +33,9 @@ $lang['securityrecommendation'] = 'Het wordt niet aanbevolen om deze plugin te g
 $lang['securitylink']          = 'plugin beveiligingsrichtlijnen';
 $lang['name_underscore']       = 'Pluginnaam bevat een lagestreep "_" en zal daarom geen populariteitspunten ontvangen.';
 $lang['name_oldage']           = 'Deze uitbreiding is al meer dan 2 jaar niet meer geupdated. Misschien worden hij niet langer onderhouden of ondersteund. Er kunnen compatibiliteitsproblemen zijn.';
+$lang['extension_obsoleted']   = '<strong>Deze extensie is gemarkeerd als verouderd.</strong> Daarom is die verborgen in de Extensiebeheerder en extensieoverzichten. Bovendien, staat die op de nominatie verwijder te worden.';
+$lang['missing_downloadurl']   = 'De ontbrekende download-link betekent dat deze extensie niet geïnstalleerd kan worden via de Extensiebeheerder. Kijk alstublieft op <a href="/devel:plugins#publishing_a_plugin_on_dokuwikiorg" class="wikilink1" title="devel:plugins">Publishing a Plugin on dokuwiki.org</a>. Het wordt aanbevolen om een publieke repository hosting zoals GitHub, GitLab of Bitbucket te gebruiken. ';
+$lang['wrongnamespace']        = 'Deze extensie is niet in de \'plugin\' of \'template\' namespace en wordt daarom genegeerd.';
 $lang['downloadurl']           = 'Download';
 $lang['bugtracker']            = 'Meld bugs';
 $lang['sourcerepo']            = 'Centrale opslag';
@@ -54,6 +57,7 @@ $lang['t_typehelper']          = '%s plugins leveren functies die gedeeld wordt 
 $lang['t_typetemplate']        = '%s wijzigen het uiterlijk en het gedrag van DokuWiki';
 $lang['t_typeremote']          = '%s plugins voegen methodes toe aan de RemoteAPI toegankelijk via webdiensten';
 $lang['t_typeauth']            = '%s plugins voegen authenticatiemodules toe';
+$lang['t_typecli']             = '%s plugins voegen commando\'s toe die gebruikt kunnen worden in een opdrachtregelinterface (Command Line Interface/Cli)';
 $lang['t_filterbytag']         = 'Filter op label';
 $lang['t_availabletype']       = 'Beschikbare %s plugins';
 $lang['t_availabletagged']     = 'Gelabeld met \'%s\'';
