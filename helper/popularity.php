@@ -1,15 +1,19 @@
 <?php
 
+use dokuwiki\Extension\Plugin;
+
 /**
  * DokuWiki popularity data repository API
  *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  */
-class helper_plugin_pluginrepo_popularity extends DokuWiki_Plugin {
+class helper_plugin_pluginrepo_popularity extends Plugin
+{
     /** @var helper_plugin_pluginrepo_repository $hlp */
     protected $hlp;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->hlp = $this->loadHelper('pluginrepo_repository');
     }
 
@@ -23,13 +27,16 @@ class helper_plugin_pluginrepo_popularity extends DokuWiki_Plugin {
      * @param int    $daysago   if $startdate not set, retrieve the submits for this number of days
      * @return array
      */
-    public function getCounts($key, $orderby = 'cnt', $startdate = '', $enddate = '', $daysago = 0) {
+    public function getCounts($key, $orderby = 'cnt', $startdate = '', $enddate = '', $daysago = 0)
+    {
         $db = $this->hlp->_getPluginsDB();
-        if(!$db) return array();
+        if (!$db) {
+            return [];
+        }
 
-        $replacements = array();
+        $replacements = [];
 
-        switch($key) {
+        switch ($key) {
             case 'page_size':
                 $select = "CONCAT(ROUND(pop.value/(1024)),'KB')";
                 break;
@@ -50,13 +57,13 @@ class helper_plugin_pluginrepo_popularity extends DokuWiki_Plugin {
         // add time restrictions
         $where = $this->buildWhere($startdate, $enddate, $daysago, $replacements);
 
-        $orderbyfields = array('val', 'cnt');
-        if(!in_array($orderby, $orderbyfields)) {
+        $orderbyfields = ['val', 'cnt'];
+        if (!in_array($orderby, $orderbyfields)) {
             $orderby = 'cnt';
         }
 
         $stmt = $db->prepare(
-                   "SELECT $select AS val, COUNT(*) AS cnt
+            "SELECT $select AS val, COUNT(*) AS cnt
                       FROM popularity pop
                      WHERE pop.key = :key
                            $where
@@ -77,15 +84,18 @@ class helper_plugin_pluginrepo_popularity extends DokuWiki_Plugin {
      * @param int    $daysago   if $startdate not set, retrieve the submits for this number of days
      * @return int
      */
-    public function getNumberOfSubmittingWikis($startdate = '', $enddate = '', $daysago = 0) {
+    public function getNumberOfSubmittingWikis($startdate = '', $enddate = '', $daysago = 0)
+    {
         $db = $this->hlp->_getPluginsDB();
-        if(!$db) return 0;
+        if (!$db) {
+            return 0;
+        }
 
-        $replacements = array();
+        $replacements = [];
         $where = $this->buildWhere($startdate, $enddate, $daysago, $replacements);
 
         $stmt = $db->prepare(
-                   "SELECT COUNT(DISTINCT pop.uid) AS cnt
+            "SELECT COUNT(DISTINCT pop.uid) AS cnt
                       FROM popularity pop
                      WHERE 1=1
                            $where"
@@ -106,13 +116,14 @@ class helper_plugin_pluginrepo_popularity extends DokuWiki_Plugin {
      * @param array  $replacements  (reference) can be extended with additional keys
      * @return string
      */
-    public function buildWhere($startdate, $enddate, $daysago, &$replacements) {
+    public function buildWhere($startdate, $enddate, $daysago, &$replacements)
+    {
         $where = '';
-        if($startdate OR $daysago) {
-            if($startdate) {
+        if ($startdate || $daysago) {
+            if ($startdate) {
                 $where .= " AND dt > UNIX_TIMESTAMP( :start )";
                 $replacements[':start'] = $startdate;
-                if($enddate) {
+                if ($enddate) {
                     $where .= "  AND dt < UNIX_TIMESTAMP( :end )";
                     $replacements[':end'] = $enddate;
                 }
