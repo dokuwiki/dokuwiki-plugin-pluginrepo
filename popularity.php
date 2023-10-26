@@ -155,43 +155,30 @@ function redirects_googlecharts($counts, $output, $usepercentage, $limit, $w, $h
     if ($output == 'pie') {
         //pie chart
         $query = [
-            'cht' => 'p',
-            // Type
-            'chs' => $w . 'x' . $h,
-            // Size
-            'chco' => '4d89f9',
-            // Serie colors
-            'chf' => 'bg,s,ffffff00',
-            // 'a,s,ffffff' // Background color  (bg=background, a=transparant, s=solid)
-            'chds' => $usepercentage ? null : 'a',
-            // automatically scaling, needed for absolute data values
-            'chd' => 't:' . implode(',', $data),
-            // Data
-            'chl' => implode('|', $label),
+            'cht' => 'p',             // Type
+            'chs' => $w . 'x' . $h,   // Size
+            'chco' => '4d89f9',       // Serie colors
+            'chf' => 'bg,s,ffffff00', // 'a,s,ffffff' // Background color  (bg=background, a=transparant, s=solid)
+            'chds' => $usepercentage ? null : 'a',        // automatically scaling, needed for absolute data values
+            'chd' => 't:' . implode(',', $data), // Data
+            'chl' => implode('|', $label),       // Data labels
         ];
     } else {
         //line chart
         $query = [
-            'cht' => 'lc',
-            // Type
-            'chs' => $w . 'x' . $h,
-            // Size
-            'chco' => '4d89f9',
-            // Serie colors
-            'chf' => 'bg,s,ffffff00',
-            // 'a,s,ffffff' // Background color  (bg=background, a=transparant, s=solid)
-            'chxt' =>  true ? 'x,y' : null,
-            // X & Y axis labels
-            'chds' => $usepercentage ? null : 'a',
-            // scaling: automatically
-            'chd' => 't:' . implode(',', $data),
-            // Data
-            'chl' => implode('|', $label),
+            'cht' => 'lc',            // Type
+            'chs' => $w . 'x' . $h,   // Size
+            'chco' => '4d89f9',       // Serie colors
+            'chf' => 'bg,s,ffffff00', // 'a,s,ffffff' // Background color  (bg=background, a=transparant, s=solid)
+            'chxt' =>  true ? 'x,y' : null,               // X & Y axis labels
+            'chds' => $usepercentage ? null : 'a',        // scaling: automatically
+            'chd' => 't:' . implode(',', $data), // Data
+            'chl' => implode('|', $label),       // Data labels
         ];
     }
 
 
-    $url = 'http://chart.apis.google.com/chart?' . buildUnencodedURLparams($query);
+    $url = 'https://chart.apis.google.com/chart?' . buildUnencodedURLparams($query);
 
     header('Location: ' . $url);
 }

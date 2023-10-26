@@ -552,7 +552,25 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
                                 :screenshot, :tags, :type)
                               ' . $duplicate);
         $stmt->execute(
-            [':plugin' => $id, ':name' => $name, ':description' => $data['description'], ':author' => $data['author'], ':email' => $data['email'], ':compatible' => $data['compatible'], ':bestcompatible' => $compatible, ':lastupdate' => $data['lastupdate'], ':securityissue' => $data['securityissue'], ':securitywarning' => $data['securitywarning'], ':downloadurl' => $data['downloadurl'], ':bugtracker' => $data['bugtracker'], ':sourcerepo' => $data['sourcerepo'], ':donationurl' => $data['donationurl'], ':screenshot' => $data['screenshot_img'], ':tags' => $data['tags'], ':type' => $type]
+            [
+                ':plugin' => $id,
+                ':name' => $name,
+                ':description' => $data['description'],
+                ':author' => $data['author'],
+                ':email' => $data['email'],
+                ':compatible' => $data['compatible'],
+                ':bestcompatible' => $compatible,
+                ':lastupdate' => $data['lastupdate'],
+                ':securityissue' => $data['securityissue'],
+                ':securitywarning' => $data['securitywarning'],
+                ':downloadurl' => $data['downloadurl'],
+                ':bugtracker' => $data['bugtracker'],
+                ':sourcerepo' => $data['sourcerepo'],
+                ':donationurl' => $data['donationurl'],
+                ':screenshot' => $data['screenshot_img'],
+                ':tags' => $data['tags'],
+                ':type' => $type
+            ]
         );
 
         if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {

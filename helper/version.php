@@ -160,17 +160,22 @@ class helper_plugin_pluginrepo_version extends Plugin
         }
         $commits = json_decode($commits, true);
 
-        $comversion = substr($commits[0]['commit']['author']['date'], 0, 10); // default to newest
+        // default to newest
+        $comversion = substr($commits[0]['commit']['author']['date'], 0, 10);
+
         foreach ($commits as $commit) {
+            // skip merges
             if (preg_match('/^Merge/i', $commit['commit']['message'])) {
                 continue;
-            } // skip merges
+            }
+            // skip version tool updates
             if (preg_match('/^Version upped$/i', $commit['commit']['message'])) {
                 continue;
-            } // skip version tool updates
+            }
+            // skip translations
             if ($commit['commit']['committer']['email'] == 'translate@dokuwiki.org') {
                 continue;
-            } //skip translations
+            }
 
             $comversion = substr($commit['commit']['author']['date'], 0, 10);
             break;

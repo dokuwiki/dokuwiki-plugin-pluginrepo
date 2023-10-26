@@ -13,7 +13,18 @@ class helper_plugin_pluginrepo_repository extends Plugin
 {
     public $dokuReleases; // array of DokuWiki releases (name & date)
 
-    public $types = [1   => 'Syntax', 2   => 'Admin', 4   => 'Action', 8   => 'Render', 16  => 'Helper', 32  => 'Template', 64  => 'Remote', 128 => 'Auth', 256 => 'CLI', 512 => 'CSS/JS-only'];
+    public $types = [
+        1   => 'Syntax',
+        2   => 'Admin',
+        4   => 'Action',
+        8   => 'Render',
+        16  => 'Helper',
+        32  => 'Template',
+        64  => 'Remote',
+        128 => 'Auth',
+        256 => 'CLI',
+        512 => 'CSS/JS-only'
+    ];
 
     public $obsoleteTag = '!obsolete';
     public $bundled;

@@ -14,10 +14,13 @@ class syntax_plugin_pluginrepo_query extends SyntaxPlugin
 {
     /**
      * will hold the repository helper plugin
-     * @var $hlp helper_plugin_pluginrepo_repository
+     * @var helper_plugin_pluginrepo_repository $hlp
      */
     public $hlp;
-    public $allowedfields = ['plugin', 'name', 'description', 'author', 'email', 'compatible', 'lastupdate', 'type', 'securityissue', 'securitywarning', 'screenshot', 'downloadurl', 'bugtracker', 'sourcerepo', 'donationurl', 'tags', 'popularity'];
+    public $allowedfields = [
+        'plugin', 'name', 'description', 'author', 'email', 'compatible', 'lastupdate', 'type', 'securityissue',
+        'securitywarning', 'screenshot', 'downloadurl', 'bugtracker', 'sourcerepo', 'donationurl', 'tags', 'popularity'
+    ];
 
     /**
      * Constructor. Load helper plugin
