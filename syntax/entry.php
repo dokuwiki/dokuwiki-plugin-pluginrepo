@@ -146,12 +146,12 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
         }
 
         $obsClass = $isObsoleted ? ' obsoleted' : '';
-        $R->doc .= "<div class=\"pluginrepo_entry$obsClass\">" . NL;
+        $R->doc .= "<div class=\"pluginrepo_entry$obsClass\">";
 
-        $R->doc .= '<div class="usageInfo">' . NL;
+        $R->doc .= '<div class="usageInfo">';
         $uptodate = $this->_showCompatibility($R, $data);
         $this->_showActionLinks($R, $data);
-        $R->doc .= '</div>' . NL;
+        $R->doc .= '</div>';
 
         $this->_showMainInfo($R, $data, $extensionType);
         $this->_showMetaInfo($R, $data, $type, $rel);
@@ -159,10 +159,10 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
         $isOld = ($age >= 2) && !$uptodate && !$isBundled;
 
         if ($rel['similar'] || $data['tags'] || $data['securitywarning'] || $data['securityissue'] || $hasUnderscoreIssue || $isOld || $isObsoleted) {
-            $R->doc .= '<div class="moreInfo">' . NL;
+            $R->doc .= '<div class="moreInfo">';
             $this->_showWarnings($R, $data, $hasUnderscoreIssue, $isOld, $isObsoleted, $isBundled);
             $this->_showTaxonomy($R, $data, $rel);
-            $R->doc .= '</div>' . NL;
+            $R->doc .= '</div>';
         }
 
         $this->_showAuthorInfo($R, $data, $rel);
@@ -179,7 +179,7 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
     {
         global $ID;
 
-        $R->doc .= '<div class="mainInfo">' . NL;
+        $R->doc .= '<div class="mainInfo">';
 
         /* plugin/template name omitted because each page usually already has an h1 with the same information
         $R->doc .= '<h4>'.noNS($id).' '.$extensionType.'</h4>';
@@ -189,14 +189,14 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
         $extensionIcon = '<a class="media" href="' . wl($extensionType . 's') . '">' .
             '<img alt="' . $extensionType . '" class="medialeft" src="' .
             DOKU_BASE . 'lib/plugins/pluginrepo/images/dwplugin.png" width="60" height="60" /></a> ';
-        $R->doc .= '<p class="description">' . $extensionIcon . hsc($data['description']) . '</p>' . NL;
+        $R->doc .= '<p class="description">' . $extensionIcon . hsc($data['description']) . '</p>';
 
         // screenshot
         if ($data['screenshot_img']) {
             $val = $data['screenshot_img'];
             $title = sprintf($this->getLang('screenshot_title'), noNS($ID));
             $R->doc .= '<a href="' . ml($val) . '" class="media screenshot" title="' . $title . '" rel="lightbox">';
-            $R->doc .= '<img src="' . ml($val, "w=220") . '" alt="" width="220" /></a>' . NL;
+            $R->doc .= '<img src="' . ml($val, "w=220") . '" alt="" width="220" /></a>';
         }
 
         $R->doc .= '</div>';
@@ -216,24 +216,24 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
             $target .= 's';
         }
 
-        $R->doc .= '<div class="metaInfo"><dl>' . NL;
+        $R->doc .= '<div class="metaInfo"><dl>';
 
         // last updated
         if (preg_match('/^\d\d\d\d-\d\d-\d\d$/', $data['lastupdate'])) {
-            $R->doc .= '<dt>' . $this->getLang('last_updated_on') . '</dt>' . NL;
-            $R->doc .= '<dd>' . $data['lastupdate'] . '</dd>' . NL;
+            $R->doc .= '<dt>' . $this->getLang('last_updated_on') . '</dt>';
+            $R->doc .= '<dd>' . $data['lastupdate'] . '</dd>';
         }
 
         // plugin type
         if ($type && $type != 32) {
-            $R->doc .= '<dt>' . $this->getLang('provides') . '</dt>' . NL;
-            $R->doc .= '<dd>' . $this->hlp->listtype($type, $target) . '</dd>' . NL;
+            $R->doc .= '<dt>' . $this->getLang('provides') . '</dt>';
+            $R->doc .= '<dd>' . $this->hlp->listtype($type, $target) . '</dd>';
         }
 
         // repository
         if ($data['sourcerepo']) {
-            $R->doc .= '<dt>' . $this->getLang('sourcerepo') . '</dt>' . NL;
-            $R->doc .= '<dd><a class="urlextern" href="' . hsc($data['sourcerepo']) . '">' . $this->getLang('source') . '</a></dd>' . NL;
+            $R->doc .= '<dt>' . $this->getLang('sourcerepo') . '</dt>';
+            $R->doc .= '<dd><a class="urlextern" href="' . hsc($data['sourcerepo']) . '">' . $this->getLang('source') . '</a></dd>';
         }
 
         // conflicts
@@ -241,17 +241,17 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
             $data['conflicts'] .= ',' . implode(',', $rel['conflicts']);
         }
         if ($data['conflicts']) {
-            $R->doc .= '<dt>' . $this->getLang('conflicts_with') . '</dt>' . NL;
-            $R->doc .= '<dd>' . $this->hlp->listplugins($data['conflicts'], $R) . '</dd>' . NL;
+            $R->doc .= '<dt>' . $this->getLang('conflicts_with') . '</dt>';
+            $R->doc .= '<dd>' . $this->hlp->listplugins($data['conflicts'], $R) . '</dd>';
         }
 
         // dependencies
         if ($data['depends']) {
-            $R->doc .= '<dt>' . $this->getLang('requires') . '</dt>' . NL;
-            $R->doc .= '<dd>' . $this->hlp->listplugins($data['depends'], $R) . '</dd>' . NL;
+            $R->doc .= '<dt>' . $this->getLang('requires') . '</dt>';
+            $R->doc .= '<dd>' . $this->hlp->listplugins($data['depends'], $R) . '</dd>';
         }
 
-        $R->doc .= '</dl></div>' . NL;
+        $R->doc .= '</dl></div>';
     }
 
     /**
@@ -262,14 +262,14 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
     protected function _showCompatibility($R, $data)
     {
         $R->doc .= '<div class="compatibility">';
-        $R->doc .= '<p class="label">' . $this->hlp->renderCompatibilityHelp() . '</p>' . NL;
+        $R->doc .= '<p class="label">' . $this->hlp->renderCompatibilityHelp() . '</p>';
         $uptodate = false;
 
         // no compatibility data
         if (!$data['compatible']) {
             $R->doc .= '<p class="nothing">';
             $R->doc .= $this->getLang('no_compatibility');
-            $R->doc .= '</p>' . NL;
+            $R->doc .= '</p>';
         // compatibility data given
         } else {
             // get recent compatible releases
@@ -293,27 +293,27 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
                     $uptodate = true;
                 }
                 $compatrow .= '<li class="' . $compaticon . '">' . $release['date'] . ' ' . $release['label'];
-                $compatrow .= '&nbsp;<strong><span>' . $value . '</span></strong></li>' . NL;
+                $compatrow .= '&nbsp;<strong><span>' . $value . '</span></strong></li>';
             }
 
             // compatible to devel
             if (strpos($data['compatible'], 'devel') !== false) {
                 $R->doc .= '<p>';
                 $R->internallink('devel:develonly', $this->getLang('develonly'));
-                $R->doc .= '</p>' . NL;
+                $R->doc .= '</p>';
                 $uptodate = true;
             // compatible to older releases
             } elseif (!$uptodate) {
                 $R->doc .= '<p>';
                 $R->doc .= $data['compatible'];
-                $R->doc .= '</p>' . NL;
+                $R->doc .= '</p>';
             // compatible to recent releases
             } else {
-                $R->doc .= '<div class="versions"><ul>' . NL . $compatrow . '</ul></div>' . NL;
+                $R->doc .= '<div class="versions"><ul>' . $compatrow . '</ul></div>';
             }
         }
 
-        $R->doc .= '</div>' . NL;
+        $R->doc .= '</div>';
         return $uptodate;
     }
 
@@ -324,20 +324,20 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
     protected function _showActionLinks($R, $data)
     {
         if ($data['downloadurl'] || $data['bugtracker'] || $data['donationurl']) {
-            $R->doc .= '<ul class="actions">' . NL;
+            $R->doc .= '<ul class="actions">';
             if ($data['downloadurl']) {
                 $R->doc .= '<li><a class="download" href="' . hsc($data['downloadurl']) . '">' .
-                    $this->getLang('downloadurl') . '</a></li>' . NL;
+                    $this->getLang('downloadurl') . '</a></li>';
             }
             if ($data['bugtracker']) {
                 $R->doc .= '<li><a class="bugs" href="' . hsc($data['bugtracker']) . '">' .
-                    $this->getLang('bugtracker') . '</a></li>' . NL;
+                    $this->getLang('bugtracker') . '</a></li>';
             }
             if ($data['donationurl']) {
                 $R->doc .= '<li><a class="donate" href="' . hsc($data['donationurl']) . '">' .
-                    $this->getLang('donationurl') . '</a></li>' . NL;
+                    $this->getLang('donationurl') . '</a></li>';
             }
-            $R->doc .= '</ul><div class="clearer"></div>' . NL;
+            $R->doc .= '</ul><div class="clearer"></div>';
         }
     }
 
@@ -356,40 +356,40 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
         if ($isObsoleted) {
             $R->doc .= '<div class="notify">';
             $R->doc .= '<p>' . $this->getLang('extension_obsoleted') . '</p>';
-            $R->doc .= '</div>' . NL;
+            $R->doc .= '</div>';
         }
         if (!$data['downloadurl'] && !$isBundled) {
             $R->doc .= '<div class="notify">';
             $R->doc .= '<p>' . $this->getLang('missing_downloadurl') . '</p>';
-            $R->doc .= '</div>' . NL;
+            $R->doc .= '</div>';
         }
         if ($isOld) {
             $R->doc .= '<div class="notify">';
             $R->doc .= '<p>' . $this->getLang('name_oldage') . '</p>';
-            $R->doc .= '</div>' . NL;
+            $R->doc .= '</div>';
         }
 
         if ($data['securitywarning']) {
-            $R->doc .= '<div class="notify">' . NL;
+            $R->doc .= '<div class="notify">';
             $securitylink = $R->internallink('devel:security', $this->getLang('securitylink'), null, true);
             $R->doc .= '<p><strong>' . sprintf($this->getLang('securitywarning'), $securitylink) . '</strong> ';
             $R->doc .= $this->hlp->replaceSecurityWarningShortcut($data['securitywarning']);
-            $R->doc .= '</p>' . NL . '</div>' . NL;
+            $R->doc .= '</p>' . '</div>';
         }
 
         if ($data['securityissue']) {
-            $R->doc .= '<div class="error">' . NL;
+            $R->doc .= '<div class="error">';
             $R->doc .= '<p><strong>' . $this->getLang('securityissue') . '</strong> ';
             $R->doc .= hsc($data['securityissue']);
             $securitylink = $R->internallink('devel:security', $this->getLang('securitylink'), null, true);
-            $R->doc .= '</p>' . NL . '<p>' . sprintf($this->getLang('securityrecommendation'), $securitylink) . '</p>' . NL;
-            $R->doc .= '</div>' . NL;
+            $R->doc .= '</p>' . '<p>' . sprintf($this->getLang('securityrecommendation'), $securitylink) . '</p>';
+            $R->doc .= '</div>';
         }
 
         if ($hasUnderscoreIssue) {
             $R->doc .= '<div class="info">';
             $R->doc .= '<p>' . $this->getLang('name_underscore') . '</p>';
-            $R->doc .= '</div>' . NL;
+            $R->doc .= '</div>';
         }
 
         //notify if outside [plugin|template]:[lang:] namespace
@@ -401,7 +401,7 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
         if ($firstns !== 'plugin' && $firstns !== 'template') {
             $R->doc .= '<div class="notify">';
             $R->doc .= '<p>' . $this->getLang('wrongnamespace') . '</p>';
-            $R->doc .= '</div>' . NL;
+            $R->doc .= '</div>';
         }
     }
 
@@ -424,17 +424,17 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
         }
         if ($data['similar']) {
             $R->doc .= '<p class="similar">' . $this->getLang('similar_to') . ' ';
-            $R->doc .= $this->hlp->listplugins($data['similar'], $R) . '</p>' . NL;
+            $R->doc .= $this->hlp->listplugins($data['similar'], $R) . '</p>';
         }
         // tags
         if ($data['tags']) {
             $R->doc .= '<p class="tags">' . $this->getLang('tagged_with') . ' ';
-            $R->doc .= $this->hlp->listtags($data['tags'], $target) . '</p>' . NL;
+            $R->doc .= $this->hlp->listtags($data['tags'], $target) . '</p>';
         }
         // Needed for
         if ($rel['needed']) {
             $R->doc .= '<p class="needed">' . $this->getLang('needed_for') . ' ';
-            $R->doc .= $this->hlp->listplugins($rel['needed'], $R) . '</p>' . NL;
+            $R->doc .= $this->hlp->listplugins($rel['needed'], $R) . '</p>';
         }
     }
 
@@ -445,7 +445,7 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
      */
     protected function _showAuthorInfo($R, $data, $rel)
     {
-        $R->doc .= '<div class="authorInfo">' . NL;
+        $R->doc .= '<div class="authorInfo">';
 
         // author
         $R->doc .= '<strong>' . ucfirst($this->getLang('by')) . ' ';
@@ -454,24 +454,24 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
         } else {
             $R->doc .= $data['author'];
         }
-        $R->doc .= '</strong>' . NL;
+        $R->doc .= '</strong>';
 
         // other extensions by the same author (10 max)
         if (isset($rel['sameauthor']) && count($rel['sameauthor']) > 0) {
             $maxShow = 10;
             $itr = 0;
-            $R->doc .= '<ul>' . NL;
+            $R->doc .= '<ul>';
             while ($itr < count($rel['sameauthor']) && $itr < $maxShow) {
-                $R->doc .= '<li>' . $this->hlp->pluginlink($R, $rel['sameauthor'][$itr++]) . '</li>' . NL;
+                $R->doc .= '<li>' . $this->hlp->pluginlink($R, $rel['sameauthor'][$itr++]) . '</li>';
             }
             if (count($rel['sameauthor']) > $maxShow) {
                 $remainingExtensions = count($rel['sameauthor']) - $maxShow;
                 $R->doc .= '<li>' . sprintf($this->getLang('more_extensions'), $remainingExtensions) . '</li>';
             }
-            $R->doc .= '</ul>' . NL;
+            $R->doc .= '</ul>';
         }
 
-        $R->doc .= '</div>' . NL;
+        $R->doc .= '</div>';
     }
 
     /**
