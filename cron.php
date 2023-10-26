@@ -1,17 +1,21 @@
 <?php
 
-$TIMEFRAME = 60*60*24*365*2; // in seconds
+$TIMEFRAME = 60 * 60 * 24 * 365 * 2; // in seconds
 
 $TIME = time() - $TIMEFRAME;
 
-if(!defined('DOKU_INC')) define('DOKU_INC',dirname(__FILE__).'/../../../');
-define('NOSESSION',true);
-require_once(DOKU_INC.'inc/init.php');
+if (!defined('DOKU_INC')) {
+    define('DOKU_INC', __DIR__ . '/../../../');
+}
+define('NOSESSION', true);
+require_once(DOKU_INC . 'inc/init.php');
 
 /** @var helper_plugin_pluginrepo_repository $hlp */
-$hlp = plugin_load('helper','pluginrepo_repository');
+$hlp = plugin_load('helper', 'pluginrepo_repository');
 $db  = $hlp->_getPluginsDB();
-if (!$db) die('failed to connect to DB');
+if (!$db) {
+    die('failed to connect to DB');
+}
 
 
 // update all plugins
@@ -25,8 +29,8 @@ $sql = "SELECT count(*) as cnt, A.value as plugin
 $stmt = $db->prepare($sql);
 $stmt->execute();
 $updt = $db->prepare("UPDATE plugins SET popularity = :pop WHERE plugin = :name");
-while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-    $updt->execute(array(':pop'=>$row['cnt'], ':name'=>$row['plugin']));
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $updt->execute([':pop' => $row['cnt'], ':name' => $row['plugin']]);
 }
 
 // update all templates
@@ -40,8 +44,8 @@ $sql = "SELECT count(*) as cnt, A.value as template
 $stmt = $db->prepare($sql);
 $stmt->execute();
 $updt = $db->prepare("UPDATE plugins SET popularity = :pop WHERE plugin = :name");
-while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-    $updt->execute(array(':pop'=>$row['cnt'], ':name'=> 'template:'.$row['template']));
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $updt->execute([':pop' => $row['cnt'], ':name' => 'template:' . $row['template']]);
 }
 
 // create info on bad extension versions

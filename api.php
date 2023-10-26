@@ -1,7 +1,9 @@
 <?php
 
-if(!defined('DOKU_INC')) define('DOKU_INC', dirname(__FILE__).'/../../../');
-require_once(DOKU_INC.'inc/init.php');
+if (!defined('DOKU_INC')) {
+    define('DOKU_INC', __DIR__ . '/../../../');
+}
+require_once(DOKU_INC . 'inc/init.php');
 
 require_once(DOKU_PLUGIN . 'pluginrepo/helper/repository.php');
 
@@ -26,24 +28,24 @@ header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 header('Pragma: public');
 header('X-Robots-Tag: noindex');
 
-if($INPUT->str('cmd') == 'ping') {
+if ($INPUT->str('cmd') == 'ping') {
     header('Content-Type: text/plain; charset=utf-8');
     echo '1';
 } else {
-    switch($INPUT->str('fmt')) {
+    switch ($INPUT->str('fmt')) {
         case 'debug':
             header('Content-Type: text/plain; charset=utf-8');
             print_r($extensions);
             break;
         case 'xml':
             header('Content-Type: application/xml; charset=utf-8');
-            require('classes/A2Xml.php');
+            require(__DIR__ . '/classes/A2Xml.php');
             $xml = xml_encode((object) $extensions, "hash");
             echo $xml;
             break;
         case 'yaml':
             header('Content-Type: text/yaml');
-            require('classes/Spyc.php');
+            require(__DIR__ . '/classes/Spyc.php');
             echo Spyc::YAMLDump($extensions, false, 0);
             break;
         case 'php':
@@ -54,7 +56,7 @@ if($INPUT->str('cmd') == 'ping') {
             $data = json_encode($extensions);
             $cb   = $INPUT->str('cb');
             $cb   = preg_replace('/\W+/', '', $cb);
-            if($cb) {
+            if ($cb) {
                 header('Content-Type: text/javascript');
                 echo "$cb($data);";
             } else {
