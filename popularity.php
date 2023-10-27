@@ -33,7 +33,6 @@ if (!defined('DOKU_INC')) {
     define('DOKU_INC', __DIR__ . '/../../../');
 }
 require_once(DOKU_INC . 'inc/init.php');
-
 require_once(DOKU_PLUGIN . 'pluginrepo/helper/repository.php');
 
 //close session
@@ -274,22 +273,24 @@ function xml_rss($counts, $usepercentage, $limit)
     $other = 0;
 
     header('Content-Type: text/xml; charset=utf-8');
-    echo '<?xml version="1.0" encoding="utf-8"?>' . NL;
-    echo '<rss version="0.91">' . NL;
-    echo '<channel>' . NL;
+    echo '<?xml version="1.0" encoding="utf-8"?>';
+    echo '<rss version="0.91">';
+    echo '<channel>';
     foreach ($counts as $count) {
         if ($limit > 0 && ++$cnt > $limit) {
             $other += $count['cnt'];
         } else {
-            echo '  <item>' . NL;
-            echo '      <title>' . formatNumber($count['cnt'], $usepercentage) . ' ' . htmlspecialchars($count['val']) . '</title>' . NL;
-            echo '  </item>' . NL;
+            echo '<item>';
+            echo '    <title>';
+            echo formatNumber($count['cnt'], $usepercentage) . ' ' . htmlspecialchars($count['val']);
+            echo '    </title>';
+            echo '</item>';
         }
     }
     if ($other > 0) {
-        echo '  <item>' . NL;
-        echo '      <title>' . formatNumber($other, $usepercentage) . ' other</title>' . NL;
-        echo '  </item>' . NL;
+        echo '<item>';
+        echo '    <title>' . formatNumber($other, $usepercentage) . ' other</title>';
+        echo '</item>';
     }
     echo '</channel>';
     echo '</rss>';

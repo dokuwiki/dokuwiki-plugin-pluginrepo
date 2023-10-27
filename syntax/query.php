@@ -108,7 +108,9 @@ class syntax_plugin_pluginrepo_query extends SyntaxPlugin
         $counter = count($fields);
         for ($fieldItr = 0; $fieldItr < $counter; $fieldItr++) {
             if (!in_array($fields[$fieldItr], $this->allowedfields)) {
-                $R->doc .= '<div class="error repoquery"><strong>Repoquery error - Unknown field:</strong> ' . hsc($fields[$fieldItr]) . '</div>';
+                $R->doc .= '<div class="error repoquery">'
+                    . '<strong>Repoquery error - Unknown field:</strong> ' . hsc($fields[$fieldItr])
+                    . '</div>';
                 return true;
             }
         }
@@ -130,7 +132,9 @@ class syntax_plugin_pluginrepo_query extends SyntaxPlugin
         }
         $error = preg_replace('/(LIKE|AND|OR|NOT|IS|NULL|[<>=\?\(\)])/i', '', $error);
         if (trim($error)) {
-            $R->doc .= '<div class="error repoquery"><strong>Repoquery error - Unsupported chars in WHERE clause:</strong> ' . hsc($error) . '</div>';
+            $R->doc .= '<div class="error repoquery">'
+                . '<strong>Repoquery error - Unsupported chars in WHERE clause:</strong> ' . hsc($error)
+                . '</div>';
             return true;
         }
         $wheresql = $data['where'];
@@ -141,7 +145,7 @@ class syntax_plugin_pluginrepo_query extends SyntaxPlugin
                             ORDER BY $ordersql");
 
         // prepare VALUES input and execute query
-        $values = preg_split("/,/", $data['values']);
+        $values = explode(",", $data['values']);
         $values = array_map('trim', $values);
         $values = array_filter($values);
         if (!$values && array_key_exists('values', $data)) {

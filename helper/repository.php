@@ -762,24 +762,24 @@ class helper_plugin_pluginrepo_repository extends Plugin
     {
         if (!$this->dokuReleases) {
             $this->dokuReleases = [];
-            $releases           = explode(',', $this->getConf('releases'));
-            $releases           = array_map('trim', $releases);
-            $releases           = array_filter($releases);
+            $releases = explode(',', $this->getConf('releases'));
+            $releases = array_map('trim', $releases);
+            $releases = array_filter($releases);
             foreach ($releases as $release) {
                 [$date, $name] = preg_split('/(\s+"\s*|")/', $release);
-                $name                      = strtolower($name);
-                $rel                       = ['date' => $date, 'name' => $name];
-                $rel['label']              = ($name ? '"' . ucwords($name) . '"' : '');
+                $name = strtolower($name);
+                $rel = ['date' => $date, 'name' => $name];
+                $rel['label'] = ($name ? '"' . ucwords($name) . '"' : '');
                 $this->dokuReleases[$date] = $rel;
             }
         }
         preg_match_all('/(!?\d\d\d\d-\d\d-\d\d\+?|!?[a-z A-Z]{4,}\+?)/', $compatible, $matches);
-        $matches[0]         = array_map('strtolower', $matches[0]);
-        $matches[0]         = array_map('trim', $matches[0]);
-        $retval             = [];
+        $matches[0] = array_map('strtolower', $matches[0]);
+        $matches[0] = array_map('trim', $matches[0]);
+        $retval = [];
         $implicitCompatible = false;
         $nextImplicitCompatible = false;
-        $dokuReleases       = $this->dokuReleases;
+        $dokuReleases = $this->dokuReleases;
         ksort($dokuReleases);
         foreach ($dokuReleases as $release) {
             $isCompatible = true;
@@ -793,7 +793,7 @@ class helper_plugin_pluginrepo_repository extends Plugin
             }
             if ($nextImplicitCompatible || !$isCompatible || in_array($release['date'], $matches[0]) || in_array($release['name'], $matches[0]) || $implicitCompatible) {
                 if (!$onlyCompatibleReleases || $isCompatible) {
-                    $retval[$release['date']]['label']    = $release['label'];
+                    $retval[$release['date']]['label'] = $release['label'];
                     $retval[$release['date']]['implicit'] = $implicitCompatible;
                     $retval[$release['date']]['isCompatible'] = $isCompatible;
                 }

@@ -15,7 +15,8 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
 {
     /**
      * will hold the repository helper plugin
-     * @var $hlp helper_plugin_pluginrepo_repository */
+     * @var helper_plugin_pluginrepo_repository $hlp
+     */
     public $hlp;
 
     /**
@@ -93,7 +94,7 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
     {
         if ($format == 'xhtml') {
             /** @var Doku_Renderer_xhtml $renderer */
-            return $this->_showData($renderer, $data);
+            return $this->showData($renderer, $data);
         }
         return false;
     }
@@ -105,27 +106,27 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
      * @param array               $data
      * @return bool rendered correctly?
      */
-    public function _showData($R, $data)
+    public function showData($R, $data)
     {
         global $ID;
 
         $R->info['cache'] = false;
-        $R->header($this->getLang('t_search_' . noNS($ID)), 2, null);
+        $R->header($this->getLang('t_search_' . noNS($ID)), 2, 0);
         $R->section_open(2);
 
         $R->doc .= '<div class="pluginrepo_table">';
 
         // filter and search
         $R->doc .= '<div class="repoFilter">';
-        $this->_showMainSearch($R, $data);
+        $this->showMainSearch($R);
         if (!$data['plugintype']) {
-            $this->_showPluginTypeFilter($R, $data);
+            $this->showPluginTypeFilter($R, $data);
         }
         $R->doc .= '</div>';
 
         // tag cloud
         $R->doc .= '<div class="repoCloud">';
-        $this->_tagcloud($R, $data);
+        $this->tagcloud($R, $data);
         $R->doc .= '</div>';
 
         $R->doc .= '<div class="clearer"></div>';
@@ -133,7 +134,7 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
         $R->section_close();
 
         // main table
-        $this->_showPluginTable($R, $data);
+        $this->showPluginTable($R, $data);
         return true;
     }
 
@@ -141,9 +142,8 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
      * Output repo table overview/intro and search form
      *
      * @param Doku_Renderer_xhtml $R
-     * @param array $data
      */
-    public function _showMainSearch($R, $data)
+    public function showMainSearch($R)
     {
         global $ID;
         if (substr($ID, -1, 1) == 's') {
@@ -156,13 +156,16 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
         $R->doc .= $this->getLang('t_searchintro_' . noNS($ID));
         $R->doc .= '</p>';
 
-        $R->doc .= '<form action="' . wl() . '" accept-charset="utf-8" class="plugin-search" id="dw__search2" method="get"><div class="no">';
-        $R->doc .= '  <input type="hidden" name="do" value="search" />';
-        $R->doc .= '  <input type="hidden" id="dw__ns" name="ns" value="' . $searchNS . '" />';
-        $R->doc .= '  <input type="text" id="qsearch2__in" accesskey="f" name="id" class="edit" />';
-        $R->doc .= '  <input type="submit" value="' . $this->getLang('t_btn_search') . '" class="button" title="' . $this->getLang('t_btn_searchtip') . '" />';
-        $R->doc .= '  <div id="qsearch2__out" class="ajax_qsearch JSpopup"></div>';
-        $R->doc .= '</div></form>';
+        $R->doc .= '<form action="' . wl() . '" accept-charset="utf-8" class="plugin-search" id="dw__search2" method="get">';
+        $R->doc .= '  <div class="no">';
+        $R->doc .= '    <input type="hidden" name="do" value="search" />';
+        $R->doc .= '    <input type="hidden" id="dw__ns" name="ns" value="' . $searchNS . '" />';
+        $R->doc .= '    <input type="text" id="qsearch2__in" accesskey="f" name="id" class="edit" />';
+        $R->doc .= '    <input type="submit" value="' . $this->getLang('t_btn_search') . '" class="button" title="'
+            . $this->getLang('t_btn_searchtip') . '" />';
+        $R->doc .= '    <div id="qsearch2__out" class="ajax_qsearch JSpopup"></div>';
+        $R->doc .= '  </div>';
+        $R->doc .= '</form>';
     }
 
     /**
@@ -171,7 +174,7 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
      * @param Doku_Renderer_xhtml $R
      * @param array $data
      */
-    public function _showPluginTypeFilter($R, $data)
+    public function showPluginTypeFilter($R, $data)
     {
         global $ID;
 
@@ -219,7 +222,7 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
      * @param Doku_Renderer_xhtml $R
      * @param array $data
      */
-    public function _tagcloud($R, $data)
+    public function tagcloud($R, $data)
     {
         global $ID;
 
@@ -247,7 +250,7 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
             }
             $min = $tag['cnt'];
         }
-        $this->_cloud_weight($tags, $min, $max, 5);
+        $this->cloud_weight($tags, $min, $max, 5);
 
         ksort($tags);
         if (count($tags) > 0) {
@@ -269,7 +272,7 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
      * @param int   $max
      * @param int   $levels
      */
-    public function _cloud_weight(&$tags, $min, $max, $levels)
+    public function cloud_weight(&$tags, $min, $max, $levels)
     {
         // calculate tresholds
         $tresholds = [];
@@ -296,7 +299,7 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
      * @param array               $data
      * @return bool
      */
-    public function _showPluginTable($R, $data)
+    public function showPluginTable($R, $data)
     {
         global $ID;
 
@@ -337,7 +340,7 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
         }
 
         // the main table
-        $this->_newTable($plugins, $linkopt, $data, $R);
+        $this->newTable($plugins, $linkopt, $data, $R);
 
         $R->doc .= '</div>';
         $R->section_close();
@@ -351,7 +354,7 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
      * @param array $data
      * @param Doku_Renderer_xhtml $R
      */
-    public function _newTable($plugins, $linkopt, $data, $R)
+    public function newTable($plugins, $linkopt, $data, $R)
     {
         global $ID;
 
@@ -369,17 +372,40 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
         $R->doc .= '<table class="inline">';
 
         // table headers
+        $urlName = wl($ID, $linkopt . 'pluginsort=' . ($sort == 'p' ? '^p' : 'p') . '#extension__table');
+        $urlAuthor = wl($ID, $linkopt . 'pluginsort=' . ($sort == 'a' ? '^a' : 'a') . '#extension__table');
+        $urlDate = wl($ID, $linkopt . 'pluginsort=' . ($sort == '^d' ? 'd' : '^d') . '#extension__table');
+        $urlPopularity = wl($ID, $linkopt . 'pluginsort=' . ($sort == '^c' ? 'c' : '^c') . '#extension__table');
+        $urlCompatibility = wl($ID, $linkopt . 'pluginsort=' . ($sort == '^v' ? 'v' : '^v') . '#extension__table');
+
         $R->doc .= '<tr>';
-        // @todo: make ugly long lines shorter
-        $R->doc .= '<th class="info"><a href="' . wl($ID, $linkopt . 'pluginsort=' . ($sort == 'p' ? '^p' : 'p') . '#extension__table') . '" title="' . $this->getLang('t_sortname') . '">' .  ($sortcol == 'p' ? $sortarr : '') . $this->getLang('t_name_' . noNS($ID)) . '</a>';
-        $R->doc .= '  <a class="authorSort" href="' . wl($ID, $linkopt . 'pluginsort=' . ($sort == 'a' ? '^a' : 'a') . '#extension__table') . '" title="' . $this->getLang('t_sortauthor') . '">' . ($sortcol == 'a' ? $sortarr : '') . $this->getLang('t_author') . '</a></th>';
+        $R->doc .= '<th class="info">'
+            . '<a href="' . $urlName . '" title="' . $this->getLang('t_sortname') . '">'
+            . ($sortcol == 'p' ? $sortarr : '') . $this->getLang('t_name_' . noNS($ID))
+            . '</a>'
+            . '<a class="authorSort" href="' . $urlAuthor . '" title="' . $this->getLang('t_sortauthor') . '">'
+            . ($sortcol == 'a' ? $sortarr : '') . $this->getLang('t_author')
+            . '</a>'
+            . '</th>';
         if ($data['screenshot'] == 'yes') {
             $R->doc .= '<th class="screenshot">' . $this->getLang('t_screenshot') . '</th>';
         }
-        $R->doc .= '  <th class="lastupdate">  <a href="' . wl($ID, $linkopt . 'pluginsort=' . ($sort == '^d' ? 'd' : '^d') . '#extension__table') . '" title="' . $this->getLang('t_sortdate') .  '">' .  ($sortcol == 'd' ? $sortarr : '') . $this->getLang('t_date') . '</a></th>';
-        $R->doc .= '  <th class="popularity">  <a href="' . wl($ID, $linkopt . 'pluginsort=' . ($sort == '^c' ? 'c' : '^c') . '#extension__table') . '" title="' . $this->getLang('t_sortpopularity') . '">' . ($sortcol == 'c' ? $sortarr : '') . $this->getLang('t_popularity') . '</a></th>';
+        $R->doc .= '<th class="lastupdate">'
+            . '<a href="' . $urlDate . '" title="' . $this->getLang('t_sortdate') .  '">'
+            . ($sortcol == 'd' ? $sortarr : '') . $this->getLang('t_date')
+            . '</a>'
+            . '</th>';
+        $R->doc .= '<th class="popularity">'
+            . '<a href="' . $urlPopularity . '" title="' . $this->getLang('t_sortpopularity') . '">'
+            . ($sortcol == 'c' ? $sortarr : '') . $this->getLang('t_popularity')
+            . '</a>'
+            . '</th>';
         if ($data['compatible'] == 'yes') {
-            $R->doc .= '  <th><a href="' . wl($ID, $linkopt . 'pluginsort=' . ($sort == '^v' ? 'v' : '^v') . '#extension__table') . '" title="' . $this->getLang('t_sortcompatible') . '">' .  ($sortcol == 'v' ? $sortarr : '') . $this->getLang('t_compatible') . '</a></th>';
+            $R->doc .= '<th>'
+                . '<a href="' . $urlCompatibility . '" title="' . $this->getLang('t_sortcompatible') . '">'
+                .  ($sortcol == 'v' ? $sortarr : '') . $this->getLang('t_compatible')
+                . '</a>'
+                . '</th>';
         }
         $R->doc .= '</tr>';
 
@@ -391,9 +417,10 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
                 $R->doc .= '<table class="inline">';
                 $R->doc .= '<caption>';
                 if ($row['bestcompatible']) {
-                    $label = array_shift($this->hlp->cleanCompat($row['bestcompatible']));
-                    $label = $label['label'];
-                    $R->doc .= $this->hlp->renderCompatibilityHelp(true) . ' <strong>' . $row['bestcompatible'] . ' ' . $label . '</strong>';
+                    $compatible = $this->hlp->cleanCompat($row['bestcompatible']);
+                    $label = array_shift($compatible);
+                    $R->doc .= $this->hlp->renderCompatibilityHelp(true)
+                        . ' <strong>' . $row['bestcompatible'] . ' ' . $label['label'] . '</strong>';
                 } else {
                     $R->doc .= $this->getLang('t_oldercompatibility');
                 }
@@ -468,7 +495,11 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
                 $R->doc .= '<td class="popularity">';
                 $progressCount = $row['popularity'] . '/' . $popmax;
                 $progressWidth = 100 * $row['popularity'] / $popmax;
-                $R->doc .= '<div class="progress" title="' . $progressCount . '"><div style="width: ' . $progressWidth . '%;"><span>' . $progressCount . '</span></div></div>';
+                $R->doc .= '<div class="progress" title="' . $progressCount . '">'
+                    . '<div style="width: ' . $progressWidth . '%;">'
+                    . '<span>' . $progressCount . '</span>'
+                    . '</div>'
+                    . '</div>';
                 $R->doc .= '</td>';
             }
 

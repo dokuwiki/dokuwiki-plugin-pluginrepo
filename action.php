@@ -35,8 +35,10 @@ class action_plugin_pluginrepo extends ActionPlugin
         global $ID;
 
         $data = $event->data;
-        $haspluginentry = preg_match('/----+ *plugin *-+/', $data[0][1]);     // addSpecialPattern: ----+ *plugin *-+\n.*?\n----+
-        $hastemplateentry = preg_match('/----+ *template *-+/', $data[0][1]); // addSpecialPattern: ----+ *template *-+\n.*?\n----+
+        // addSpecialPattern: ----+ *plugin *-+\n.*?\n----+
+        $haspluginentry = preg_match('/----+ *plugin *-+/', $data[0][1]);
+        // addSpecialPattern: ----+ *template *-+\n.*?\n----+
+        $hastemplateentry = preg_match('/----+ *template *-+/', $data[0][1]);
         if ($haspluginentry || $hastemplateentry) {
             return; // plugin seems still to be there
         }

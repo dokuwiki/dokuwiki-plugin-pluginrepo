@@ -107,13 +107,13 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
         switch ($format) {
             case 'xhtml':
                 /** @var Doku_Renderer_xhtml $renderer */
-                $this->_showData($data, $id, $renderer);
+                $this->showData($data, $id, $renderer);
                 return true;
             case 'metadata':
                 /** @var Doku_Renderer_metadata $renderer */
                 // only save if in first level namespace to ignore translated namespaces, and only plugins or templates
                 if (substr_count($ID, ':') == 1 && (curNS($ID) == 'plugin' || curNS($ID) == 'template')) {
-                    $this->_saveData($data, $id, $renderer->meta['title']);
+                    $this->saveData($data, $id, $renderer->meta['title']);
                 }
                 return true;
             default:
@@ -128,7 +128,7 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
      * @param string              $id   plugin/template id
      * @param Doku_Renderer_xhtml $R
      */
-    protected function _showData($data, $id, $R)
+    protected function showData($data, $id, $R)
     {
         $rel = $this->hlp->getPluginRelations($id);
         $type = $this->hlp->parsetype($data['type']);
@@ -149,23 +149,26 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
         $R->doc .= "<div class=\"pluginrepo_entry$obsClass\">";
 
         $R->doc .= '<div class="usageInfo">';
-        $uptodate = $this->_showCompatibility($R, $data);
-        $this->_showActionLinks($R, $data);
+        $uptodate = $this->showCompatibility($R, $data);
+        $this->showActionLinks($R, $data);
         $R->doc .= '</div>';
 
-        $this->_showMainInfo($R, $data, $extensionType);
-        $this->_showMetaInfo($R, $data, $type, $rel);
+        $this->showMainInfo($R, $data, $extensionType);
+        $this->showMetaInfo($R, $data, $type, $rel);
 
         $isOld = ($age >= 2) && !$uptodate && !$isBundled;
 
-        if ($rel['similar'] || $data['tags'] || $data['securitywarning'] || $data['securityissue'] || $hasUnderscoreIssue || $isOld || $isObsoleted) {
+        if (
+            $rel['similar'] || $data['tags'] || $data['securitywarning'] || $data['securityissue']
+            || $hasUnderscoreIssue || $isOld || $isObsoleted
+        ) {
             $R->doc .= '<div class="moreInfo">';
-            $this->_showWarnings($R, $data, $hasUnderscoreIssue, $isOld, $isObsoleted, $isBundled);
-            $this->_showTaxonomy($R, $data, $rel);
+            $this->showWarnings($R, $data, $hasUnderscoreIssue, $isOld, $isObsoleted, $isBundled);
+            $this->showTaxonomy($R, $data, $rel);
             $R->doc .= '</div>';
         }
 
-        $this->_showAuthorInfo($R, $data, $rel);
+        $this->showAuthorInfo($R, $data, $rel);
 
         $R->doc .= '</div>'; // pluginrepo_entry
     }
@@ -175,7 +178,7 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
      * @param array               $data instructions from handle()
      * @param string              $extensionType
      */
-    protected function _showMainInfo($R, $data, $extensionType)
+    protected function showMainInfo($R, $data, $extensionType)
     {
         global $ID;
 
@@ -188,7 +191,8 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
         // icon and description
         $extensionIcon = '<a class="media" href="' . wl($extensionType . 's') . '">' .
             '<img alt="' . $extensionType . '" class="medialeft" src="' .
-            DOKU_BASE . 'lib/plugins/pluginrepo/images/dwplugin.png" width="60" height="60" /></a> ';
+            DOKU_BASE . 'lib/plugins/pluginrepo/images/dwplugin.png" width="60" height="60" />'
+            . '</a> ';
         $R->doc .= '<p class="description">' . $extensionIcon . hsc($data['description']) . '</p>';
 
         // screenshot
@@ -208,7 +212,7 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
      * @param int                 $type
      * @param array               $rel relations with other extensions
      */
-    protected function _showMetaInfo($R, $data, $type, $rel)
+    protected function showMetaInfo($R, $data, $type, $rel)
     {
         global $ID;
         $target = getNS($ID);
@@ -233,7 +237,9 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
         // repository
         if ($data['sourcerepo']) {
             $R->doc .= '<dt>' . $this->getLang('sourcerepo') . '</dt>';
-            $R->doc .= '<dd><a class="urlextern" href="' . hsc($data['sourcerepo']) . '">' . $this->getLang('source') . '</a></dd>';
+            $R->doc .= '<dd>'
+                . '<a class="urlextern" href="' . hsc($data['sourcerepo']) . '">' . $this->getLang('source') . '</a>'
+                . '</dd>';
         }
 
         // conflicts
@@ -259,7 +265,7 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
      * @param array $data instructions from handle()
      * @return bool
      */
-    protected function _showCompatibility($R, $data)
+    protected function showCompatibility($R, $data)
     {
         $R->doc .= '<div class="compatibility">';
         $R->doc .= '<p class="label">' . $this->hlp->renderCompatibilityHelp() . '</p>';
@@ -321,7 +327,7 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
      * @param Doku_Renderer_xhtml $R
      * @param array               $data instructions from handle()
      */
-    protected function _showActionLinks($R, $data)
+    protected function showActionLinks($R, $data)
     {
         if ($data['downloadurl'] || $data['bugtracker'] || $data['donationurl']) {
             $R->doc .= '<ul class="actions">';
@@ -349,7 +355,7 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
      * @param bool $isObsoleted
      * @param bool $isBundled
      */
-    protected function _showWarnings($R, $data, $hasUnderscoreIssue, $isOld, $isObsoleted, $isBundled)
+    protected function showWarnings($R, $data, $hasUnderscoreIssue, $isOld, $isObsoleted, $isBundled)
     {
         global $ID;
 
@@ -410,7 +416,7 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
      * @param array               $data instructions from handle()
      * @param array               $rel
      */
-    protected function _showTaxonomy($R, $data, $rel)
+    protected function showTaxonomy($R, $data, $rel)
     {
         global $ID;
         $target = getNS($ID);
@@ -443,7 +449,7 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
      * @param array               $data instructions from handle()
      * @param array               $rel
      */
-    protected function _showAuthorInfo($R, $data, $rel)
+    protected function showAuthorInfo($R, $data, $rel)
     {
         $R->doc .= '<div class="authorInfo">';
 
@@ -481,7 +487,7 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
      * @param string $id   plugin/template id
      * @param string $name page title
      */
-    protected function _saveData($data, $id, $name)
+    protected function saveData($data, $id, $name)
     {
         $db = $this->hlp->_getPluginsDB();
         if (!$db) {
@@ -538,40 +544,40 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
             $duplicate = '';
         }
 
-        $stmt = $db->prepare($insert . ' INTO plugins
-                               (plugin, name, description,
-                                author, email,
-                                compatible, bestcompatible, lastupdate, securityissue, securitywarning,
-                                downloadurl, bugtracker, sourcerepo, donationurl,
-                                screenshot, tags, type)
-                              VALUES
-                               (:plugin, :name, :description,
-                                :author, LOWER(:email),
-                                :compatible, :bestcompatible, :lastupdate, :securityissue, :securitywarning,
-                                :downloadurl, :bugtracker, :sourcerepo, :donationurl,
-                                :screenshot, :tags, :type)
-                              ' . $duplicate);
-        $stmt->execute(
-            [
-                ':plugin' => $id,
-                ':name' => $name,
-                ':description' => $data['description'],
-                ':author' => $data['author'],
-                ':email' => $data['email'],
-                ':compatible' => $data['compatible'],
-                ':bestcompatible' => $compatible,
-                ':lastupdate' => $data['lastupdate'],
-                ':securityissue' => $data['securityissue'],
-                ':securitywarning' => $data['securitywarning'],
-                ':downloadurl' => $data['downloadurl'],
-                ':bugtracker' => $data['bugtracker'],
-                ':sourcerepo' => $data['sourcerepo'],
-                ':donationurl' => $data['donationurl'],
-                ':screenshot' => $data['screenshot_img'],
-                ':tags' => $data['tags'],
-                ':type' => $type
-            ]
+        $stmt = $db->prepare(
+            $insert . ' INTO plugins
+                (plugin, name, description,
+                author, email,
+                compatible, bestcompatible, lastupdate, securityissue, securitywarning,
+                downloadurl, bugtracker, sourcerepo, donationurl,
+                screenshot, tags, type)
+            VALUES
+                (:plugin, :name, :description,
+                :author, LOWER(:email),
+                :compatible, :bestcompatible, :lastupdate, :securityissue, :securitywarning,
+                :downloadurl, :bugtracker, :sourcerepo, :donationurl,
+                :screenshot, :tags, :type)
+            ' . $duplicate
         );
+        $stmt->execute([
+            ':plugin' => $id,
+            ':name' => $name,
+            ':description' => $data['description'],
+            ':author' => $data['author'],
+            ':email' => $data['email'],
+            ':compatible' => $data['compatible'],
+            ':bestcompatible' => $compatible,
+            ':lastupdate' => $data['lastupdate'],
+            ':securityissue' => $data['securityissue'],
+            ':securitywarning' => $data['securitywarning'],
+            ':downloadurl' => $data['downloadurl'],
+            ':bugtracker' => $data['bugtracker'],
+            ':sourcerepo' => $data['sourcerepo'],
+            ':donationurl' => $data['donationurl'],
+            ':screenshot' => $data['screenshot_img'],
+            ':tags' => $data['tags'],
+            ':type' => $type
+        ]);
 
         if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {
             $insert = 'INSERT IGNORE';

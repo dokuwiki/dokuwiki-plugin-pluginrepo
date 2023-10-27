@@ -87,11 +87,11 @@ class syntax_plugin_pluginrepo_news extends SyntaxPlugin
      * @param Doku_Renderer   $renderer        the current renderer object
      * @param array           $data     data created by handler() used entries:
      *          headline: headline of new block
-     *          link:     link shown at the bottom of the news block
+     *          link: link shown at the bottom of the news block
      *          linktext: text for the link
-     *          style:    'sameauthor' shows extensions of the same author (only on extension page), otherwise random picked
+     *          style: 'sameauthor' shows extensions of the same author (only on extension page), otherwise random picked
      *        ..more see functions below
-     * @return  boolean                 rendered correctly? (however, returned value is not used at the moment)
+     * @return  boolean rendered correctly? (however, returned value is not used at the moment)
      */
     public function render($format, Doku_Renderer $renderer, $data)
     {
@@ -162,6 +162,7 @@ class syntax_plugin_pluginrepo_news extends SyntaxPlugin
      *         screenshot: if 'yes' a screenshot is shown
      *      and used by the filtering:
      *
+     * @throws Exception
      */
     public function showDefault($R, $data)
     {
