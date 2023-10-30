@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Creates output in different format of the usage statistics of DokuWiki
  *
@@ -27,23 +28,25 @@
  *  - d:     (optional) when no start date set, shows the submits of last d days
  *
  */
-if(!defined('DOKU_INC')) define('DOKU_INC', dirname(__FILE__) . '/../../../');
-require_once(DOKU_INC . 'inc/init.php');
 
+if (!defined('DOKU_INC')) {
+    define('DOKU_INC', __DIR__ . '/../../../');
+}
+require_once(DOKU_INC . 'inc/init.php');
 require_once(DOKU_PLUGIN . 'pluginrepo/helper/repository.php');
 
 //close session
 session_write_close();
 
 $key = $INPUT->str('key'); //e.g. page_size, media_size, webserver, php_version, etc
-if(!$key) {
+if (!$key) {
     echo 'no key given';
     return;
 }
 
 /** @var helper_plugin_pluginrepo_popularity $popularity */
 $popularity = plugin_load('helper', 'pluginrepo_popularity');
-if(!$popularity) {
+if (!$popularity) {
     echo 'no popularity helper available';
     return;
 }
@@ -58,12 +61,12 @@ $daysago   = $INPUT->int('d');
 $default = ($output == 'line') ? 'val' : 'cnt';
 $orderby   = $INPUT->str('o', $default, true);
 
-$default = ($output == 'line') ? false : true;
+$default = $output != 'line';
 $usepercentage = $INPUT->bool('p', $default);
 
 //retrieve data
 $counts = $popularity->getCounts($key, $orderby, $startdate, $enddate, $daysago);
-if($usepercentage) {
+if ($usepercentage) {
     $MAX = $popularity->getNumberOfSubmittingWikis($startdate, $enddate, $daysago);
 } else {
     $MAX = 0;
@@ -88,9 +91,10 @@ output($counts, $output, $usepercentage, $limit, $w, $h);
  * @param int $w chart image width
  * @param int $h chart image height
  */
-function output($counts, $output, $usepercentage, $limit, $w, $h) {
+function output($counts, $output, $usepercentage, $limit, $w, $h)
+{
 
-    switch($output) {
+    switch ($output) {
         case 'rss':
             xml_rss($counts, $usepercentage, $limit);
             break;
@@ -116,28 +120,29 @@ function output($counts, $output, $usepercentage, $limit, $w, $h) {
  * @param int $w chart image width
  * @param int $h chart image height
  */
-function redirects_googlecharts($counts, $output, $usepercentage, $limit, $w, $h) {
-    $data = array();
-    $label = array();
+function redirects_googlecharts($counts, $output, $usepercentage, $limit, $w, $h)
+{
+    $data = [];
+    $label = [];
     $other = 0;
 
     $cnt = 0;
-    foreach($counts as $count) {
-        if($limit > 0 AND ++$cnt > $limit) {
+    foreach ($counts as $count) {
+        if ($limit > 0 && ++$cnt > $limit) {
             $other += $count['cnt'];
         } else {
             $data[] = formatNumber($count['cnt'], $usepercentage, false);
             $labeltext = $count['val'];
-            if($output == 'pie') {
+            if ($output == 'pie') {
                 $labeltext .= '  ' . formatNumber($count['cnt'], $usepercentage);
             }
             $label[] =  $labeltext;
         }
     }
-    if($other > 0) {
+    if ($other > 0) {
         $data[] = formatNumber($other, $usepercentage, false);
         $labeltext = 'other';
-        if($output == 'pie') {
+        if ($output == 'pie') {
             $labeltext .= '  ' . formatNumber($other, $usepercentage);
         }
         $label[] =  $labeltext;
@@ -146,35 +151,35 @@ function redirects_googlecharts($counts, $output, $usepercentage, $limit, $w, $h
     $label = array_map('rawurlencode', $label);
 
     // Create query
-    if($output == 'pie') {
+    if ($output == 'pie') {
         //pie chart
-        $query = array(
-            'cht' => 'p',                         // Type
-            'chs' => $w . 'x' . $h,               // Size
-            'chco'=> '4d89f9',                    // Serie colors
-            'chf' => 'bg,s,ffffff00',             // 'a,s,ffffff' // Background color  (bg=background, a=transparant, s=solid)
-            'chds'=> $usepercentage ? null : 'a', // automatically scaling, needed for absolute data values
-            'chd' => 't:' . join(',', $data),     // Data
-            'chl' => join('|', $label)            // Data labels
-        );
+        $query = [
+            'cht' => 'p',             // Type
+            'chs' => $w . 'x' . $h,   // Size
+            'chco' => '4d89f9',       // Serie colors
+            'chf' => 'bg,s,ffffff00', // 'a,s,ffffff' // Background color  (bg=background, a=transparant, s=solid)
+            'chds' => $usepercentage ? null : 'a',        // automatically scaling, needed for absolute data values
+            'chd' => 't:' . implode(',', $data), // Data
+            'chl' => implode('|', $label),       // Data labels
+        ];
     } else {
         //line chart
-        $query = array(
-            'cht' => 'lc',                        // Type
-            'chs' => $w . 'x' . $h,               // Size
-            'chco'=> '4d89f9',                    // Serie colors
-            'chf' => 'bg,s,ffffff00',             // 'a,s,ffffff' // Background color  (bg=background, a=transparant, s=solid)
-            'chxt' =>  true ? 'x,y' : null,       // X & Y axis labels
-            'chds'=> $usepercentage ? null : 'a', // scaling: automatically
-            'chd' => 't:' . join(',', $data),     // Data
-            'chl' => join('|', $label)            // Data labels
-        );
+        $query = [
+            'cht' => 'lc',            // Type
+            'chs' => $w . 'x' . $h,   // Size
+            'chco' => '4d89f9',       // Serie colors
+            'chf' => 'bg,s,ffffff00', // 'a,s,ffffff' // Background color  (bg=background, a=transparant, s=solid)
+            'chxt' =>  true ? 'x,y' : null,               // X & Y axis labels
+            'chds' => $usepercentage ? null : 'a',        // scaling: automatically
+            'chd' => 't:' . implode(',', $data), // Data
+            'chl' => implode('|', $label),       // Data labels
+        ];
     }
 
 
-    $url = 'http://chart.apis.google.com/chart?' . buildUnencodedURLparams($query);
+    $url = 'https://chart.apis.google.com/chart?' . buildUnencodedURLparams($query);
 
-    header('Location: '.$url);
+    header('Location: ' . $url);
 }
 
 /**
@@ -185,13 +190,16 @@ function redirects_googlecharts($counts, $output, $usepercentage, $limit, $w, $h
  * @param string $sep
  * @return string
  */
-function buildUnencodedURLparams($params, $sep='&') {
+function buildUnencodedURLparams($params, $sep = '&')
+{
     $url = '';
     $amp = false;
-    foreach($params as $key => $val) {
-        if($amp) $url .= $sep;
+    foreach ($params as $key => $val) {
+        if ($amp) {
+            $url .= $sep;
+        }
 
-        $url .= rawurlencode($key).'=';
+        $url .= rawurlencode($key) . '=';
         $url .= (string) $val;
         $amp = true;
     }
@@ -206,12 +214,13 @@ function buildUnencodedURLparams($params, $sep='&') {
  * @param bool $withpercentagechar add % behind number?
  * @return string
  */
-function formatNumber($value, $calculatepercentage = true, $withpercentagechar = true) {
+function formatNumber($value, $calculatepercentage = true, $withpercentagechar = true)
+{
     global $MAX;
 
-    if($calculatepercentage && $MAX) {
+    if ($calculatepercentage && $MAX) {
         $char = $withpercentagechar ? '%%' : '';
-        return sprintf('%.1f' . $char , $value * 100 / $MAX);
+        return sprintf('%.1f' . $char, $value * 100 / $MAX);
     } else {
         return $value;
     }
@@ -224,14 +233,15 @@ function formatNumber($value, $calculatepercentage = true, $withpercentagechar =
  * @param int $limit number of values shown, rest as summarized as 'other'
  * @param bool $usepercentage
  */
-function html_table($counts, $usepercentage, $limit) {
+function html_table($counts, $usepercentage, $limit)
+{
 
     $cnt = 0;
     $other = 0;
 
     echo '<table>';
-    foreach($counts as $count) {
-        if($limit > 0 AND ++$cnt > $limit) {
+    foreach ($counts as $count) {
+        if ($limit > 0 && ++$cnt > $limit) {
             $other += $count['cnt'];
         } else {
             echo '<tr>';
@@ -240,7 +250,7 @@ function html_table($counts, $usepercentage, $limit) {
             echo '</tr>';
         }
     }
-    if($other > 0) {
+    if ($other > 0) {
         echo '<tr>';
         echo '    <td>Other</td>';
         echo '    <td>' . formatNumber($other, $usepercentage) . '</td>';
@@ -256,28 +266,31 @@ function html_table($counts, $usepercentage, $limit) {
  * @param int $limit number of values shown, rest as summarized as 'other'
  * @param bool $usepercentage
  */
-function xml_rss($counts, $usepercentage, $limit) {
+function xml_rss($counts, $usepercentage, $limit)
+{
 
     $cnt = 0;
     $other = 0;
 
     header('Content-Type: text/xml; charset=utf-8');
-    echo '<?xml version="1.0" encoding="utf-8"?>' . NL;
-    echo '<rss version="0.91">' . NL;
-    echo '<channel>' . NL;
-    foreach($counts as $count) {
-        if($limit > 0 AND ++$cnt > $limit) {
+    echo '<?xml version="1.0" encoding="utf-8"?>';
+    echo '<rss version="0.91">';
+    echo '<channel>';
+    foreach ($counts as $count) {
+        if ($limit > 0 && ++$cnt > $limit) {
             $other += $count['cnt'];
         } else {
-            echo '  <item>' . NL;
-            echo '      <title>' . formatNumber($count['cnt'], $usepercentage) . ' ' . htmlspecialchars($count['val']) . '</title>' . NL;
-            echo '  </item>' . NL;
+            echo '<item>';
+            echo '    <title>';
+            echo formatNumber($count['cnt'], $usepercentage) . ' ' . htmlspecialchars($count['val']);
+            echo '    </title>';
+            echo '</item>';
         }
     }
-    if($other > 0) {
-        echo '  <item>' . NL;
-        echo '      <title>' . formatNumber($other, $usepercentage) . ' other</title>' . NL;
-        echo '  </item>' . NL;
+    if ($other > 0) {
+        echo '<item>';
+        echo '    <title>' . formatNumber($other, $usepercentage) . ' other</title>';
+        echo '</item>';
     }
     echo '</channel>';
     echo '</rss>';

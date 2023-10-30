@@ -1,21 +1,26 @@
 <?php
+
+use dokuwiki\Extension\ActionPlugin;
+use dokuwiki\Extension\EventHandler;
+use dokuwiki\Extension\Event;
+
 /**
  * Removes entries from repository database when removed from page
  *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  */
-
 /**
  * Register actions for event hooks
  */
-class action_plugin_pluginrepo extends DokuWiki_Action_Plugin {
-
+class action_plugin_pluginrepo extends ActionPlugin
+{
     /**
      * Registers a callback function for a given event
      *
      * @param Doku_Event_Handler $controller
      */
-    public function register(Doku_Event_Handler $controller) {
+    public function register(EventHandler $controller)
+    {
         $controller->register_hook('IO_WIKIPAGE_WRITE', 'BEFORE', $this, '_cleanOldEntry');
     }
 
@@ -25,21 +30,26 @@ class action_plugin_pluginrepo extends DokuWiki_Action_Plugin {
      *
      * @param Doku_Event $event  event object
      */
-    public function _cleanOldEntry(Doku_Event $event) {
+    public function _cleanOldEntry(Event $event)
+    {
         global $ID;
 
         $data = $event->data;
-        $haspluginentry = preg_match('/----+ *plugin *-+/', $data[0][1]);     // addSpecialPattern: ----+ *plugin *-+\n.*?\n----+
-        $hastemplateentry = preg_match('/----+ *template *-+/', $data[0][1]); // addSpecialPattern: ----+ *template *-+\n.*?\n----+
-        if($haspluginentry || $hastemplateentry) {
+        // addSpecialPattern: ----+ *plugin *-+\n.*?\n----+
+        $haspluginentry = preg_match('/----+ *plugin *-+/', $data[0][1]);
+        // addSpecialPattern: ----+ *template *-+\n.*?\n----+
+        $hastemplateentry = preg_match('/----+ *template *-+/', $data[0][1]);
+        if ($haspluginentry || $hastemplateentry) {
             return; // plugin seems still to be there
         }
 
         /** @var helper_plugin_pluginrepo_repository $hlp */
         $hlp = $this->loadHelper('pluginrepo_repository');
-        if(!$hlp) return;
+        if (!$hlp) {
+            return;
+        }
 
-        if(curNS($ID) == 'plugin') {
+        if (curNS($ID) == 'plugin') {
             $id = noNS($ID);
         } else {
             $id = curNS($ID) . ':' . noNS($ID);
@@ -48,4 +58,3 @@ class action_plugin_pluginrepo extends DokuWiki_Action_Plugin {
         $hlp->deletePlugin($id);
     }
 }
-

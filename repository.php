@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DokuWiki plugin/template/popularity data repository API
  *
@@ -11,8 +12,10 @@
 
 use dokuwiki\Cache\Cache;
 
-if(!defined('DOKU_INC')) define('DOKU_INC',dirname(__FILE__).'/../../../');
-require_once(DOKU_INC.'inc/init.php');
+if (!defined('DOKU_INC')) {
+    define('DOKU_INC', __DIR__ . '/../../../');
+}
+require_once(DOKU_INC . 'inc/init.php');
 
 require_once(DOKU_PLUGIN . 'pluginrepo/helper/repository.php');
 
@@ -31,7 +34,7 @@ http_conditionalRequest(time());
 $string = "pluginrepo";
 
 $cache = new Cache($string, '.xml');
-if($cache->useCache(array('age'=>7200))) {
+if ($cache->useCache(['age' => 7200])) {
     $feed = $cache->retrieveCache();
 } else {
     // create new feed
@@ -41,7 +44,7 @@ if($cache->useCache(array('age'=>7200))) {
     $cache->storeCache($feed);
 }
 // finally deliver
-print $feed;
+echo $feed;
 
 // ---------------------------------------------------------------- //
 
@@ -51,48 +54,49 @@ print $feed;
  *
  * @return string
  */
-function getRepository() {
+function getRepository()
+{
     $hlp = new helper_plugin_pluginrepo_repository();
     $plugins = $hlp->getAllExtensions();
 
     $feed = '<?xml version="1.0" encoding="utf-8"?>';
     $feed .= '<repository>';
-    foreach($plugins as $plugin) {
+    foreach ($plugins as $plugin) {
         $id = hsc($plugin['plugin']);
         $feed .= '<plugin>';
-        $feed .= '<id>'.$id.'</id>';
-        $feed .= '<dokulink>'.($plugin['type'] == 32 ? $id : 'plugin:'.$id).'</dokulink>';
-        $feed .= '<popularity>'.$plugin['popularity'].'</popularity>';
-        $feed .= '<name>'.hsc($plugin['name']).'</name>';
-        $feed .= '<description>'.hsc($plugin['description']).'</description>';
-        $feed .= '<author>'.hsc($plugin['author']).'</author>'; // mail not exposed as an anti-spam measure
+        $feed .= '<id>' . $id . '</id>';
+        $feed .= '<dokulink>' . ($plugin['type'] == 32 ? $id : 'plugin:' . $id) . '</dokulink>';
+        $feed .= '<popularity>' . $plugin['popularity'] . '</popularity>';
+        $feed .= '<name>' . hsc($plugin['name']) . '</name>';
+        $feed .= '<description>' . hsc($plugin['description']) . '</description>';
+        $feed .= '<author>' . hsc($plugin['author']) . '</author>'; // mail not exposed as an anti-spam measure
         $feed .= '<type>';
         if ($plugin['type']) {
-            $types = array();
-            foreach($hlp->types as $k => $v){
-                if($plugin['type'] & $k){
+            $types = [];
+            foreach ($hlp->types as $k => $v) {
+                if ($plugin['type'] & $k) {
                     $types[] = $v;
                 }
             }
             sort($types);
-            $feed .= join(', ', $types);
+            $feed .= implode(', ', $types);
         }
         $feed .= '</type>';
 
-        $feed .= '<lastupdate>'.hsc(str_replace("'",'',$plugin['lastupdate'])).'</lastupdate>';
-        if (strpos($plugin['compatible'],'devel') !== false) {
+        $feed .= '<lastupdate>' . hsc(str_replace("'", '', $plugin['lastupdate'])) . '</lastupdate>';
+        if (strpos($plugin['compatible'], 'devel') !== false) {
             $feed .= '<develonly>true</develonly>';
         }
         $feed .= '<compatible>';
         $compatibility = $hlp->cleanCompat($plugin['compatible']);
-        foreach ($compatibility as $date => $info) {
-            $feed .= '<release>'.$date.'</release>';
+        foreach (array_keys($compatibility) as $date) {
+            $feed .= '<release>' . $date . '</release>';
         }
         $feed .= '</compatible>';
-        $feed .= '<securityissue>'.hsc($plugin['securityissue']).'</securityissue>';
+        $feed .= '<securityissue>' . hsc($plugin['securityissue']) . '</securityissue>';
         $feed .= '<securitywarning>';
-        if (in_array($plugin['securitywarning'],$hlp->securitywarning)) {
-            $feed .= $hlp->getLang('security_'.$plugin['securitywarning']);
+        if (in_array($plugin['securitywarning'], $hlp->securitywarning)) {
+            $feed .= $hlp->getLang('security_' . $plugin['securitywarning']);
         } else {
             $feed .= hsc($plugin['securitywarning']);
         }
@@ -101,26 +105,26 @@ function getRepository() {
         $feed .= '<tags>';
         $tags = $hlp->parsetags($plugin['tags']);
         foreach ($tags as $link) {
-            $feed .= '<tag>'.hsc($link).'</tag>';
+            $feed .= '<tag>' . hsc($link) . '</tag>';
         }
         $feed .= '</tags>';
 
-        if(empty($plugin['screenshot'])){
+        if (empty($plugin['screenshot'])) {
             $feed .= '<screenshoturl></screenshoturl>';
             $feed .= '<thumbnailurl></thumbnailurl>';
-        }else{
-            if(!preg_match('/^https?:\/\//', $plugin['screenshot'])){
-                $feed .= '<screenshoturl>'.hsc(ml($plugin['screenshot'],array(),true,'&',true)).'</screenshoturl>';
-            }else{
-                $feed .= '<screenshoturl>'.hsc($plugin['screenshot']).'</screenshoturl>';
+        } else {
+            if (!preg_match('/^https?:\/\//', $plugin['screenshot'])) {
+                $feed .= '<screenshoturl>' . hsc(ml($plugin['screenshot'], [], true, '&', true)) . '</screenshoturl>';
+            } else {
+                $feed .= '<screenshoturl>' . hsc($plugin['screenshot']) . '</screenshoturl>';
             }
-            $feed .= '<thumbnailurl>'.hsc(ml($plugin['screenshot'], array('cache'=>'cache', 'w'=>120, 'h'=>70),true,'&',true)).'</thumbnailurl>';
+            $feed .= '<thumbnailurl>' . hsc(ml($plugin['screenshot'], ['cache' => 'cache', 'w' => 120, 'h' => 70], true, '&', true)) . '</thumbnailurl>';
         }
 
-        $feed .= '<downloadurl>'.hsc($plugin['downloadurl']).'</downloadurl>';
-        $feed .= '<sourcerepo>'.hsc($plugin['sourcerepo']).'</sourcerepo>';
-        $feed .= '<bugtracker>'.hsc($plugin['bugtracker']).'</bugtracker>';
-        $feed .= '<donationurl>'.hsc($plugin['donationurl']).'</donationurl>';
+        $feed .= '<downloadurl>' . hsc($plugin['downloadurl']) . '</downloadurl>';
+        $feed .= '<sourcerepo>' . hsc($plugin['sourcerepo']) . '</sourcerepo>';
+        $feed .= '<bugtracker>' . hsc($plugin['bugtracker']) . '</bugtracker>';
+        $feed .= '<donationurl>' . hsc($plugin['donationurl']) . '</donationurl>';
 
         $rel = $hlp->getPluginRelations($id);
         $feed .= '<relations>';
@@ -128,7 +132,7 @@ function getRepository() {
         $feed .= '<similar>';
         if ($rel['similar']) {
             foreach ($rel['similar'] as $link) {
-                $feed .= '<id>'.hsc($link).'</id>';
+                $feed .= '<id>' . hsc($link) . '</id>';
             }
         }
         $feed .= '</similar>';
@@ -136,7 +140,7 @@ function getRepository() {
         $feed .= '<conflicts>';
         if ($rel['conflicts']) {
             foreach ($rel['conflicts'] as $link) {
-                $feed .= '<id>'.hsc($link).'</id>';
+                $feed .= '<id>' . hsc($link) . '</id>';
             }
         }
         $feed .= '</conflicts>';
@@ -144,7 +148,7 @@ function getRepository() {
         $feed .= '<depends>';
         if ($rel['depends']) {
             foreach ($rel['depends'] as $link) {
-                $feed .= '<id>'.hsc($link).'</id>';
+                $feed .= '<id>' . hsc($link) . '</id>';
             }
         }
         $feed .= '</depends>';
@@ -156,4 +160,3 @@ function getRepository() {
     $feed .= '</repository>';
     return $feed;
 }
-

@@ -1,4 +1,7 @@
 <?php
+
+use dokuwiki\Extension\Plugin;
+
 /**
  * DokuWiki plugin/template/popularity data repository API
  *
@@ -6,12 +9,11 @@
  * @author     Andreas Gohr <andi@splitbrain.org>
  * @author     Hakan Sandell <hakan.sandell@home.se>
  */
-
-class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
-
+class helper_plugin_pluginrepo_repository extends Plugin
+{
     public $dokuReleases; // array of DokuWiki releases (name & date)
 
-    public $types = array(
+    public $types = [
         1   => 'Syntax',
         2   => 'Admin',
         4   => 'Action',
@@ -22,16 +24,17 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
         128 => 'Auth',
         256 => 'CLI',
         512 => 'CSS/JS-only'
-    );
+    ];
 
     public $obsoleteTag = '!obsolete';
     public $bundled;
-    public $securitywarning = array('informationleak', 'allowsscript', 'requirespatch', 'partlyhidden');
+    public $securitywarning = ['informationleak', 'allowsscript', 'requirespatch', 'partlyhidden'];
 
     /**
      * helper_plugin_pluginrepo_repository constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->bundled = explode(',', $this->getConf('bundled'));
         $this->bundled = array_map('trim', $this->bundled);
         $this->bundled = array_filter($this->bundled);
@@ -49,34 +52,41 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      * @param string $match data block
      * @return array
      */
-    public function parseData($match) {
+    public function parseData($match)
+    {
         // get lines
         $lines = explode("\n", $match);
         array_pop($lines);
         array_shift($lines);
 
         // parse info
-        $data = array();
-        foreach($lines as $line) {
+        $data = [];
+        foreach ($lines as $line) {
             // ignore comments and bullet syntax
             $line = preg_replace('/(?<![&\\\\])#.*$/', '', $line);
             $line = preg_replace('/^  \* /', '', $line);
             $line = str_replace('\\#', '#', $line);
             $line = trim($line);
-            if(empty($line)) continue;
-            list($key, $value) = preg_split('/\s*:\s*/', $line, 2);
+            if (empty($line)) {
+                continue;
+            }
+            [$key, $value] = preg_split('/\s*:\s*/', $line, 2);
             $key = strtolower($key);
-            if($data[$key]) {
-                $data[$key] .= ' '.trim($value);
+            if ($data[$key]) {
+                $data[$key] .= ' ' . trim($value);
             } else {
                 $data[$key] = trim($value);
             }
         }
         // sqlite plugin compability (formerly used for templates)
-        if($data['lastupdate_dt']) $data['lastupdate'] = $data['lastupdate_dt'];
-        if($data['template_tags']) $data['tags'] = $data['template_tags'];
-        if($data['author_mail']) {
-            list($mail, $name) = preg_split('/\s+/', $data['author_mail'], 2);
+        if ($data['lastupdate_dt']) {
+            $data['lastupdate'] = $data['lastupdate_dt'];
+        }
+        if ($data['template_tags']) {
+            $data['tags'] = $data['template_tags'];
+        }
+        if ($data['author_mail']) {
+            [$mail, $name] = preg_split('/\s+/', $data['author_mail'], 2);
             $data['author'] = $name;
             $data['email']  = $mail;
         }
@@ -88,25 +98,26 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      *
      * @param array $data (reference) data from entry::handle
      */
-    public function harmonizeExtensionIDs(&$data) {
-        foreach(array('similar', 'conflicts', 'depends') as $key) {
+    public function harmonizeExtensionIDs(&$data)
+    {
+        foreach (['similar', 'conflicts', 'depends'] as $key) {
             $refs = explode(',', $data[$key]);
             $refs = array_map('trim', $refs);
             $refs = array_filter($refs);
 
-            $updatedrefs = array();
-            foreach($refs as $ref) {
+            $updatedrefs = [];
+            foreach ($refs as $ref) {
                 $ns = curNS($ref);
-                if($ns === false) {
+                if ($ns === false) {
                     $ns = '';
                 }
                 $id = noNS($ref);
-                if($ns == 'template' OR ($data['type'] == 'template' AND $ns === '')) {
+                if ($ns == 'template' || $data['type'] == 'template' && $ns === '') {
                     $ns = 'template:';
-                } elseif($ns == 'plugin' OR $ns === '') {
+                } elseif ($ns == 'plugin' || $ns === '') {
                     $ns = '';
                 } else {
-                    $ns = $ns . ':';
+                    $ns .= ':';
                 }
                 $updatedrefs[] = $ns . $id;
             }
@@ -124,19 +135,19 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      * Example: 'mysql:dbname=testdb;host=127.0.0.1'
      *      or  'sqlite2:C:\DokuWikiStickNew\dokuwiki\repo.sqlite'
      */
-    public function _getPluginsDB() {
+    public function _getPluginsDB()
+    {
         global $conf;
         /** @var PDO $db */
         try {
             $db = new PDO($this->getConf('db_name'), $this->getConf('db_user'), $this->getConf('db_pass'));
             $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            if($db->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {
+            if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {
                 // Running on mysql; do something mysql specific here
             }
-
-        } catch(PDOException $e) {
-            msg("Repository plugin: failed to connect to database (".$e->getMessage().")", -1);
+        } catch (PDOException $e) {
+            msg("Repository plugin: failed to connect to database (" . $e->getMessage() . ")", -1);
             return null;
         }
 
@@ -144,11 +155,11 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
         try {
             $stmt = $db->prepare('SELECT 1 FROM plugin_depends LIMIT 1');
             $stmt->execute();
-        } catch(PDOException $e) {
+        } catch (PDOException $e) {
             $this->_initPluginDB($db);
         }
 
-        if($conf['allowdebug']) {
+        if ($conf['allowdebug']) {
             $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
         } else {
             $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
@@ -169,21 +180,24 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      *   'includetemplates' (yes/no) default/unset is 'no' and template data will not be returned
      * @return array data per plugin
      */
-    public function getPlugins($filter = null) {
+    public function getPlugins($filter = null)
+    {
         $db = $this->_getPluginsDB();
-        if(!$db) return array();
+        if (!$db) {
+            return [];
+        }
 
         // return named plugins OR with certain tag/type
         $requestedplugins = $filter['plugins'];
         $type    = 0;
         $tag     = '';
         $where_requested = '';
-        $requestedINvalues = array();
-        if($requestedplugins) {
-            if(!is_array($requestedplugins)) {
-                $requestedplugins = array($requestedplugins);
+        $requestedINvalues = [];
+        if ($requestedplugins) {
+            if (!is_array($requestedplugins)) {
+                $requestedplugins = [$requestedplugins];
             }
-            list($requestedINsql, $requestedINvalues) = $this->prepareINstmt('requested', $requestedplugins);
+            [$requestedINsql, $requestedINvalues] = $this->prepareINstmt('requested', $requestedplugins);
 
             $where_requested = " AND A.plugin " . $requestedINsql;
         } else {
@@ -191,26 +205,26 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
             $tag  = strtolower(trim($filter['plugintag']));
         }
 
-        if($filter['showall'] == 'yes') {
+        if ($filter['showall'] == 'yes') {
             $where_filtered = "1";
-            $values = array();
+            $values = [];
         } else {
-            list($bundledINsql, $bundledINvalues) = $this->prepareINstmt('bundled', $this->bundled);
+            [$bundledINsql, $bundledINvalues] = $this->prepareINstmt('bundled', $this->bundled);
 
             $where_filtered = "'" . $this->obsoleteTag . "' NOT IN(SELECT tag FROM plugin_tags WHERE plugin_tags.plugin = A.plugin)"
                 . " AND A.securityissue = ''"
                 . " AND (A.downloadurl <> '' OR A.plugin " . $bundledINsql . ")";
             $values = $bundledINvalues;
         }
-        if($filter['includetemplates'] != 'yes') {
+        if ($filter['includetemplates'] != 'yes') {
             $where_filtered .= " AND A.type <> 32"; // templates are only type=32, has no other type.
         }
 
         $sort    = strtolower(trim($filter['pluginsort']));
         $sortsql = $this->_getPluginsSortSql($sort);
 
-        if($tag) {
-            if($type < 1 or $type > 1023) {
+        if ($tag) {
+            if ($type < 1 || $type > 1023) {
                 $type = 1023;
             }
             $sql = "      SELECT A.*, SUBSTR(A.plugin,10) as simplename
@@ -226,12 +240,10 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
                                            AND :plugin_tag IN(SELECT tag FROM plugin_tags WHERE plugin_tags.plugin = A.plugin)
                                 $sortsql";
             $values = array_merge(
-                array(':plugin_tag' => $tag,
-                      ':plugin_type' => $type),
+                [':plugin_tag' => $tag, ':plugin_type' => $type],
                 $values
             );
-
-        } elseif($type > 0 and $type <= 1023) {
+        } elseif ($type > 0 && $type <= 1023) {
             $sql = "      SELECT A.*, SUBSTR(A.plugin,10) as simplename
                                           FROM plugins A
                                          WHERE A.type = 32 AND $where_filtered
@@ -243,10 +255,9 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
                                            AND (A.type & :plugin_type)
                                  $sortsql";
             $values = array_merge(
-                array(':plugin_type' => $type),
+                [':plugin_type' => $type],
                 $values
             );
-
         } else {
             $sql = "      SELECT A.*, SUBSTR(A.plugin,10) as simplename
                                           FROM plugins A
@@ -279,18 +290,16 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      *      sql as string
      *      params as associated array
      */
-    protected function prepareINstmt($paramlabel, $values) {
+    protected function prepareINstmt($paramlabel, $values)
+    {
         $count = 0;
-        $params  = array();
-        foreach($values as $value) {
+        $params  = [];
+        foreach ($values as $value) {
             $params[':' . $paramlabel . $count++] = $value;
         }
 
-        $sql = 'IN ('.join(',', array_keys($params)).')';
-        return array(
-            $sql,
-            $params
-        );
+        $sql = 'IN (' . implode(',', array_keys($params)) . ')';
+        return [$sql, $params];
     }
 
     /**
@@ -298,9 +307,12 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      *
      * @return array extensions same as above, but without 'simplename' column
      */
-    public function getAllExtensions() {
+    public function getAllExtensions()
+    {
         $db = $this->_getPluginsDB();
-        if(!$db) return array();
+        if (!$db) {
+            return [];
+        }
 
         $sql = "SELECT A.*
                   FROM plugins A
@@ -328,10 +340,10 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      * @throws Exception
      */
     public function getFilteredPlugins(
-        $names = array(),
-        $emailids = array(),
+        $names = [],
+        $emailids = [],
         $type = 0,
-        $tags = array(),
+        $tags = [],
         $order = '',
         $limit = 0,
         $fulltext = ''
@@ -341,16 +353,20 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
         $maxpop = $this->getMaxPopularity();
 
         // default to all extensions
-        if($type == 0) {
-            foreach(array_keys($this->types) as $t) $type += $t;
+        if ($type == 0) {
+            foreach (array_keys($this->types) as $t) $type += $t;
         }
 
         // cleanup $order
         $order = preg_replace('/[^a-z]+/', '', $order);
-        if($order == 'popularity') $order .= ' DESC';
-        if($order == 'lastupdate') $order .= ' DESC';
-        if($order == '') {
-            if($fulltext) {
+        if ($order == 'popularity') {
+            $order .= ' DESC';
+        }
+        if ($order == 'lastupdate') {
+            $order .= ' DESC';
+        }
+        if ($order == '') {
+            if ($fulltext) {
                 $order = 'score DESC';
             } else {
                 $order = 'plugin';
@@ -359,62 +375,60 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
         // limit
         $limit = (int) $limit;
-        if($limit) {
+        if ($limit) {
             $limit = "LIMIT $limit";
+        } elseif ($fulltext) {
+            $limit = 'LIMIT 50';
         } else {
-            if($fulltext) {
-                $limit = 'LIMIT 50';
-            } else {
-                $limit = '';
-            }
+            $limit = '';
         }
 
         // name filter
         $namefilter = '';
-        $nameparams = array();
-        if($names) {
+        $nameparams = [];
+        if ($names) {
             $count = 0;
-            foreach($names as $name) {
-                $nameparams[':name'.$count++] = $name;
+            foreach ($names as $name) {
+                $nameparams[':name' . $count++] = $name;
             }
 
-            $namefilter = 'AND A.plugin IN ('.join(',', array_keys($nameparams)).')';
+            $namefilter = 'AND A.plugin IN (' . implode(',', array_keys($nameparams)) . ')';
         }
 
         // email filter
         $emailfilter = '';
-        $emailparams = array();
-        if($emailids) {
+        $emailparams = [];
+        if ($emailids) {
             $count = 0;
-            foreach($emailids as $email) {
-                $emailparams[':email'.$count++] = $email;
+            foreach ($emailids as $email) {
+                $emailparams[':email' . $count++] = $email;
             }
 
-            $emailfilter = 'AND MD5(LOWER(A.email)) IN ('.join(',', array_keys($emailparams)).')';
+            $emailfilter = 'AND MD5(LOWER(A.email)) IN (' . implode(',', array_keys($emailparams)) . ')';
         }
 
         // tag filter
         $tagfilter = '';
-        $tagparams = array();
-        if($tags) {
+        $tagparams = [];
+        if ($tags) {
             $count = 0;
-            foreach($tags as $tag) {
-                $tagparams[':tag'.$count++] = $tag;
+            foreach ($tags as $tag) {
+                $tagparams[':tag' . $count++] = $tag;
             }
 
-            $tagfilter = 'AND B.tag IN ('.join(',', array_keys($tagparams)).')';
+            $tagfilter = 'AND B.tag IN (' . implode(',', array_keys($tagparams)) . ')';
         }
 
         // fulltext search
         $fulltextwhere  = '';
         $fulltextfilter = '';
-        $fulltextparams = array();
-        if($fulltext) {
+        $fulltextparams = [];
+        if ($fulltext) {
             $fulltextwhere  = 'MATCH (A.plugin, A.name, A.description, A.author, A.tags)
                                  AGAINST (:fulltext WITH QUERY EXPANSION) AS score,';
             $fulltextfilter = 'AND MATCH (A.plugin, A.name, A.description, A.author, A.tags)
                                  AGAINST (:fulltext WITH QUERY EXPANSION)';
-            $fulltextparams = array(':fulltext' => $fulltext);
+            $fulltextparams = [':fulltext' => $fulltext];
         }
 
         $obsoletefilter = "AND '" . $this->obsoleteTag . "' NOT IN(SELECT tag FROM plugin_tags WHERE plugin_tags.plugin = A.plugin)";
@@ -448,10 +462,12 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
                        $limit";
 
         $db = $this->_getPluginsDB();
-        if(!$db) throw new Exception('Cannot connect to database');
+        if (!$db) {
+            throw new Exception('Cannot connect to database');
+        }
 
         $parameters = array_merge(
-            array(':type' => $type, ':maxpop' => $maxpop),
+            [':type' => $type, ':maxpop' => $maxpop],
             $nameparams,
             $tagparams,
             $emailparams,
@@ -460,22 +476,23 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
         $stmt = $db->prepare($sql);
         $stmt->execute($parameters);
+
         $plugins = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         // add and cleanup few more fields
         $cnt = count($plugins);
-        for($i = 0; $i < $cnt; $i++) {
-            if(in_array($plugins[$i]['plugin'], $this->bundled)) {
+        for ($i = 0; $i < $cnt; $i++) {
+            if (in_array($plugins[$i]['plugin'], $this->bundled)) {
                 $plugins[$i]['bundled'] = true;
             } else {
                 $plugins[$i]['bundled'] = false;
             }
-            if(!$plugins[$i]['screenshot']) {
+            if (!$plugins[$i]['screenshot']) {
                 $plugins[$i]['screenshoturl'] = null;
                 $plugins[$i]['thumbnailurl']  = null;
             } else {
                 $plugins[$i]['screenshoturl'] = ml($plugins[$i]['screenshot'], '', true, '&', true);
-                $plugins[$i]['thumbnailurl']  = ml($plugins[$i]['screenshot'], array('w' => 120, 'h' => 70), true, '&', true);
+                $plugins[$i]['thumbnailurl']  = ml($plugins[$i]['screenshot'], ['w' => 120, 'h' => 70], true, '&', true);
             }
             unset($plugins[$i]['screenshot']);
             unset($plugins[$i]['email']); // no spam
@@ -488,7 +505,7 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
             $plugins[$i]['compatible'] = $this->cleanCompat($plugins[$i]['compatible']);
             $plugins[$i]['types']      = $this->listtypes($plugins[$i]['type']);
 
-            $plugins[$i]['securitywarning'] = $this->replaceSecurityWarningShortcut ($plugins[$i]['securitywarning']);
+            $plugins[$i]['securitywarning'] = $this->replaceSecurityWarningShortcut($plugins[$i]['securitywarning']);
 
             ksort($plugins[$i]);
         }
@@ -501,26 +518,27 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      * @param string $sort keyword in format [^]<columnnames|shortcut columnname>
      * @return string
      */
-    private function _getPluginsSortSql($sort) {
+    private function _getPluginsSortSql($sort)
+    {
         $sortsql = '';
-        if($sort[0] == '^') {
+        if ($sort[0] == '^') {
             $sortsql = ' DESC';
             $sort    = substr($sort, 1);
         }
-        if($sort == 'a' || $sort == 'author') {
-            $sortsql = 'ORDER BY author'.$sortsql;
-        } elseif($sort == 'd' || $sort == 'lastupdate') {
-            $sortsql = 'ORDER BY lastupdate'.$sortsql;
-        } elseif($sort == 't' || $sort == 'type') {
-            $sortsql = 'ORDER BY type'.$sortsql.', simplename';
-        } elseif($sort == 'v' || $sort == 'compatibility') {
-            $sortsql = 'ORDER BY bestcompatible'.$sortsql.', simplename';
-        } elseif($sort == 'c' || $sort == 'popularity') {
-            $sortsql = 'ORDER BY popularity'.$sortsql;
-        } elseif($sort == 'p' || $sort == 'plugin') {
-            $sortsql = 'ORDER BY simplename'.$sortsql;
+        if ($sort == 'a' || $sort == 'author') {
+            $sortsql = 'ORDER BY author' . $sortsql;
+        } elseif ($sort == 'd' || $sort == 'lastupdate') {
+            $sortsql = 'ORDER BY lastupdate' . $sortsql;
+        } elseif ($sort == 't' || $sort == 'type') {
+            $sortsql = 'ORDER BY type' . $sortsql . ', simplename';
+        } elseif ($sort == 'v' || $sort == 'compatibility') {
+            $sortsql = 'ORDER BY bestcompatible' . $sortsql . ', simplename';
+        } elseif ($sort == 'c' || $sort == 'popularity') {
+            $sortsql = 'ORDER BY popularity' . $sortsql;
+        } elseif ($sort == 'p' || $sort == 'plugin') {
+            $sortsql = 'ORDER BY simplename' . $sortsql;
         } else {
-            $sortsql = 'ORDER BY bestcompatible DESC, simplename'.$sortsql;
+            $sortsql = 'ORDER BY bestcompatible DESC, simplename' . $sortsql;
         }
         return $sortsql;
     }
@@ -534,47 +552,60 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      *   'needed'     array of plugin names
      *   'sameauthor' array of plugin names
      */
-    public function getPluginRelations($id) {
+    public function getPluginRelations($id)
+    {
         $db = $this->_getPluginsDB();
-        if(!$db) return array();
+        if (!$db) {
+            return [];
+        }
 
         $id   = strtolower($id);
-        $meta = array();
+        $meta = [];
 
         /** @var PDOStatement $stmt */
         $stmt = $db->prepare('SELECT plugin,other FROM plugin_conflicts WHERE plugin = ? OR other = ?');
-        $stmt->execute(array($id, $id));
-        foreach($stmt as $row) {
-            if($row['plugin'] == $id) $meta['conflicts'][] = $row['other'];
-            elseif($row['other'] == $id) $meta['conflicts'][] = $row['plugin'];
+        $stmt->execute([$id, $id]);
+        foreach ($stmt as $row) {
+            if ($row['plugin'] == $id) {
+                $meta['conflicts'][] = $row['other'];
+            } elseif ($row['other'] == $id) {
+                $meta['conflicts'][] = $row['plugin'];
+            }
         }
 
         $stmt = $db->prepare('SELECT plugin,other FROM plugin_similar WHERE plugin = ? OR other = ?');
-        $stmt->execute(array($id, $id));
-        foreach($stmt as $row) {
-            if($row['plugin'] == $id) $meta['similar'][] = $row['other'];
-            elseif($row['other'] == $id) $meta['similar'][] = $row['plugin'];
+        $stmt->execute([$id, $id]);
+        foreach ($stmt as $row) {
+            if ($row['plugin'] == $id) {
+                $meta['similar'][] = $row['other'];
+            } elseif ($row['other'] == $id) {
+                $meta['similar'][] = $row['plugin'];
+            }
         }
 
         $stmt = $db->prepare('SELECT other FROM plugin_depends WHERE plugin = ? ');
-        $stmt->execute(array($id));
-        foreach($stmt as $row) {
+        $stmt->execute([$id]);
+        foreach ($stmt as $row) {
             $meta['depends'][] = $row['other'];
         }
 
         $stmt = $db->prepare('SELECT plugin FROM plugin_depends WHERE other = ? ');
-        $stmt->execute(array($id));
-        foreach($stmt as $row) {
+        $stmt->execute([$id]);
+        foreach ($stmt as $row) {
             $meta['needed'][] = $row['plugin'];
         }
 
         $stmt = $db->prepare('SELECT plugin FROM plugins WHERE plugin <> ? AND email <> "" AND email=(SELECT email FROM plugins WHERE plugin = ?)');
-        $stmt->execute(array($id, $id));
-        foreach($stmt as $row) {
+        $stmt->execute([$id, $id]);
+        foreach ($stmt as $row) {
             $meta['sameauthor'][] = $row['plugin'];
         }
-        if(!empty($meta['conflicts'])) $meta['conflicts'] = array_unique($meta['conflicts']);
-        if(!empty($meta['similar'])) $meta['similar'] = array_unique($meta['similar']);
+        if (!empty($meta['conflicts'])) {
+            $meta['conflicts'] = array_unique($meta['conflicts']);
+        }
+        if (!empty($meta['similar'])) {
+            $meta['similar'] = array_unique($meta['similar']);
+        }
         return $meta;
     }
 
@@ -588,19 +619,22 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      *                  'includetemplates' => true|false
      * @return array with tags and counts
      */
-    public function getTags($minlimit, $filter) {
+    public function getTags($minlimit, $filter)
+    {
         $db = $this->_getPluginsDB();
-        if(!$db) return array();
+        if (!$db) {
+            return [];
+        }
 
-        if($filter['showall'] == 'yes') {
+        if ($filter['showall'] == 'yes') {
             $shown = "1";
         } else {
             $shown = "'" . $this->obsoleteTag . "' NOT IN(SELECT tag FROM plugin_tags WHERE plugin_tags.plugin = B.plugin)
                       AND B.securityissue = ''";
         }
-        if($filter['plugintype'] == 32) {
+        if ($filter['plugintype'] == 32) {
             $shown .= ' AND B.type = 32';
-        } elseif(!$filter['includetemplates']) {
+        } elseif (!$filter['includetemplates']) {
             $shown .= ' AND B.type <> 32';
         }
 
@@ -628,9 +662,12 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      * @param string $type either 'plugins' or 'templates', '' shows all
      * @return int
      */
-    public function getMaxPopularity($type = '') {
+    public function getMaxPopularity($type = '')
+    {
         $db = $this->_getPluginsDB();
-        if(!$db) return 1;
+        if (!$db) {
+            return 1;
+        }
 
         $sql = "SELECT A.popularity
                   FROM plugins A
@@ -639,8 +676,12 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
 
         $sql .= str_repeat("AND plugin != ? ", count($this->bundled));
 
-        if($type == 'plugins' || $type == 'plugin') $sql .= "AND plugin NOT LIKE 'template:%'";
-        if($type == 'templates' || $type == 'template') $sql .= "AND plugin LIKE 'template:%'";
+        if ($type == 'plugins' || $type == 'plugin') {
+            $sql .= "AND plugin NOT LIKE 'template:%'";
+        }
+        if ($type == 'templates' || $type == 'template') {
+            $sql .= "AND plugin LIKE 'template:%'";
+        }
 
         $sql .= "ORDER BY popularity DESC
                  LIMIT 1";
@@ -648,10 +689,13 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
         /** @var PDOStatement $stmt */
         $stmt = $db->prepare($sql);
         $stmt->execute($this->bundled);
+
         $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $retval = $res[0]['popularity'];
-        if(!$retval) $retval = 1;
+        if (!$retval) {
+            $retval = 1;
+        }
         return (int) $retval;
     }
 
@@ -661,25 +705,28 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      *
      * @param string $plugin extension id e.g. pluginname or template:templatename
      */
-    public function deletePlugin($plugin) {
+    public function deletePlugin($plugin)
+    {
         $db = $this->_getPluginsDB();
-        if(!$db) return;
+        if (!$db) {
+            return;
+        }
 
         /** @var PDOStatement $stmt */
         $stmt = $db->prepare('DELETE FROM plugins          WHERE plugin = ?');
-        $stmt->execute(array($plugin));
+        $stmt->execute([$plugin]);
 
         $stmt = $db->prepare('DELETE FROM plugin_tags      WHERE plugin = ?');
-        $stmt->execute(array($plugin));
+        $stmt->execute([$plugin]);
 
         $stmt = $db->prepare('DELETE FROM plugin_similar   WHERE plugin = ? OR other = ?');
-        $stmt->execute(array($plugin, $plugin));
+        $stmt->execute([$plugin, $plugin]);
 
         $stmt = $db->prepare('DELETE FROM plugin_conflicts WHERE plugin = ? OR other = ?');
-        $stmt->execute(array($plugin, $plugin));
+        $stmt->execute([$plugin, $plugin]);
 
         $stmt = $db->prepare('DELETE FROM plugin_depends   WHERE plugin = ? OR other = ?');
-        $stmt->execute(array($plugin, $plugin));
+        $stmt->execute([$plugin, $plugin]);
     }
 
     /**
@@ -692,11 +739,13 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      */
     public function pluginlink(Doku_Renderer_xhtml $R, string $plugin, string $title = null): string
     {
-        if(!getNS($plugin)) {
-            return $R->internallink(':plugin:'.$plugin, $title, null, true);
+        if (!getNS($plugin)) {
+            return $R->internallink(':plugin:' . $plugin, $title, null, true);
         } else {
-            if(!$title) $title = noNS($plugin);
-            return $R->internallink(':'.$plugin, $title, null, true);
+            if (!$title) {
+                $title = noNS($plugin);
+            }
+            return $R->internallink(':' . $plugin, $title, null, true);
         }
     }
 
@@ -709,49 +758,47 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      * @param bool   $onlyCompatibleReleases don't include not-compatible releases
      * @return array
      */
-    public function cleanCompat($compatible, $onlyCompatibleReleases = true) {
-        if(!$this->dokuReleases) {
-            $this->dokuReleases = array();
-            $releases           = explode(',', $this->getConf('releases'));
-            $releases           = array_map('trim', $releases);
-            $releases           = array_filter($releases);
-            foreach($releases as $release) {
-                list($date, $name) = preg_split('/(\s+"\s*|")/', $release);
-                $name                      = strtolower($name);
-                $rel                       = array(
-                    'date' => $date,
-                    'name' => $name
-                );
-                $rel['label']              = ($name ? '"'.ucwords($name).'"' : '');
+    public function cleanCompat($compatible, $onlyCompatibleReleases = true)
+    {
+        if (!$this->dokuReleases) {
+            $this->dokuReleases = [];
+            $releases = explode(',', $this->getConf('releases'));
+            $releases = array_map('trim', $releases);
+            $releases = array_filter($releases);
+            foreach ($releases as $release) {
+                [$date, $name] = preg_split('/(\s+"\s*|")/', $release);
+                $name = strtolower($name);
+                $rel = ['date' => $date, 'name' => $name];
+                $rel['label'] = ($name ? '"' . ucwords($name) . '"' : '');
                 $this->dokuReleases[$date] = $rel;
             }
         }
-        preg_match_all('/(!?[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\+?|!?[a-z A-Z]{4,}\+?)/', $compatible, $matches);
-        $matches[0]         = array_map('strtolower', $matches[0]);
-        $matches[0]         = array_map('trim', $matches[0]);
-        $retval             = array();
+        preg_match_all('/(!?\d\d\d\d-\d\d-\d\d\+?|!?[a-z A-Z]{4,}\+?)/', $compatible, $matches);
+        $matches[0] = array_map('strtolower', $matches[0]);
+        $matches[0] = array_map('trim', $matches[0]);
+        $retval = [];
         $implicitCompatible = false;
         $nextImplicitCompatible = false;
-        $dokuReleases       = $this->dokuReleases;
+        $dokuReleases = $this->dokuReleases;
         ksort($dokuReleases);
-        foreach($dokuReleases as $release) {
+        foreach ($dokuReleases as $release) {
             $isCompatible = true;
-            if(in_array('!' . $release['date'], $matches[0]) || in_array('!' . $release['name'], $matches[0])) {
+            if (in_array('!' . $release['date'], $matches[0]) || in_array('!' . $release['name'], $matches[0])) {
                 $isCompatible = false;
                 // stop implicit compatibility
                 $nextImplicitCompatible = false;
                 $implicitCompatible = false;
-            }elseif(in_array($release['date'].'+', $matches[0]) || in_array($release['name'].'+', $matches[0])) {
+            } elseif (in_array($release['date'] . '+', $matches[0]) || in_array($release['name'] . '+', $matches[0])) {
                 $nextImplicitCompatible = true;
             }
-            if($nextImplicitCompatible || !$isCompatible || in_array($release['date'], $matches[0]) || in_array($release['name'], $matches[0]) || $implicitCompatible) {
-                if(!$onlyCompatibleReleases || $isCompatible) {
-                    $retval[$release['date']]['label']    = $release['label'];
+            if ($nextImplicitCompatible || !$isCompatible || in_array($release['date'], $matches[0]) || in_array($release['name'], $matches[0]) || $implicitCompatible) {
+                if (!$onlyCompatibleReleases || $isCompatible) {
+                    $retval[$release['date']]['label'] = $release['label'];
                     $retval[$release['date']]['implicit'] = $implicitCompatible;
                     $retval[$release['date']]['isCompatible'] = $isCompatible;
                 }
             }
-            if($nextImplicitCompatible) {
+            if ($nextImplicitCompatible) {
                 $implicitCompatible = true;
             }
         }
@@ -763,8 +810,9 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      * @param bool $addInfolink
      * @return string rendered
      */
-    public function renderCompatibilityHelp($addInfolink = false) {
-        $infolink = '<sup><a href="https://www.dokuwiki.org/extension_compatibility" title="'.$this->getLang('compatible_with_info').'">?</a></sup>';
+    public function renderCompatibilityHelp($addInfolink = false)
+    {
+        $infolink = '<sup><a href="https://www.dokuwiki.org/extension_compatibility" title="' . $this->getLang('compatible_with_info') . '">?</a></sup>';
         $infolink = $addInfolink ? $infolink : '';
         return sprintf($this->getLang('compatible_with'), $infolink);
     }
@@ -778,8 +826,9 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      * @param string                $sep
      * @return string
      */
-    public function listplugins($plugins, $R, $sep = ', ') {
-        if(!is_array($plugins)) {
+    public function listplugins($plugins, $R, $sep = ', ')
+    {
+        if (!is_array($plugins)) {
             $plugins = explode(',', $plugins);
         }
         $plugins = array_map('trim', $plugins);
@@ -787,11 +836,11 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
         $plugins = array_unique($plugins);
         $plugins = array_filter($plugins);
         sort($plugins);
-        $out = array();
-        foreach($plugins as $plugin) {
+        $out = [];
+        foreach ($plugins as $plugin) {
             $out[] = $this->pluginlink($R, $plugin);
         }
-        return join($sep, $out);
+        return implode($sep, $out);
     }
 
     /**
@@ -802,14 +851,15 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      * @param string $sep
      * @return string
      */
-    public function listtags($string, $target, $sep = ', ') {
+    public function listtags($string, $target, $sep = ', ')
+    {
         $tags = $this->parsetags($string);
-        $out  = array();
-        foreach($tags as $tag) {
-            $out[] = '<a href="'.wl($target, array('plugintag' => $tag)).'#extension__table" '.
-                'class="wikilink1" title="List all plugins with this tag">'.hsc($tag).'</a>';
+        $out  = [];
+        foreach ($tags as $tag) {
+            $out[] = '<a href="' . wl($target, ['plugintag' => $tag]) . '#extension__table" ' .
+                'class="wikilink1" title="List all plugins with this tag">' . hsc($tag) . '</a>';
         }
-        return join($sep, $out);
+        return implode($sep, $out);
     }
 
     /**
@@ -818,7 +868,8 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      * @param string $string comma separated list of tags
      * @return array
      */
-    public function parsetags($string) {
+    public function parsetags($string)
+    {
         $tags = preg_split('/[;,\s]/', $string);
         $tags = array_map('strtolower', $tags);
         $tags = array_unique($tags);
@@ -835,16 +886,17 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      * @param string $sep
      * @return string
      */
-    public function listtype($type, $target, $sep = ', ') {
-        $types = array();
-        foreach($this->types as $k => $v) {
-            if($type & $k) {
-                $types[] = '<a href="'.wl($target, array('plugintype' => $k)).'#extension__table" '.
-                    'class="wikilink1" title="List all '.$v.' plugins">'.$v.'</a>';
+    public function listtype($type, $target, $sep = ', ')
+    {
+        $types = [];
+        foreach ($this->types as $k => $v) {
+            if ($type & $k) {
+                $types[] = '<a href="' . wl($target, ['plugintype' => $k]) . '#extension__table" ' .
+                    'class="wikilink1" title="List all ' . $v . ' plugins">' . $v . '</a>';
             }
         }
         sort($types);
-        return join($sep, $types);
+        return implode($sep, $types);
     }
 
     /**
@@ -853,10 +905,13 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      * @param int $type
      * @return array
      */
-    public function listtypes($type) {
-        $types = array();
-        foreach($this->types as $k => $v) {
-            if($type & $k) $types[] = $v;
+    public function listtypes($type)
+    {
+        $types = [];
+        foreach ($this->types as $k => $v) {
+            if ($type & $k) {
+                $types[] = $v;
+            }
         }
         sort($types);
         return $types;
@@ -868,14 +923,15 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      * @param string $types
      * @return int
      */
-    public function parsetype($types) {
+    public function parsetype($types)
+    {
         $type = 0;
-        foreach($this->types as $k => $v) {
-            if(preg_match('#' . preg_quote($v) . '#i', $types)) {
+        foreach ($this->types as $k => $v) {
+            if (preg_match('#' . preg_quote($v) . '#i', $types)) {
                 $type += $k;
             }
         }
-        if($type === 0 AND $types === '') {
+        if ($type === 0 && $types === '') {
             $type = 512; // CSS/JS-only
         }
         return $type;
@@ -886,7 +942,8 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      *
      * @param PDO $db
      */
-    private function _initPluginDB($db) {
+    private function _initPluginDB($db)
+    {
         msg("Repository plugin: data tables created for plugin repository", -1);
         $db->exec('CREATE TABLE plugin_conflicts (plugin varchar(50) NOT NULL, other varchar(50) NOT NULL);');
         $db->exec('CREATE TABLE plugin_depends (plugin varchar(50) NOT NULL, other varchar(50) NOT NULL);');
@@ -909,11 +966,11 @@ class helper_plugin_pluginrepo_repository extends DokuWiki_Plugin {
      * @param string $warning Original warning content
      * @return string
      */
-    public function replaceSecurityWarningShortcut($warning) {
-        if(in_array($warning,$this->securitywarning)){
-            return $this->getLang('security_'.$warning);
+    public function replaceSecurityWarningShortcut($warning)
+    {
+        if (in_array($warning, $this->securitywarning)) {
+            return $this->getLang('security_' . $warning);
         }
         return hsc($warning);
     }
 }
-
