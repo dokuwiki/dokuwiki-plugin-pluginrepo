@@ -468,7 +468,7 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
             $itr = 0;
             $R->doc .= '<ul>';
             while ($itr < count($rel['sameauthor']) && $itr < $maxShow) {
-                $R->doc .= '<li>' . $this->hlp->pluginlink($R, $rel['sameauthor'][$itr++]) . '</li>';
+                $R->doc .= '<li>' . $this->hlp->pluginlink($R, $rel['sameauthor'][$itr++]) . '</li> ';
             }
             if (count($rel['sameauthor']) > $maxShow) {
                 $remainingExtensions = count($rel['sameauthor']) - $maxShow;
