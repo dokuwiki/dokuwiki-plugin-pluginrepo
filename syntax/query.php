@@ -105,6 +105,7 @@ class syntax_plugin_pluginrepo_query extends SyntaxPlugin
         $fields = preg_split("/[;,\s]+/", $data['select']);
         $fields = array_filter($fields);
         $fields = array_unique($fields);
+
         $counter = count($fields);
         for ($fieldItr = 0; $fieldItr < $counter; $fieldItr++) {
             if (!in_array($fields[$fieldItr], $this->allowedfields)) {
