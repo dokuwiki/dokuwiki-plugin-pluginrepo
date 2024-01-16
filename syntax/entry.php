@@ -25,7 +25,7 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
     public function __construct()
     {
         $this->hlp = plugin_load('helper', 'pluginrepo_repository');
-        if (!$this->hlp) {
+        if (!$this->hlp instanceof helper_plugin_pluginrepo_repository) {
             msg('Loading the pluginrepo repository helper failed. Make sure the pluginrepo plugin is installed.', -1);
         }
     }
@@ -78,7 +78,27 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
     {
         global $ID;
 
-        $data = $this->hlp->parseData($match);
+        $initialData = [
+            'description' => '',
+            'author' => '', //author_mail
+            'email' => '', //author_mail
+            'compatible' => '',
+            'lastupdate' => '', //string; lastupdate_dt
+            'securityissue' => '',
+            'securitywarning' => '',
+            'downloadurl' => '',
+            'bugtracker' => '',
+            'sourcerepo' => '',
+            'donationurl' => '',
+            'screenshot_img' => '',
+            'tags' => '', //string, csv; template_tags
+            'type' => '', //string, text is later converted to type numbers
+            'depends' => '',
+            'conflicts' => '',
+            'similar' => '',
+        ];
+
+        $data = $this->hlp->parseData($match, $initialData);
         if (curNS($ID) == 'template') {
             $data['type'] = 'template';
         }
@@ -197,10 +217,10 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
 
         // screenshot
         if ($data['screenshot_img']) {
-            $val = $data['screenshot_img'];
+            $url = $data['screenshot_img'];
             $title = sprintf($this->getLang('screenshot_title'), noNS($ID));
-            $R->doc .= '<a href="' . ml($val) . '" class="media screenshot" title="' . $title . '" rel="lightbox">';
-            $R->doc .= '<img src="' . ml($val, "w=220") . '" alt="" width="220" /></a>';
+            $R->doc .= '<a href="' . ml($url) . '" class="media screenshot" title="' . $title . '" rel="lightbox">';
+            $R->doc .= '<img src="' . ml($url, "w=220") . '" alt="" width="220" /></a>';
         }
 
         $R->doc .= '</div>';
@@ -282,7 +302,7 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
             $compatibility = $this->hlp->cleanCompat($data['compatible'], false);
             $cols = 0;
             $compatrow = '';
-            foreach ($this->hlp->dokuReleases as $release) {
+            foreach ($this->hlp->getDokuReleases() as $release) {
                 if (++$cols > 4) {
                     break;
                 }
@@ -489,7 +509,7 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
      */
     protected function saveData($data, $id, $name)
     {
-        $db = $this->hlp->_getPluginsDB();
+        $db = $this->hlp->getPluginsDB();
         if (!$db) {
             return;
         }
@@ -502,19 +522,19 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
         }
 
         if (in_array($id, $this->hlp->bundled)) {
-            $compatible = 'xx9999-99-99';
+            $bestcompatible = 'xx9999-99-99';
         } else {
             $array = array_keys($this->hlp->cleanCompat($data['compatible']));
-            $compatible = array_shift($array);
+            $bestcompatible = array_shift($array);
         }
 
         $type = $this->hlp->parsetype($data['type']);
 
         // handle securityissue, tags field NOT NULL otherwise WHERE clauses will fail
-        if (!$data['securityissue']) {
+        if (empty($data['securityissue'])) {
             $data['securityissue'] = "";
         }
-        if (!$data['tags']) {
+        if (empty($data['tags'])) {
             $data['tags'] = "";
         }
 
@@ -566,7 +586,7 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
             ':author' => $data['author'],
             ':email' => $data['email'],
             ':compatible' => $data['compatible'],
-            ':bestcompatible' => $compatible,
+            ':bestcompatible' => $bestcompatible,
             ':lastupdate' => $data['lastupdate'],
             ':securityissue' => $data['securityissue'],
             ':securitywarning' => $data['securitywarning'],

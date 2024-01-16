@@ -28,7 +28,7 @@ class syntax_plugin_pluginrepo_query extends SyntaxPlugin
     public function __construct()
     {
         $this->hlp = plugin_load('helper', 'pluginrepo_repository');
-        if (!$this->hlp) {
+        if (!$this->hlp instanceof helper_plugin_pluginrepo_repository) {
             msg('Loading the pluginrepo helper failed. Make sure the pluginrepo plugin is installed.', -1);
         }
     }
@@ -78,7 +78,14 @@ class syntax_plugin_pluginrepo_query extends SyntaxPlugin
      */
     public function handle($match, $state, $pos, Doku_Handler $handler)
     {
-        return $this->hlp->parseData($match);
+        $initialData = [
+            //query
+            'select' => '',
+            'where' => '',
+            'values' => '',
+            'headline' => ''
+        ];
+        return $this->hlp->parseData($match, $initialData);
     }
 
     /**
@@ -94,7 +101,7 @@ class syntax_plugin_pluginrepo_query extends SyntaxPlugin
         if ($format != 'xhtml') {
             return false;
         }
-        $db = $this->hlp->_getPluginsDB();
+        $db = $this->hlp->getPluginsDB();
         if (!$db) {
             return false;
         }
@@ -105,6 +112,8 @@ class syntax_plugin_pluginrepo_query extends SyntaxPlugin
         $fields = preg_split("/[;,\s]+/", $data['select']);
         $fields = array_filter($fields);
         $fields = array_unique($fields);
+        $fields = array_values($fields); //reindex
+
         $counter = count($fields);
         for ($fieldItr = 0; $fieldItr < $counter; $fieldItr++) {
             if (!in_array($fields[$fieldItr], $this->allowedfields)) {
@@ -130,7 +139,7 @@ class syntax_plugin_pluginrepo_query extends SyntaxPlugin
         foreach ($this->allowedfields as $field) {
             $error = str_replace($field, '', $error);
         }
-        $error = preg_replace('/(LIKE|AND|OR|NOT|IS|NULL|[<>=\?\(\)])/i', '', $error);
+        $error = preg_replace('/(LIKE|AND|OR|NOT|IS|NULL|[<>=?()])/i', '', $error);
         if (trim($error)) {
             $R->doc .= '<div class="error repoquery">'
                 . '<strong>Repoquery error - Unsupported chars in WHERE clause:</strong> ' . hsc($error)
@@ -145,9 +154,25 @@ class syntax_plugin_pluginrepo_query extends SyntaxPlugin
                             ORDER BY $ordersql");
 
         // prepare VALUES input and execute query
+        $datePlaceholders = [
+            '@DATEMOSTRECENT@', '@DATESECONDMOSTRECENT@', '@DATETHIRDMOSTRECENT@',
+            '@DATEFOURTHMOSTRECENT@'
+        ];
+        $rows = 0;
+        $recentDates = [];
+        foreach ($this->hlp->getDokuReleases() as $release) {
+            if (++$rows > 4) {
+                break;
+            }
+            $recentDates[] = $release['date'];
+        }
+
         $values = explode(",", $data['values']);
         $values = array_map('trim', $values);
         $values = array_filter($values);
+        $values = array_map(function ($value) use ($datePlaceholders, $recentDates) {
+            return str_replace($datePlaceholders, $recentDates, $value);
+        }, $values);
         if (!$values && array_key_exists('values', $data)) {
             $values = [''];
         }
@@ -157,12 +182,16 @@ class syntax_plugin_pluginrepo_query extends SyntaxPlugin
         if (!$values) {
             $values = [''];
         }
-        $headline = 'Plugins WHERE ' . vsprintf(str_replace('?', '%s', $wheresql), $values);
+        if($data['headline']) {
+            $headline = $data['headline'];
+        } else {
+            $headline = 'Plugins WHERE ' . vsprintf(str_replace('?', '%s', $wheresql), $values);
+        }
 
         $R->doc .= '<div class="pluginrepo_query">';
+        $plugingroups = [];
         if (count($fields) == 0) {
             // sort into alpha groups (A, B, C,...) if only displaying plugin links
-            $plugingroups = [];
             foreach ($datarows as $row) {
                 $firstchar = substr(noNS($row['plugin']), 0, 1);
                 $plugingroups[$firstchar][] = $row['plugin'];
@@ -183,13 +212,10 @@ class syntax_plugin_pluginrepo_query extends SyntaxPlugin
                 $R->doc .= $this->hlp->listplugins($plugins, $R);
                 $R->doc .= '</td>';
 
-                $R->doc .= '</tr>' . DOKU_LF;
+                $R->doc .= '</tr>';
             }
-            $R->doc .= '</table>';
-            $R->doc .= '</div>';
         } else {
             // show values for all fields in separate columns
-            $plugingroups = [];
             foreach ($datarows as $row) {
                 $groupkey = '';
                 foreach ($fields as $field) {
@@ -242,11 +268,11 @@ class syntax_plugin_pluginrepo_query extends SyntaxPlugin
                 $R->doc .= '<td>';
                 $R->doc .= $this->hlp->listplugins($plugins, $R);
                 $R->doc .= '</td>';
-                $R->doc .= '</tr>' . DOKU_LF;
+                $R->doc .= '</tr>';
             }
-            $R->doc .= '</table>';
-            $R->doc .= '</div>';
         }
+        $R->doc .= '</table>';
+        $R->doc .= '</div>';
         $R->doc .= '<p class="querytotal">∑ ' . count($datarows) . ' plugins matching query</p>';
         $R->doc .= '</div>';
         return true;

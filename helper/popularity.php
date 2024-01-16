@@ -29,7 +29,7 @@ class helper_plugin_pluginrepo_popularity extends Plugin
      */
     public function getCounts($key, $orderby = 'cnt', $startdate = '', $enddate = '', $daysago = 0)
     {
-        $db = $this->hlp->_getPluginsDB();
+        $db = $this->hlp->getPluginsDB();
         if (!$db) {
             return [];
         }
@@ -86,7 +86,7 @@ class helper_plugin_pluginrepo_popularity extends Plugin
      */
     public function getNumberOfSubmittingWikis($startdate = '', $enddate = '', $daysago = 0)
     {
-        $db = $this->hlp->_getPluginsDB();
+        $db = $this->hlp->getPluginsDB();
         if (!$db) {
             return 0;
         }

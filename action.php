@@ -21,7 +21,7 @@ class action_plugin_pluginrepo extends ActionPlugin
      */
     public function register(EventHandler $controller)
     {
-        $controller->register_hook('IO_WIKIPAGE_WRITE', 'BEFORE', $this, '_cleanOldEntry');
+        $controller->register_hook('IO_WIKIPAGE_WRITE', 'BEFORE', $this, 'cleanOldEntry');
     }
 
     /**
@@ -30,7 +30,7 @@ class action_plugin_pluginrepo extends ActionPlugin
      *
      * @param Doku_Event $event  event object
      */
-    public function _cleanOldEntry(Event $event)
+    public function cleanOldEntry(Event $event)
     {
         global $ID;
 
