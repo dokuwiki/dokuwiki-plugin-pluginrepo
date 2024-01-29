@@ -86,6 +86,7 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
             'lastupdate' => '', //string; lastupdate_dt
             'securityissue' => '',
             'securitywarning' => '',
+            'updatemessage' => '',
             'downloadurl' => '',
             'bugtracker' => '',
             'sourcerepo' => '',
@@ -180,7 +181,7 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
 
         if (
             $rel['similar'] || $data['tags'] || $data['securitywarning'] || $data['securityissue']
-            || $hasUnderscoreIssue || $isOld || $isObsoleted
+            || $hasUnderscoreIssue || $isOld || $isObsoleted || $data['updatemessage']
         ) {
             $R->doc .= '<div class="moreInfo">';
             $this->showWarnings($R, $data, $hasUnderscoreIssue, $isOld, $isObsoleted, $isBundled);
@@ -379,6 +380,11 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
     {
         global $ID;
 
+        if ($data['updatemessage']) {
+            $R->doc .= '<div class="notify">';
+            $R->doc .= '<p>' . hsc($data['updatemessage']) . '</p>';
+            $R->doc .= '</div>';
+        }
         if ($isObsoleted) {
             $R->doc .= '<div class="notify">';
             $R->doc .= '<p>' . $this->getLang('extension_obsoleted') . '</p>';
@@ -550,6 +556,7 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
                                 lastupdate      = :lastupdate,
                                 securityissue   = :securityissue,
                                 securitywarning = :securitywarning,
+                                updatemessage   = :updatemessage,
                                 downloadurl     = :downloadurl,
                                 bugtracker      = :bugtracker,
                                 sourcerepo      = :sourcerepo,
@@ -568,13 +575,13 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
             $insert . ' INTO plugins
                 (plugin, name, description,
                 author, email,
-                compatible, bestcompatible, lastupdate, securityissue, securitywarning,
+                compatible, bestcompatible, lastupdate, securityissue, securitywarning, updatemessage,
                 downloadurl, bugtracker, sourcerepo, donationurl,
                 screenshot, tags, type)
             VALUES
                 (:plugin, :name, :description,
                 :author, LOWER(:email),
-                :compatible, :bestcompatible, :lastupdate, :securityissue, :securitywarning,
+                :compatible, :bestcompatible, :lastupdate, :securityissue, :securitywarning, :updatemessage,
                 :downloadurl, :bugtracker, :sourcerepo, :donationurl,
                 :screenshot, :tags, :type)
             ' . $duplicate
@@ -590,6 +597,7 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
             ':lastupdate' => $data['lastupdate'],
             ':securityissue' => $data['securityissue'],
             ':securitywarning' => $data['securitywarning'],
+            ':updatemessage' => $data['updatemessage'],
             ':downloadurl' => $data['downloadurl'],
             ':bugtracker' => $data['bugtracker'],
             ':sourcerepo' => $data['sourcerepo'],

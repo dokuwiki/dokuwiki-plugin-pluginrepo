@@ -17,9 +17,10 @@ class syntax_plugin_pluginrepo_query extends SyntaxPlugin
      * @var helper_plugin_pluginrepo_repository $hlp
      */
     public $hlp;
-    public $allowedfields = [
-        'plugin', 'name', 'description', 'author', 'email', 'compatible', 'lastupdate', 'type', 'securityissue',
-        'securitywarning', 'screenshot', 'downloadurl', 'bugtracker', 'sourcerepo', 'donationurl', 'tags', 'popularity'
+    public array $allowedfields = [
+        'plugin', 'name', 'description', 'author', 'email', 'bestcompatible', 'compatible', 'lastupdate', 'type',
+        'securityissue', 'securitywarning', 'updatemessage', 'screenshot', 'downloadurl', 'bugtracker', 'sourcerepo',
+        'donationurl', 'tags', 'popularity'
     ];
 
     /**

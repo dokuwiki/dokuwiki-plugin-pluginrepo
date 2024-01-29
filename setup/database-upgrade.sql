@@ -37,3 +37,7 @@ ON target.uid = source.uid
 SET target.dt = source.value;
 
 CREATE INDEX idx_dt ON popularity (dt);
+
+-- 2023-10-30 add column for message explaining an update
+ALTER TABLE plugins
+    ADD COLUMN updatemessage varchar(255) default NULL;

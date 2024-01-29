@@ -1,6 +1,7 @@
 <?php
 
 use dokuwiki\Extension\Plugin;
+use dokuwiki\Utf8\PhpString;
 use dokuwiki\Utf8\Sort;
 
 /**
@@ -92,7 +93,9 @@ class helper_plugin_pluginrepo_repository extends Plugin
             $data['author'] = $name;
             $data['email'] = $mail;
         }
-
+        foreach ($data as $key => $value) {
+            $data[$key] = $this->truncateString($key, $value);
+        }
         return $data;
     }
 
@@ -119,8 +122,37 @@ class helper_plugin_pluginrepo_repository extends Plugin
                 $value = (int) $value;
             }
         }
+
         return $value;
     }
+
+    /**
+     * Shorten entries that are stored as 255 varchar string in MySQL.
+     *
+     * @param string $key
+     * @param mixed|string $value
+     * @return mixed|string
+     */
+    public function truncateString($key, $value) {
+        $is50chars = [
+            'plugin',
+            'bestcompatible' //always based on values from config
+        ];
+        $is255chars = [
+            'name', 'description', 'author', 'email', 'compatible', 'securityissue', 'securitywarning',
+            'updatemessage', 'downloadurl', 'bugtracker', 'sourcerepo', 'donationurl', 'screenshot', 'tags'
+        ];
+
+//        if (in_array($key, $is50chars)) {
+//            $value = PhpString::substr($value, 0, 50);
+//        }
+        if (in_array($key, $is255chars)) {
+            $value = PhpString::substr($value, 0, 255); //varchar(255) in MySQL>=5 count multibytes chars
+        }
+
+        return $value;
+    }
+
     /**
      * Rewrite plugin
      *
