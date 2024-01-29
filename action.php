@@ -17,7 +17,7 @@ class action_plugin_pluginrepo extends ActionPlugin
     /**
      * Registers a callback function for a given event
      *
-     * @param Doku_Event_Handler $controller
+     * @param EventHandler $controller
      */
     public function register(EventHandler $controller)
     {
@@ -28,7 +28,7 @@ class action_plugin_pluginrepo extends ActionPlugin
      * Handles the page write event and removes the database info
      * when the plugin or template code is no longer in the source
      *
-     * @param Doku_Event $event  event object
+     * @param Event $event event object
      */
     public function cleanOldEntry(Event $event)
     {
