@@ -1,8 +1,10 @@
 <?php
+
 /**
  * Calculate the popularity per plugin/template from the popularity database tables
  * Check for version and base discrepancies and update the 'devel:badextensions' page
  */
+
 $TIMEFRAME = 60 * 60 * 24 * 365 * 2; // in seconds
 
 $TIME = time() - $TIMEFRAME;

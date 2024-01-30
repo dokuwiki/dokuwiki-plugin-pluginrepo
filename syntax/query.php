@@ -183,7 +183,7 @@ class syntax_plugin_pluginrepo_query extends SyntaxPlugin
         if (!$values) {
             $values = [''];
         }
-        if($data['headline']) {
+        if ($data['headline']) {
             $headline = $data['headline'];
         } else {
             $headline = 'Plugins WHERE ' . vsprintf(str_replace('?', '%s', $wheresql), $values);
