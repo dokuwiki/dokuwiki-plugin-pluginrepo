@@ -133,11 +133,8 @@ class helper_plugin_pluginrepo_repository extends Plugin
      * @param mixed|string $value
      * @return mixed|string
      */
-    public function truncateString($key, $value) {
-        $is50chars = [
-            'plugin',
-            'bestcompatible' //always based on values from config
-        ];
+    public function truncateString($key, $value)
+    {
         $is255chars = [
             'name', 'description', 'author', 'email', 'compatible', 'securityissue', 'securitywarning',
             'updatemessage', 'downloadurl', 'bugtracker', 'sourcerepo', 'donationurl', 'screenshot', 'tags'
@@ -863,7 +860,7 @@ class helper_plugin_pluginrepo_repository extends Plugin
             $releases = array_map('trim', $releases);
             $releases = array_filter($releases);
             foreach ($releases as $release) {
-                [$date, $name] = array_pad(preg_split('/(\s+"\s*|")/', $release),2, '');
+                [$date, $name] = array_pad(preg_split('/(\s+"\s*|")/', $release), 2, '');
                 $name = strtolower($name);
                 $rel = [
                     'date' => $date,
@@ -1082,8 +1079,7 @@ class helper_plugin_pluginrepo_repository extends Plugin
             screenshot varchar(255) default NULL, tags varchar(255) default NULL,
             securitywarning varchar(255) default NULL, securityissue varchar(255) NOT NULL,
             bestcompatible varchar(50) default NULL, popularity int default 0,
-            updatemessage varchar(50) default NULL);'
-        );
+            updatemessage varchar(50) default NULL);');
     }
 
     /**

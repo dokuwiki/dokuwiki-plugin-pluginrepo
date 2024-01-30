@@ -171,9 +171,7 @@ class syntax_plugin_pluginrepo_query extends SyntaxPlugin
         $values = explode(",", $data['values']);
         $values = array_map('trim', $values);
         $values = array_filter($values);
-        $values = array_map(function ($value) use ($datePlaceholders, $recentDates) {
-            return str_replace($datePlaceholders, $recentDates, $value);
-        }, $values);
+        $values = array_map(static fn($value) => str_replace($datePlaceholders, $recentDates, $value), $values);
         if (!$values && array_key_exists('values', $data)) {
             $values = [''];
         }
@@ -183,7 +181,7 @@ class syntax_plugin_pluginrepo_query extends SyntaxPlugin
         if (!$values) {
             $values = [''];
         }
-        if($data['headline']) {
+        if ($data['headline']) {
             $headline = $data['headline'];
         } else {
             $headline = 'Plugins WHERE ' . vsprintf(str_replace('?', '%s', $wheresql), $values);
