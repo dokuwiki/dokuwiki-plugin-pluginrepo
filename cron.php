@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * Calculate the popularity per plugin/template from the popularity database tables
+ * Check for version and base discrepancies and update the 'devel:badextensions' page
+ */
 $TIMEFRAME = 60 * 60 * 24 * 365 * 2; // in seconds
 
 $TIME = time() - $TIMEFRAME;
@@ -12,7 +15,7 @@ require_once(DOKU_INC . 'inc/init.php');
 
 /** @var helper_plugin_pluginrepo_repository $hlp */
 $hlp = plugin_load('helper', 'pluginrepo_repository');
-$db  = $hlp->_getPluginsDB();
+$db  = $hlp->getPluginsDB();
 if (!$db) {
     die('failed to connect to DB');
 }

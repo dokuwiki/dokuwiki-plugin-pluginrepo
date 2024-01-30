@@ -77,21 +77,38 @@ class syntax_plugin_pluginrepo_news extends SyntaxPlugin
      */
     public function handle($match, $state, $pos, Doku_Handler $handler)
     {
-        return $this->hlp->parseData($match);
+        $initialData = [
+            'headline' => '',
+            'style' => '',
+            'link' => '',
+            'linktext' => '',
+            'entries' => 0,
+            'random' => true,
+            'showscreenshot' => false,
+            //filter
+            'plugins' => '',
+            'plugintype' => 0,
+            'plugintag' => '',
+            'pluginsort' => '',
+            'showall' => false,
+            'includetemplates' => false,
+        ];
+        return $this->hlp->parseData($match, $initialData);
     }
 
     /**
      * Create output
      *
-     * @param string          $format   output format being rendered
-     * @param Doku_Renderer   $renderer        the current renderer object
-     * @param array           $data     data created by handler() used entries:
+     * @param string $format output format being rendered
+     * @param Doku_Renderer $renderer the current renderer object
+     * @param array $data data created by handler() used entries:
      *          headline: headline of new block
      *          link: link shown at the bottom of the news block
      *          linktext: text for the link
      *          style: 'sameauthor' shows extensions of the same author (only on extension page), otherwise random picked
      *        ..more see functions below
      * @return  boolean rendered correctly? (however, returned value is not used at the moment)
+     * @throws Exception
      */
     public function render($format, Doku_Renderer $renderer, $data)
     {
@@ -143,7 +160,7 @@ class syntax_plugin_pluginrepo_news extends SyntaxPlugin
             return;
         }
 
-        $limit = (is_numeric($data['entries']) ? $data['entries'] : 10);
+        $limit = $data['entries'] > 0 ? $data['entries'] : 10;
         $itr = 0;
         $R->doc .= '<ul>';
         while ($itr < count($rel['sameauthor']) && $itr < $limit) {
@@ -166,12 +183,12 @@ class syntax_plugin_pluginrepo_news extends SyntaxPlugin
      */
     public function showDefault($R, $data)
     {
-        $limit = (is_numeric($data['entries']) ? $data['entries'] : 1);
+        $limit = $data['entries'] > 0 ? $data['entries'] : 1;
         $plugins = $this->hlp->getPlugins($data);
-        if ($data['random'] == 'no') {
-            $start = 0;
-        } else {
+        if ($data['random']) {
             $start = random_int(0, count($plugins) - 1 - $limit);
+        } else {
+            $start = 0;
         }
         for ($i = 0; $i < $limit; $i++) {
             $row = $plugins[$start + $i];
@@ -179,10 +196,10 @@ class syntax_plugin_pluginrepo_news extends SyntaxPlugin
             $R->doc .= '<p class="title">' . $this->hlp->pluginlink($R, $row['plugin'], $linkText) . '</p>';
             $R->doc .= '<p class="description">' . $row['description'] . '</p>';
 
-            $val = $row['screenshot'];
-            if ($val && $data['screenshot'] == 'yes') {
-                $R->doc .= '<a href="' . ml($val) . '" class="media screenshot" rel="lightbox">';
-                $R->doc .= '<img src="' . ml($val, "w=200") . '" alt="" width="200" /></a>';
+            $url = $row['screenshot'];
+            if ($url && $data['showscreenshot']) {
+                $R->doc .= '<a href="' . ml($url) . '" class="media screenshot" rel="lightbox">';
+                $R->doc .= '<img src="' . ml($url, "w=200") . '" alt="" width="200" /></a>';
             }
 
             $R->doc .= '<p class="author">Author: ';

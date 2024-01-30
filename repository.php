@@ -93,6 +93,7 @@ function getRepository()
             $feed .= '<release>' . $date . '</release>';
         }
         $feed .= '</compatible>';
+        $feed .= '<updatemessage>' . hsc($plugin['updatemessage']) . '</updatemessage>';
         $feed .= '<securityissue>' . hsc($plugin['securityissue']) . '</securityissue>';
         $feed .= '<securitywarning>';
         if (in_array($plugin['securitywarning'], $hlp->securitywarning)) {
