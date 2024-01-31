@@ -102,13 +102,13 @@ class syntax_plugin_pluginrepo_query extends SyntaxPlugin
         if ($format != 'xhtml') {
             return false;
         }
-        /** @var Doku_Renderer_xhtml $renderer */
 
         $db = $this->hlp->getPluginsDB();
         if (!$db) {
             return false;
         }
 
+        /** @var Doku_Renderer_xhtml $renderer */
         $renderer->info['cache'] = false;
 
         // sanitize SELECT input (data fields shown in separate columns)
