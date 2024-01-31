@@ -921,8 +921,7 @@ class Spyc
                 $this->result[$key] = $value;
             } else {
                 $this->result[] = $value;
-                end($this->result);
-                $key = key($this->result);
+                $key = array_key_last($this->result);
             }
             $this->path[$incoming_indent] = $key;
             return;
@@ -960,8 +959,7 @@ class Spyc
             $key = 0;
         } else {
             $_arr[] = $value;
-            end($_arr);
-            $key = key($_arr);
+            $key = array_key_last($_arr);
         }
 
         $reverse_path = array_reverse($this->path);
@@ -1070,8 +1068,7 @@ class Spyc
         }
         $linePath = $this->path;
         do {
-            end($linePath);
-            $lastIndentInParentPath = key($linePath);
+            $lastIndentInParentPath = array_key_last($linePath);
             if ($indent <= $lastIndentInParentPath) {
                 array_pop($linePath);
             }
@@ -1145,7 +1142,7 @@ class Spyc
         $array = [];
         $key         = self::unquote(trim(substr($line, 1, -1)));
         $array[$key] = [];
-        $this->delayedPath = [strpos($line, $key) + $this->indent => $key];
+        $this->delayedPath = [strpos($line, (string) $key) + $this->indent => $key];
         return [$array];
     }
 
