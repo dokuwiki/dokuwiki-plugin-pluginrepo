@@ -142,7 +142,9 @@ class syntax_plugin_pluginrepo_news extends SyntaxPlugin
      *
      * @param Doku_Renderer_xhtml $R
      * @param array $data used entries:
-     *          entries: number of plugins/templates displayed, otherwise 10
+     *  <ul>
+     *      <li>entries: number of plugins/templates displayed, otherwise 10</li>
+     *  </ul>
      */
     public function showSameAuthor($R, $data)
     {
@@ -174,12 +176,23 @@ class syntax_plugin_pluginrepo_news extends SyntaxPlugin
      *
      * @param Doku_Renderer_xhtml $R
      * @param array $data used entries:
-     *         entries: number of plugins/templates displayed, otherwise 1
-     *         random: if 'no' the plugin/template is not selected randomly
-     *         screenshot: if 'yes' a screenshot is shown
-     *      and used by the filtering:
-     *
+     *  <ul>
+     *      <li>entries: number of plugins/templates displayed, otherwise 1</li>
+     *      <li>random: if 'no' the plugin/template is not selected randomly</li>
+     *      <li>screenshot: if 'yes' a screenshot is shown</li>
+     *      <li>via getPlugins():
+     *          <ul>
+     *              <li>'plugins' array or str, if used plugintype and plugintag are skipped</li>
+     *              <li>'plugintype' int,</li>
+     *              <li>'plugintag' str</li>
+     *              <li>'pluginsort' str shortcuts assumed</li>
+     *              <li>'showall' bool</li>
+     *              <li>'includetemplates' bool</li>
+     *          </ul>
+     *      </li>
+     *  </ul>
      * @throws Exception
+     * @see helper_plugin_pluginrepo_repository::getPlugins()
      */
     public function showDefault($R, $data)
     {

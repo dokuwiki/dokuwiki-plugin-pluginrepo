@@ -237,7 +237,7 @@ class helper_plugin_pluginrepo_repository extends Plugin
      *
      * @param array $filter with entries used
      * <ul>
-     *   <li>'plugins'    (array) returns only data of named plugins</li>
+     *   <li>'plugins'    (array|string) returns only data of named plugins</li>
      *   <li>'plugintype' (integer) filter by type, binary-code decimal so you can combine types</li>
      *   <li>'plugintag'  (string) filter by one tag</li>
      *   <li>'pluginsort' (string) sort by some specific columns (also shortcuts available)</li>
