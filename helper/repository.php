@@ -133,7 +133,8 @@ class helper_plugin_pluginrepo_repository extends Plugin
      * @param mixed|string $value
      * @return mixed|string
      */
-    public function truncateString($key, $value) {
+    public function truncateString($key, $value)
+    {
         $is50chars = [
             'plugin',
             'bestcompatible' //always based on values from config
