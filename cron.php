@@ -12,7 +12,7 @@ $TIME = time() - $TIMEFRAME;
 if (!defined('DOKU_INC')) {
     define('DOKU_INC', __DIR__ . '/../../../');
 }
-define('NOSESSION', true);
+const NOSESSION = true;
 require_once(DOKU_INC . 'inc/init.php');
 
 /** @var helper_plugin_pluginrepo_repository $hlp */

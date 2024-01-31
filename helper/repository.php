@@ -2,7 +2,6 @@
 
 use dokuwiki\Extension\Plugin;
 use dokuwiki\Utf8\PhpString;
-use dokuwiki\Utf8\Sort;
 
 /**
  * DokuWiki plugin/template/popularity data repository API
@@ -66,7 +65,7 @@ class helper_plugin_pluginrepo_repository extends Plugin
         foreach ($lines as $line) {
             // ignore comments and bullet syntax
             $line = preg_replace('/(?<![&\\\\])#.*$/', '', $line);
-            $line = preg_replace('/^  \* /', '', $line);
+            $line = preg_replace('/^ {2}\* /', '', $line);
             $line = str_replace('\\#', '#', $line);
             $line = trim($line);
             if (empty($line)) {
@@ -135,10 +134,10 @@ class helper_plugin_pluginrepo_repository extends Plugin
      */
     public function truncateString($key, $value)
     {
-        $is50chars = [
-            'plugin',
-            'bestcompatible' //always based on values from config
-        ];
+//        $is50chars = [
+//            'plugin',
+//            'bestcompatible' //always based on values from config
+//        ];
         $is255chars = [
             'name', 'description', 'author', 'email', 'compatible', 'securityissue', 'securitywarning',
             'updatemessage', 'downloadurl', 'bugtracker', 'sourcerepo', 'donationurl', 'screenshot', 'tags'
