@@ -75,10 +75,10 @@ class helper_plugin_pluginrepo_repository extends Plugin
             [$key, $value] = preg_split('/\s*:\s*/', $line, 2);
             $key = strtolower($key);
             $value = $this->convertToType($key, trim($value));
-            if ($data[$key] === '') {
-                $data[$key] .= ' ' . $value;
-            } else {
+            if (is_bool($data[$key]) || empty($data[$key])) {
                 $data[$key] = $value;
+            } else {
+                $data[$key] .= ' ' . $value;
             }
         }
         // sqlite plugin compability (formerly used for templates)
