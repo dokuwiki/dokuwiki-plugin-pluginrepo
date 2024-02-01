@@ -144,7 +144,7 @@ class syntax_plugin_pluginrepo_query extends SyntaxPlugin
         foreach ($this->allowedfields as $field) {
             $error = str_replace($field, '', $error);
         }
-        $error = preg_replace('/(LIKE|AND|OR|NOT|IS|NULL|[<>=?()])/i', '', $error);
+        $error = preg_replace('/(LIKE|AND|OR|NOT|IS|NULL|[<>=?()&])/i', '', $error);
         if (trim($error)) {
             $renderer->doc .= '<div class="error repoquery">'
                 . '<strong>Repoquery error - Unsupported chars in WHERE clause:</strong> ' . hsc($error)
