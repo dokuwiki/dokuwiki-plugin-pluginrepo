@@ -250,9 +250,9 @@ class syntax_plugin_pluginrepo_query extends SyntaxPlugin
                     $renderer->doc .= '<td>';
 
                     if ($field == 'type') {
-                        foreach ($this->hlp->types as $k => $v) {
-                            if ($row['type'] & $k) {
-                                $renderer->doc .= $v . ' ';
+                        foreach ($this->hlp->types as $number => $label) {
+                            if ($row['type'] & $number) {
+                                $renderer->doc .= $label . ' ';
                             }
                         }
                     } elseif ($field == 'plugin') {

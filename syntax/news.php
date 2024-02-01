@@ -211,8 +211,9 @@ class syntax_plugin_pluginrepo_news extends SyntaxPlugin
 
             $url = $row['screenshot'];
             if ($url && $data['showscreenshot']) {
-                $R->doc .= '<a href="' . ml($url) . '" class="media screenshot" rel="lightbox">';
-                $R->doc .= '<img src="' . ml($url, "w=200") . '" alt="" width="200" /></a>';
+                $R->doc .= '<a href="' . ml($url) . '" class="media screenshot" rel="lightbox">'
+                    . '<img src="' . ml($url, "w=200") . '" alt="" width="200" />'
+                    . '</a>';
             }
 
             $R->doc .= '<p class="author">Author: ';

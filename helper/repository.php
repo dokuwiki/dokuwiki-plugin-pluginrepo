@@ -12,7 +12,7 @@ use dokuwiki\Utf8\PhpString;
  */
 class helper_plugin_pluginrepo_repository extends Plugin
 {
-    public array $dokuReleases = []; // array of DokuWiki releases (name & date)
+    private array $dokuReleases = []; // array of DokuWiki releases (name & date)
 
     public array $types = [
         1   => 'Syntax',
@@ -292,15 +292,15 @@ class helper_plugin_pluginrepo_repository extends Plugin
         $sortsql = $this->getPluginsSortSql($sort);
 
         $alltypes = 0;
-        foreach (array_keys($this->types) as $t) {
-            $alltypes += $t;
+        foreach (array_keys($this->types) as $number) {
+            $alltypes += $number;
         }
 
         if ($tag) {
             if ($type < 1 || $type > $alltypes) {
                 $type = $alltypes; //all types
             }
-            $sql = "SELECT A.*, SUBSTR(A.plugin,10) as simplename
+            $sql = "    SELECT A.*, SUBSTR(A.plugin,10) as simplename
                         FROM plugins A
                         WHERE A.type = 32 AND $where_filtered
                             AND (A.type & :plugin_type)
@@ -317,7 +317,7 @@ class helper_plugin_pluginrepo_repository extends Plugin
                 $values
             );
         } elseif ($type > 0 && $type <= $alltypes) {
-            $sql = "SELECT A.*, SUBSTR(A.plugin,10) as simplename
+            $sql = "    SELECT A.*, SUBSTR(A.plugin,10) as simplename
                         FROM plugins A
                         WHERE A.type = 32 AND $where_filtered
                             AND (A.type & :plugin_type)
@@ -427,8 +427,8 @@ class helper_plugin_pluginrepo_repository extends Plugin
 
         // default to all extensions
         if ($type == 0) {
-            foreach (array_keys($this->types) as $t) {
-                $type += $t;
+            foreach (array_keys($this->types) as $number) {
+                $type += $number;
             }
         }
 
@@ -1025,11 +1025,11 @@ class helper_plugin_pluginrepo_repository extends Plugin
     public function listtype($type, $target, $sep = ', ')
     {
         $types = [];
-        foreach ($this->types as $k => $v) {
-            if ($type & $k) {
-                $url = wl($target, ['plugintype' => $k]) . '#extension__table';
-                $types[] = '<a href="' . $url . '" class="wikilink1" title="List all ' . $v . ' plugins">'
-                        . $v
+        foreach ($this->types as $number => $label) {
+            if ($type & $number) {
+                $url = wl($target, ['plugintype' => $number]) . '#extension__table';
+                $types[] = '<a href="' . $url . '" class="wikilink1" title="List all ' . $label . ' plugins">'
+                        . $label
                         . '</a>';
             }
         }
@@ -1046,9 +1046,9 @@ class helper_plugin_pluginrepo_repository extends Plugin
     public function listtypes($type)
     {
         $types = [];
-        foreach ($this->types as $k => $v) {
-            if ($type & $k) {
-                $types[] = $v;
+        foreach ($this->types as $number => $label) {
+            if ($type & $number) {
+                $types[] = $label;
             }
         }
         sort($types);
@@ -1064,9 +1064,9 @@ class helper_plugin_pluginrepo_repository extends Plugin
     public function parsetype($types)
     {
         $type = 0;
-        foreach ($this->types as $k => $v) {
-            if (preg_match('#' . preg_quote($v) . '#i', $types)) {
-                $type += $k;
+        foreach ($this->types as $number => $label) {
+            if (preg_match('#' . preg_quote($label) . '#i', $types)) {
+                $type += $number;
             }
         }
         if ($type === 0 && $types === '') {

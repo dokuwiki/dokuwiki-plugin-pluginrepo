@@ -170,7 +170,7 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
         <p>
             $intro
         </p>
-        <form action="{$url}" accept-charset="utf-8" class="plugin-search" id="dw__search2" method="get">
+        <form action="$url" accept-charset="utf-8" class="plugin-search" id="dw__search2" method="get">
             <div class="no">
                 <input type="hidden" name="do" value="search" />
                 <input type="hidden" id="dw__ns" name="ns" value="$searchNS" />
@@ -258,9 +258,10 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
         $tagData = $this->hlp->getTags($data['cloudmin'], $data);
         // $tagData will be sorted by cnt (descending)
         foreach ($tagData as $tag) {
+            // obsolete plugins are not included in the table
             if ($tag['tag'] == $this->hlp->obsoleteTag) {
                 continue;
-            } // obsolete plugins are not included in the table
+            }
             $tags[$tag['tag']] = $tag['cnt'];
             if (!$max) {
                 $max = $tag['cnt'];

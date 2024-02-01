@@ -73,9 +73,9 @@ function getRepository()
         $feed .= '<type>';
         if ($plugin['type']) {
             $types = [];
-            foreach ($hlp->types as $k => $v) {
-                if ($plugin['type'] & $k) {
-                    $types[] = $v;
+            foreach ($hlp->types as $number => $label) {
+                if ($plugin['type'] & $number) {
+                    $types[] = $label;
                 }
             }
             sort($types);
