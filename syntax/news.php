@@ -105,7 +105,7 @@ class syntax_plugin_pluginrepo_news extends SyntaxPlugin
      *          headline: headline of new block
      *          link: link shown at the bottom of the news block
      *          linktext: text for the link
-     *          style: 'sameauthor' shows extensions of the same author (only on extension page), otherwise random picked
+     *          style: 'sameauthor' shows extensions of the same author (only on extension page), otherwise random pick
      *        ..more see functions below
      * @return  boolean rendered correctly? (however, returned value is not used at the moment)
      * @throws Exception

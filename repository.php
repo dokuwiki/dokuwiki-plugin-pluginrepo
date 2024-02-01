@@ -119,7 +119,8 @@ function getRepository()
             } else {
                 $feed .= '<screenshoturl>' . hsc($plugin['screenshot']) . '</screenshoturl>';
             }
-            $feed .= '<thumbnailurl>' . hsc(ml($plugin['screenshot'], ['cache' => 'cache', 'w' => 120, 'h' => 70], true, '&', true)) . '</thumbnailurl>';
+            $param = ['cache' => 'cache', 'w' => 120, 'h' => 70];
+            $feed .= '<thumbnailurl>' . hsc(ml($plugin['screenshot'], $param, true, '&', true)) . '</thumbnailurl>';
         }
 
         $feed .= '<downloadurl>' . hsc($plugin['downloadurl']) . '</downloadurl>';

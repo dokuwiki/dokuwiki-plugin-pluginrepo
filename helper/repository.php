@@ -2,7 +2,6 @@
 
 use dokuwiki\Extension\Plugin;
 use dokuwiki\Utf8\PhpString;
-use dokuwiki\Utf8\Sort;
 
 /**
  * DokuWiki plugin/template/popularity data repository API
@@ -66,7 +65,7 @@ class helper_plugin_pluginrepo_repository extends Plugin
         foreach ($lines as $line) {
             // ignore comments and bullet syntax
             $line = preg_replace('/(?<![&\\\\])#.*$/', '', $line);
-            $line = preg_replace('/^  \* /', '', $line);
+            $line = preg_replace('/^ {2}\* /', '', $line);
             $line = str_replace('\\#', '#', $line);
             $line = trim($line);
             if (empty($line)) {
@@ -75,10 +74,10 @@ class helper_plugin_pluginrepo_repository extends Plugin
             [$key, $value] = preg_split('/\s*:\s*/', $line, 2);
             $key = strtolower($key);
             $value = $this->convertToType($key, trim($value));
-            if ($data[$key] === '') {
-                $data[$key] .= ' ' . $value;
-            } else {
+            if (is_bool($data[$key]) || empty($data[$key])) {
                 $data[$key] = $value;
+            } else {
+                $data[$key] .= ' ' . $value;
             }
         }
         // sqlite plugin compability (formerly used for templates)
@@ -133,11 +132,12 @@ class helper_plugin_pluginrepo_repository extends Plugin
      * @param mixed|string $value
      * @return mixed|string
      */
-    public function truncateString($key, $value) {
-        $is50chars = [
-            'plugin',
-            'bestcompatible' //always based on values from config
-        ];
+    public function truncateString($key, $value)
+    {
+//        $is50chars = [
+//            'plugin',
+//            'bestcompatible' //always based on values from config
+//        ];
         $is255chars = [
             'name', 'description', 'author', 'email', 'compatible', 'securityissue', 'securitywarning',
             'updatemessage', 'downloadurl', 'bugtracker', 'sourcerepo', 'donationurl', 'screenshot', 'tags'
@@ -200,7 +200,11 @@ class helper_plugin_pluginrepo_repository extends Plugin
         global $conf;
         /** @var PDO $db */
         try {
-            $db = new PDO($this->getConf('db_name'), $this->getConf('db_user'), $this->getConf('db_pass'));
+            $db = new PDO(
+                $this->getConf('db_name'),
+                $this->getConf('db_user'),
+                $this->getConf('db_pass')
+            );
             $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {
@@ -273,7 +277,9 @@ class helper_plugin_pluginrepo_repository extends Plugin
         } else {
             [$bundledINsql, $bundledINvalues] = $this->prepareINstmt('bundled', $this->bundled);
 
-            $where_filtered = "'" . $this->obsoleteTag . "' NOT IN(SELECT tag FROM plugin_tags WHERE plugin_tags.plugin = A.plugin)"
+            $where_filtered = "'" . $this->obsoleteTag . "' NOT IN(SELECT tag
+                                                                   FROM plugin_tags
+                                                                   WHERE plugin_tags.plugin = A.plugin)"
                 . " AND A.securityissue = ''"
                 . " AND (A.downloadurl <> '' OR A.plugin " . $bundledINsql . ")";
             $values = $bundledINvalues;
@@ -294,48 +300,48 @@ class helper_plugin_pluginrepo_repository extends Plugin
             if ($type < 1 || $type > $alltypes) {
                 $type = $alltypes; //all types
             }
-            $sql = "      SELECT A.*, SUBSTR(A.plugin,10) as simplename
-                                          FROM plugins A
-                                         WHERE A.type = 32 AND $where_filtered
-                                           AND (A.type & :plugin_type)
-                                           AND :plugin_tag IN(SELECT tag FROM plugin_tags WHERE plugin_tags.plugin = A.plugin)
-                                 UNION
-                                        SELECT A.*, A.plugin as simplename
-                                          FROM plugins A
-                                         WHERE A.type <> 32 AND $where_filtered
-                                           AND (A.type & :plugin_type)
-                                           AND :plugin_tag IN(SELECT tag FROM plugin_tags WHERE plugin_tags.plugin = A.plugin)
-                                $sortsql";
+            $sql = "SELECT A.*, SUBSTR(A.plugin,10) as simplename
+                        FROM plugins A
+                        WHERE A.type = 32 AND $where_filtered
+                            AND (A.type & :plugin_type)
+                            AND :plugin_tag IN(SELECT tag FROM plugin_tags WHERE plugin_tags.plugin = A.plugin)
+                    UNION
+                        SELECT A.*, A.plugin as simplename
+                        FROM plugins A
+                        WHERE A.type <> 32 AND $where_filtered
+                            AND (A.type & :plugin_type)
+                            AND :plugin_tag IN(SELECT tag FROM plugin_tags WHERE plugin_tags.plugin = A.plugin)
+                            $sortsql";
             $values = array_merge(
                 [':plugin_tag' => $tag, ':plugin_type' => $type],
                 $values
             );
         } elseif ($type > 0 && $type <= $alltypes) {
-            $sql = "      SELECT A.*, SUBSTR(A.plugin,10) as simplename
-                                          FROM plugins A
-                                         WHERE A.type = 32 AND $where_filtered
-                                           AND (A.type & :plugin_type)
-                                 UNION
-                                        SELECT A.*, A.plugin as simplename
-                                          FROM plugins A
-                                         WHERE A.type <> 32 AND $where_filtered
-                                           AND (A.type & :plugin_type)
-                                 $sortsql";
+            $sql = "SELECT A.*, SUBSTR(A.plugin,10) as simplename
+                        FROM plugins A
+                        WHERE A.type = 32 AND $where_filtered
+                            AND (A.type & :plugin_type)
+                    UNION
+                        SELECT A.*, A.plugin as simplename
+                        FROM plugins A
+                        WHERE A.type <> 32 AND $where_filtered
+                            AND (A.type & :plugin_type)
+                            $sortsql";
             $values = array_merge(
                 [':plugin_type' => $type],
                 $values
             );
         } else {
-            $sql = "      SELECT A.*, SUBSTR(A.plugin,10) as simplename
-                                          FROM plugins A
-                                         WHERE A.type = 32 AND $where_filtered
-                                    $where_requested
-                                 UNION
-                                        SELECT A.*, A.plugin as simplename
-                                          FROM plugins A
-                                         WHERE A.type <> 32 AND $where_filtered
-                                    $where_requested
-                                 $sortsql";
+            $sql = "SELECT A.*, SUBSTR(A.plugin,10) as simplename
+                        FROM plugins A
+                        WHERE A.type = 32 AND $where_filtered
+                            $where_requested
+                    UNION
+                        SELECT A.*, A.plugin as simplename
+                        FROM plugins A
+                        WHERE A.type <> 32 AND $where_filtered
+                            $where_requested
+                            $sortsql";
 
             $values = array_merge(
                 $requestedINvalues,
@@ -563,7 +569,8 @@ class helper_plugin_pluginrepo_repository extends Plugin
                 $plugins[$i]['thumbnailurl']  = null;
             } else {
                 $plugins[$i]['screenshoturl'] = ml($plugins[$i]['screenshot'], '', true, '&', true);
-                $plugins[$i]['thumbnailurl']  = ml($plugins[$i]['screenshot'], ['w' => 120, 'h' => 70], true, '&', true);
+                $size = ['w' => 120, 'h' => 70];
+                $plugins[$i]['thumbnailurl']  = ml($plugins[$i]['screenshot'], $size, true, '&', true);
             }
             unset($plugins[$i]['screenshot']);
             unset($plugins[$i]['email']); // no spam
@@ -728,7 +735,9 @@ class helper_plugin_pluginrepo_repository extends Plugin
         if ($filter['showall']) {
             $shown = "1";
         } else {
-            $shown = "'" . $this->obsoleteTag . "' NOT IN(SELECT tag FROM plugin_tags WHERE plugin_tags.plugin = B.plugin)
+            $shown = "'" . $this->obsoleteTag . "' NOT IN(SELECT tag
+                                                          FROM plugin_tags
+                                                          WHERE plugin_tags.plugin = B.plugin)
                       AND B.securityissue = ''";
         }
         if ($filter['plugintype'] == 32) {
@@ -814,19 +823,24 @@ class helper_plugin_pluginrepo_repository extends Plugin
         }
 
         /** @var PDOStatement $stmt */
-        $stmt = $db->prepare('DELETE FROM plugins          WHERE plugin = ?');
+        $stmt = $db->prepare('DELETE FROM plugins
+                                    WHERE plugin = ?');
         $stmt->execute([$plugin]);
 
-        $stmt = $db->prepare('DELETE FROM plugin_tags      WHERE plugin = ?');
+        $stmt = $db->prepare('DELETE FROM plugin_tags
+                                    WHERE plugin = ?');
         $stmt->execute([$plugin]);
 
-        $stmt = $db->prepare('DELETE FROM plugin_similar   WHERE plugin = ? OR other = ?');
+        $stmt = $db->prepare('DELETE FROM plugin_similar
+                                    WHERE plugin = ? OR other = ?');
         $stmt->execute([$plugin, $plugin]);
 
-        $stmt = $db->prepare('DELETE FROM plugin_conflicts WHERE plugin = ? OR other = ?');
+        $stmt = $db->prepare('DELETE FROM plugin_conflicts
+                                    WHERE plugin = ? OR other = ?');
         $stmt->execute([$plugin, $plugin]);
 
-        $stmt = $db->prepare('DELETE FROM plugin_depends   WHERE plugin = ? OR other = ?');
+        $stmt = $db->prepare('DELETE FROM plugin_depends
+                                    WHERE plugin = ? OR other = ?');
         $stmt->execute([$plugin, $plugin]);
     }
 
@@ -863,7 +877,7 @@ class helper_plugin_pluginrepo_repository extends Plugin
             $releases = array_map('trim', $releases);
             $releases = array_filter($releases);
             foreach ($releases as $release) {
-                [$date, $name] = array_pad(preg_split('/(\s+"\s*|")/', $release),2, '');
+                [$date, $name] = array_pad(preg_split('/(\s+"\s*|")/', $release), 2, '');
                 $name = strtolower($name);
                 $rel = [
                     'date' => $date,
@@ -1074,7 +1088,8 @@ class helper_plugin_pluginrepo_repository extends Plugin
         $db->exec('CREATE TABLE plugin_depends (plugin varchar(50) NOT NULL, other varchar(50) NOT NULL);');
         $db->exec('CREATE TABLE plugin_similar (plugin varchar(50) NOT NULL, other varchar(50) NOT NULL);');
         $db->exec('CREATE TABLE plugin_tags (plugin varchar(50) NOT NULL, tag varchar(255) NOT NULL);');
-        $db->exec('CREATE TABLE plugins (plugin varchar(50) PRIMARY KEY NOT NULL, name varchar(255) default NULL,
+        $db->exec('CREATE TABLE plugins (
+            plugin varchar(50) PRIMARY KEY NOT NULL, name varchar(255) default NULL,
             description varchar(255) default NULL, author varchar(255) default NULL, email varchar(255) default NULL,
             compatible varchar(255) default NULL, lastupdate date default NULL, downloadurl varchar(255) default NULL,
             bugtracker varchar(255) default NULL, sourcerepo varchar(255) default NULL,
@@ -1082,8 +1097,7 @@ class helper_plugin_pluginrepo_repository extends Plugin
             screenshot varchar(255) default NULL, tags varchar(255) default NULL,
             securitywarning varchar(255) default NULL, securityissue varchar(255) NOT NULL,
             bestcompatible varchar(50) default NULL, popularity int default 0,
-            updatemessage varchar(50) default NULL);'
-        );
+            updatemessage varchar(50) default NULL);');
     }
 
     /**

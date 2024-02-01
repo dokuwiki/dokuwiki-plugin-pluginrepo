@@ -164,20 +164,23 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
             $searchNS = $ID;
         }
 
-        $R->doc .= '<p>';
-        $R->doc .= $this->getLang('t_searchintro_' . noNS($ID));
-        $R->doc .= '</p>';
-
-        $R->doc .= '<form action="' . wl() . '" accept-charset="utf-8" class="plugin-search" id="dw__search2" method="get">';
-        $R->doc .= '  <div class="no">';
-        $R->doc .= '    <input type="hidden" name="do" value="search" />';
-        $R->doc .= '    <input type="hidden" id="dw__ns" name="ns" value="' . $searchNS . '" />';
-        $R->doc .= '    <input type="text" id="qsearch2__in" accesskey="f" name="id" class="edit" />';
-        $R->doc .= '    <input type="submit" value="' . $this->getLang('t_btn_search') . '" class="button" title="'
-            . $this->getLang('t_btn_searchtip') . '" />';
-        $R->doc .= '    <div id="qsearch2__out" class="ajax_qsearch JSpopup"></div>';
-        $R->doc .= '  </div>';
-        $R->doc .= '</form>';
+        $intro = $this->getLang('t_searchintro_' . noNS($ID));
+        $url = wl();
+        $R->doc .= <<<HTML
+        <p>
+            $intro
+        </p>
+        <form action="{$url}" accept-charset="utf-8" class="plugin-search" id="dw__search2" method="get">
+            <div class="no">
+                <input type="hidden" name="do" value="search" />
+                <input type="hidden" id="dw__ns" name="ns" value="$searchNS" />
+                <input type="text" id="qsearch2__in" accesskey="f" name="id" class="edit" />
+                <input type="submit" value="{$this->getLang('t_btn_search')}"
+                       class="button" title="{$this->getLang('t_btn_searchtip')}" />
+                <div id="qsearch2__out" class="ajax_qsearch JSpopup"></div>
+            </div>
+        </form>
+        HTML;
     }
 
     /**
@@ -262,7 +265,7 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
             }
             $min = $tag['cnt'];
         }
-        $this->cloud_weight($tags, $min, $max, 5);
+        $this->cloudWeight($tags, $min, $max, 5);
 
         ksort($tags);
         if (count($tags) > 0) {
@@ -284,7 +287,7 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
      * @param int   $max
      * @param int   $levels
      */
-    public function cloud_weight(&$tags, $min, $max, $levels)
+    public function cloudWeight(&$tags, $min, $max, $levels)
     {
         // calculate tresholds
         $tresholds = [];
