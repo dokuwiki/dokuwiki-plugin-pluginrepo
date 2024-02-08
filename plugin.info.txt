@@ -1,8 +1,8 @@
 base   pluginrepo
 author Andreas Gohr/Håkan Sandell
 email  sandell.hakan@gmail.com
-date   2024-01-30
+date   2024-02-09
 name   Repository plugin
-desc   Helps organizing the plugin repository
-url    http://www.dokuwiki.org/plugin:pluginrepo
+desc   Helps organizing the plugin and template repository
+url    https://www.dokuwiki.org/plugin:repository
 minphp 7.4
