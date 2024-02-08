@@ -108,7 +108,7 @@ class helper_plugin_pluginrepo_repository extends Plugin
     public function convertToType($key, $value)
     {
         $hasYesValue = ['showall', 'includetemplates', 'showcompatible', 'showscreenshot'];
-        $hasNoValue = ['random'];
+        $hasNoValue = ['random', 'onlyrecent'];
         $isInteger = ['entries', 'plugintype', 'cloudmin'];
         if (in_array($key, $hasYesValue)) {
             $value = $value == 'yes';
@@ -243,6 +243,7 @@ class helper_plugin_pluginrepo_repository extends Plugin
      *   <li>'pluginsort' (string) sort by some specific columns (also shortcuts available)</li>
      *   <li>'showall'    (bool) default/unset is false and obsolete plugins and security issues are not returned</li>
      *   <li>'includetemplates' (bool) default/unset is false and template data will not be returned</li>
+     *   <li>'onlyrecent' (bool) include only extensions which are marked compatible with last 2 releases</li>
      * </ul>
      * @return array data per plugin
      */
@@ -277,12 +278,29 @@ class helper_plugin_pluginrepo_repository extends Plugin
         } else {
             [$bundledINsql, $bundledINvalues] = $this->prepareINstmt('bundled', $this->bundled);
 
-            $where_filtered = "'" . $this->obsoleteTag . "' NOT IN(SELECT tag
-                                                                   FROM plugin_tags
-                                                                   WHERE plugin_tags.plugin = A.plugin)"
-                . " AND A.securityissue = ''"
-                . " AND (A.downloadurl <> '' OR A.plugin " . $bundledINsql . ")";
+            $where_filtered = "'$this->obsoleteTag' NOT IN(SELECT tag
+                                                           FROM plugin_tags
+                                                           WHERE plugin_tags.plugin = A.plugin)
+                                AND A.securityissue = ''
+                                AND (A.downloadurl <> '' OR A.plugin $bundledINsql)";
             $values = $bundledINvalues;
+
+            if ($filter['onlyrecent']) {
+                $rows = 0;
+                $recentDates = [];
+                foreach ($this->getDokuReleases() as $release) {
+                    if (++$rows > 2) {
+                        break;
+                    }
+                    $recentDates[] = $release['date'];
+                }
+                [$compatibilityINsql, $compatibilityINvalues] = $this->prepareINstmt('bestcompat', $recentDates);
+                $where_filtered .= " AND A.bestcompatible  $compatibilityINsql";
+                $values = array_merge(
+                    $compatibilityINvalues,
+                    $values
+                );
+            }
         }
         if (!$filter['includetemplates']) {
             $where_filtered .= " AND A.type <> 32"; // templates are only type=32, has no other type.

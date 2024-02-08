@@ -347,7 +347,8 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
             'plugintag' => $data['plugintag'] ?: trim($INPUT->str('plugintag')),
             'pluginsort' => $data['pluginsort'] ?: strtolower(trim($INPUT->str('pluginsort'))),
             'showall' => $data['showall'] ?: $INPUT->str('showall') == 'yes',
-            'includetemplates' => $data['includetemplates'] ?: $INPUT->str('includetemplates') == 'yes'
+            'includetemplates' => $data['includetemplates'] ?: $INPUT->str('includetemplates') == 'yes',
+            'onlyrecent' => false
         ];
         $plugins = $this->hlp->getPlugins($request);
 

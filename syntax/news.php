@@ -92,6 +92,7 @@ class syntax_plugin_pluginrepo_news extends SyntaxPlugin
             'pluginsort' => '',
             'showall' => false,
             'includetemplates' => false,
+            'onlyrecent' => true
         ];
         return $this->hlp->parseData($match, $initialData);
     }
@@ -188,6 +189,7 @@ class syntax_plugin_pluginrepo_news extends SyntaxPlugin
      *              <li>'pluginsort' str shortcuts assumed</li>
      *              <li>'showall' bool</li>
      *              <li>'includetemplates' bool</li>
+     *              <li>'onlyrecent' bool</li>
      *          </ul>
      *      </li>
      *  </ul>
