@@ -111,14 +111,16 @@ class helper_plugin_pluginrepo_repository extends Plugin
         $hasNoValue = ['random', 'onlyrecent'];
         $isInteger = ['entries', 'plugintype', 'cloudmin'];
         if (in_array($key, $hasYesValue)) {
-            $value = $value == 'yes';
+            $value = strtolower($value) == 'yes';
         }
         if (in_array($key, $hasNoValue)) {
-            $value = $value == 'no';
+            $value = strtolower($value) != 'no';
         }
         if (in_array($key, $isInteger)) {
             if (is_numeric($value)) {
                 $value = (int) $value;
+            } else {
+                $value = 0;
             }
         }
 
