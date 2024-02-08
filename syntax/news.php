@@ -164,10 +164,10 @@ class syntax_plugin_pluginrepo_news extends SyntaxPlugin
         }
 
         $limit = $data['entries'] > 0 ? $data['entries'] : 10;
-        $itr = 0;
+        $i = 0;
         $R->doc .= '<ul>';
-        while ($itr < count($rel['sameauthor']) && $itr < $limit) {
-            $R->doc .= '<li>' . $this->hlp->pluginlink($R, $rel['sameauthor'][$itr++]) . '</li>';
+        while ($i < count($rel['sameauthor']) && $i < $limit) {
+            $R->doc .= '<li>' . $this->hlp->pluginlink($R, $rel['sameauthor'][$i++]) . '</li>';
         }
         $R->doc .= '</ul>';
     }
