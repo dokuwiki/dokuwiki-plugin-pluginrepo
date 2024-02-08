@@ -198,13 +198,17 @@ class syntax_plugin_pluginrepo_news extends SyntaxPlugin
      */
     public function showDefault($R, $data)
     {
-        $limit = $data['entries'] > 0 ? $data['entries'] : 1;
         $plugins = $this->hlp->getPlugins($data);
+
+        $limit = $data['entries'] > 0 ? $data['entries'] : 1;
+        $limit = min($limit, count($plugins));
+
         if ($data['random']) {
-            $start = random_int(0, count($plugins) - 1 - $limit);
+            $start = random_int(0, count($plugins) - $limit);
         } else {
             $start = 0;
         }
+
         for ($i = 0; $i < $limit; $i++) {
             $row = $plugins[$start + $i];
             $linkText = ucfirst(noNS($row['plugin'])) . ($row['type'] == 32 ? ' template' : ' plugin');
