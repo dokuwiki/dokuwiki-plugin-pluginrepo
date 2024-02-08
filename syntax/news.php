@@ -158,7 +158,7 @@ class syntax_plugin_pluginrepo_news extends SyntaxPlugin
         }
 
         $rel = $this->hlp->getPluginRelations($id);
-        if (count($rel) == 0) {
+        if (count($rel['sameauthor']) == 0) {
             $R->doc .= '<p class="nothing">Can\'t find any other plugins or templates</p>';
             return;
         }
