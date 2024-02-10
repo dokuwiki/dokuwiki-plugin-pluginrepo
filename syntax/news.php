@@ -92,6 +92,7 @@ class syntax_plugin_pluginrepo_news extends SyntaxPlugin
             'pluginsort' => '',
             'showall' => false,
             'includetemplates' => false,
+            'onlyrecent' => true
         ];
         return $this->hlp->parseData($match, $initialData);
     }
@@ -142,7 +143,9 @@ class syntax_plugin_pluginrepo_news extends SyntaxPlugin
      *
      * @param Doku_Renderer_xhtml $R
      * @param array $data used entries:
-     *          entries: number of plugins/templates displayed, otherwise 10
+     *  <ul>
+     *      <li>entries: number of plugins/templates displayed, otherwise 10</li>
+     *  </ul>
      */
     public function showSameAuthor($R, $data)
     {
@@ -155,16 +158,16 @@ class syntax_plugin_pluginrepo_news extends SyntaxPlugin
         }
 
         $rel = $this->hlp->getPluginRelations($id);
-        if (count($rel) == 0) {
+        if (count($rel['sameauthor']) == 0) {
             $R->doc .= '<p class="nothing">Can\'t find any other plugins or templates</p>';
             return;
         }
 
         $limit = $data['entries'] > 0 ? $data['entries'] : 10;
-        $itr = 0;
+        $i = 0;
         $R->doc .= '<ul>';
-        while ($itr < count($rel['sameauthor']) && $itr < $limit) {
-            $R->doc .= '<li>' . $this->hlp->pluginlink($R, $rel['sameauthor'][$itr++]) . '</li>';
+        while ($i < count($rel['sameauthor']) && $i < $limit) {
+            $R->doc .= '<li>' . $this->hlp->pluginlink($R, $rel['sameauthor'][$i++]) . '</li>';
         }
         $R->doc .= '</ul>';
     }
@@ -174,22 +177,38 @@ class syntax_plugin_pluginrepo_news extends SyntaxPlugin
      *
      * @param Doku_Renderer_xhtml $R
      * @param array $data used entries:
-     *         entries: number of plugins/templates displayed, otherwise 1
-     *         random: if 'no' the plugin/template is not selected randomly
-     *         screenshot: if 'yes' a screenshot is shown
-     *      and used by the filtering:
-     *
+     *  <ul>
+     *      <li>entries: number of plugins/templates displayed, otherwise 1</li>
+     *      <li>random: if 'no' the plugin/template is not selected randomly</li>
+     *      <li>screenshot: if 'yes' a screenshot is shown</li>
+     *      <li>via getPlugins():
+     *          <ul>
+     *              <li>'plugins' array or str, if used plugintype and plugintag are skipped</li>
+     *              <li>'plugintype' int,</li>
+     *              <li>'plugintag' str</li>
+     *              <li>'pluginsort' str shortcuts assumed</li>
+     *              <li>'showall' bool</li>
+     *              <li>'includetemplates' bool</li>
+     *              <li>'onlyrecent' bool</li>
+     *          </ul>
+     *      </li>
+     *  </ul>
      * @throws Exception
+     * @see helper_plugin_pluginrepo_repository::getPlugins()
      */
     public function showDefault($R, $data)
     {
-        $limit = $data['entries'] > 0 ? $data['entries'] : 1;
         $plugins = $this->hlp->getPlugins($data);
+
+        $limit = $data['entries'] > 0 ? $data['entries'] : 1;
+        $limit = min($limit, count($plugins));
+
         if ($data['random']) {
-            $start = random_int(0, count($plugins) - 1 - $limit);
+            $start = random_int(0, count($plugins) - $limit);
         } else {
             $start = 0;
         }
+
         for ($i = 0; $i < $limit; $i++) {
             $row = $plugins[$start + $i];
             $linkText = ucfirst(noNS($row['plugin'])) . ($row['type'] == 32 ? ' template' : ' plugin');
@@ -198,8 +217,9 @@ class syntax_plugin_pluginrepo_news extends SyntaxPlugin
 
             $url = $row['screenshot'];
             if ($url && $data['showscreenshot']) {
-                $R->doc .= '<a href="' . ml($url) . '" class="media screenshot" rel="lightbox">';
-                $R->doc .= '<img src="' . ml($url, "w=200") . '" alt="" width="200" /></a>';
+                $R->doc .= '<a href="' . ml($url) . '" class="media screenshot" rel="lightbox">'
+                    . '<img src="' . ml($url, "w=200") . '" alt="" width="200" />'
+                    . '</a>';
             }
 
             $R->doc .= '<p class="author">Author: ';

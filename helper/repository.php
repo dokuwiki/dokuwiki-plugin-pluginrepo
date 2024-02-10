@@ -12,7 +12,7 @@ use dokuwiki\Utf8\PhpString;
  */
 class helper_plugin_pluginrepo_repository extends Plugin
 {
-    public array $dokuReleases = []; // array of DokuWiki releases (name & date)
+    private array $dokuReleases = []; // array of DokuWiki releases (name & date)
 
     public array $types = [
         1   => 'Syntax',
@@ -108,17 +108,19 @@ class helper_plugin_pluginrepo_repository extends Plugin
     public function convertToType($key, $value)
     {
         $hasYesValue = ['showall', 'includetemplates', 'showcompatible', 'showscreenshot'];
-        $hasNoValue = ['random'];
+        $hasNoValue = ['random', 'onlyrecent'];
         $isInteger = ['entries', 'plugintype', 'cloudmin'];
         if (in_array($key, $hasYesValue)) {
-            $value = $value == 'yes';
+            $value = strtolower($value) == 'yes';
         }
         if (in_array($key, $hasNoValue)) {
-            $value = $value == 'no';
+            $value = strtolower($value) != 'no';
         }
         if (in_array($key, $isInteger)) {
             if (is_numeric($value)) {
                 $value = (int) $value;
+            } else {
+                $value = 0;
             }
         }
 
@@ -237,12 +239,13 @@ class helper_plugin_pluginrepo_repository extends Plugin
      *
      * @param array $filter with entries used
      * <ul>
-     *   <li>'plugins'    (array) returns only data of named plugins</li>
+     *   <li>'plugins'    (array|string) returns only data of named plugins</li>
      *   <li>'plugintype' (integer) filter by type, binary-code decimal so you can combine types</li>
      *   <li>'plugintag'  (string) filter by one tag</li>
      *   <li>'pluginsort' (string) sort by some specific columns (also shortcuts available)</li>
      *   <li>'showall'    (bool) default/unset is false and obsolete plugins and security issues are not returned</li>
      *   <li>'includetemplates' (bool) default/unset is false and template data will not be returned</li>
+     *   <li>'onlyrecent' (bool) include only extensions which are marked compatible with last 2 releases</li>
      * </ul>
      * @return array data per plugin
      */
@@ -277,12 +280,29 @@ class helper_plugin_pluginrepo_repository extends Plugin
         } else {
             [$bundledINsql, $bundledINvalues] = $this->prepareINstmt('bundled', $this->bundled);
 
-            $where_filtered = "'" . $this->obsoleteTag . "' NOT IN(SELECT tag
-                                                                   FROM plugin_tags
-                                                                   WHERE plugin_tags.plugin = A.plugin)"
-                . " AND A.securityissue = ''"
-                . " AND (A.downloadurl <> '' OR A.plugin " . $bundledINsql . ")";
+            $where_filtered = "'$this->obsoleteTag' NOT IN(SELECT tag
+                                                           FROM plugin_tags
+                                                           WHERE plugin_tags.plugin = A.plugin)
+                                AND A.securityissue = ''
+                                AND (A.downloadurl <> '' OR A.plugin $bundledINsql)";
             $values = $bundledINvalues;
+
+            if ($filter['onlyrecent']) {
+                $rows = 0;
+                $recentDates = [];
+                foreach ($this->getDokuReleases() as $release) {
+                    if (++$rows > 2) {
+                        break;
+                    }
+                    $recentDates[] = $release['date'];
+                }
+                [$compatibilityINsql, $compatibilityINvalues] = $this->prepareINstmt('bestcompat', $recentDates);
+                $where_filtered .= " AND A.bestcompatible  $compatibilityINsql";
+                $values = array_merge(
+                    $compatibilityINvalues,
+                    $values
+                );
+            }
         }
         if (!$filter['includetemplates']) {
             $where_filtered .= " AND A.type <> 32"; // templates are only type=32, has no other type.
@@ -292,15 +312,15 @@ class helper_plugin_pluginrepo_repository extends Plugin
         $sortsql = $this->getPluginsSortSql($sort);
 
         $alltypes = 0;
-        foreach (array_keys($this->types) as $t) {
-            $alltypes += $t;
+        foreach (array_keys($this->types) as $number) {
+            $alltypes += $number;
         }
 
         if ($tag) {
             if ($type < 1 || $type > $alltypes) {
                 $type = $alltypes; //all types
             }
-            $sql = "SELECT A.*, SUBSTR(A.plugin,10) as simplename
+            $sql = "    SELECT A.*, SUBSTR(A.plugin,10) as simplename
                         FROM plugins A
                         WHERE A.type = 32 AND $where_filtered
                             AND (A.type & :plugin_type)
@@ -317,7 +337,7 @@ class helper_plugin_pluginrepo_repository extends Plugin
                 $values
             );
         } elseif ($type > 0 && $type <= $alltypes) {
-            $sql = "SELECT A.*, SUBSTR(A.plugin,10) as simplename
+            $sql = "    SELECT A.*, SUBSTR(A.plugin,10) as simplename
                         FROM plugins A
                         WHERE A.type = 32 AND $where_filtered
                             AND (A.type & :plugin_type)
@@ -427,8 +447,8 @@ class helper_plugin_pluginrepo_repository extends Plugin
 
         // default to all extensions
         if ($type == 0) {
-            foreach (array_keys($this->types) as $t) {
-                $type += $t;
+            foreach (array_keys($this->types) as $number) {
+                $type += $number;
             }
         }
 
@@ -1025,11 +1045,11 @@ class helper_plugin_pluginrepo_repository extends Plugin
     public function listtype($type, $target, $sep = ', ')
     {
         $types = [];
-        foreach ($this->types as $k => $v) {
-            if ($type & $k) {
-                $url = wl($target, ['plugintype' => $k]) . '#extension__table';
-                $types[] = '<a href="' . $url . '" class="wikilink1" title="List all ' . $v . ' plugins">'
-                        . $v
+        foreach ($this->types as $number => $label) {
+            if ($type & $number) {
+                $url = wl($target, ['plugintype' => $number]) . '#extension__table';
+                $types[] = '<a href="' . $url . '" class="wikilink1" title="List all ' . $label . ' plugins">'
+                        . $label
                         . '</a>';
             }
         }
@@ -1046,9 +1066,9 @@ class helper_plugin_pluginrepo_repository extends Plugin
     public function listtypes($type)
     {
         $types = [];
-        foreach ($this->types as $k => $v) {
-            if ($type & $k) {
-                $types[] = $v;
+        foreach ($this->types as $number => $label) {
+            if ($type & $number) {
+                $types[] = $label;
             }
         }
         sort($types);
@@ -1064,9 +1084,9 @@ class helper_plugin_pluginrepo_repository extends Plugin
     public function parsetype($types)
     {
         $type = 0;
-        foreach ($this->types as $k => $v) {
-            if (preg_match('#' . preg_quote($v) . '#i', $types)) {
-                $type += $k;
+        foreach ($this->types as $number => $label) {
+            if (preg_match('#' . preg_quote($label) . '#i', $types)) {
+                $type += $number;
             }
         }
         if ($type === 0 && $types === '') {

@@ -170,7 +170,7 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
         <p>
             $intro
         </p>
-        <form action="{$url}" accept-charset="utf-8" class="plugin-search" id="dw__search2" method="get">
+        <form action="$url" accept-charset="utf-8" class="plugin-search" id="dw__search2" method="get">
             <div class="no">
                 <input type="hidden" name="do" value="search" />
                 <input type="hidden" id="dw__ns" name="ns" value="$searchNS" />
@@ -236,10 +236,12 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
      *
      * @param Doku_Renderer_xhtml $R
      * @param array $data with entries used:
-     *   'cloudmin' int,
-     *   'showall' => bool,
-     *   'plugintype' => 32 or different type,
-     *   'includetemplates' => bool
+     *  <ul>
+     *      <li>'cloudmin' int,</li>
+     *      <li>'showall' => bool,</li>
+     *      <li>'plugintype' => 32 or different type,</li>
+     *      <li>'includetemplates' => bool</li>
+     *  </ul>
      */
     public function tagcloud($R, $data)
     {
@@ -256,9 +258,10 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
         $tagData = $this->hlp->getTags($data['cloudmin'], $data);
         // $tagData will be sorted by cnt (descending)
         foreach ($tagData as $tag) {
+            // obsolete plugins are not included in the table
             if ($tag['tag'] == $this->hlp->obsoleteTag) {
                 continue;
-            } // obsolete plugins are not included in the table
+            }
             $tags[$tag['tag']] = $tag['cnt'];
             if (!$max) {
                 $max = $tag['cnt'];
@@ -312,28 +315,40 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
      *
      * @param Doku_Renderer_xhtml $R
      * @param array $data with entries used:
-     * via getPlugins():
-     *  'plugintype' int,
-     *  'plugintag' str
-     *  'pluginsort' str shortcuts assumed
-     *  'showall' bool
-     *  'includetemplates' bool
-     * via showTable():
-     *  'showcompatible' bool
-     *  'showscreenshot' bool
+     *  <ul>
+     *      <li>via getPlugins():
+     *          <ul>
+     *              <li>'plugins' array or str, if used plugintype and plugintag are skipped</li>
+     *              <li>'plugintype' int,</li>
+     *              <li>'plugintag' str</li>
+     *              <li>'pluginsort' str shortcuts assumed</li>
+     *              <li>'showall' bool</li>
+     *              <li>'includetemplates' bool</li>
+     *          </ul>
+     *      </li>
+     *      <li>via showTable():
+     *          <ul>
+     *              <li>'showcompatible' bool</li>
+     *              <li>'showscreenshot' bool</li>
+     *          </ul>
+     *      </li>
+     *  </ul>
      * @return bool
+     * @see helper_plugin_pluginrepo_repository::getPlugins()
      */
     public function showPluginTable($R, $data)
     {
         global $ID, $INPUT;
+
         //if set in syntax it overrides the url parameters
         $request = [
-            'plugins' => $data['plugins'] ?: $INPUT->arr('plugins'),  //TODO support also string?
+            'plugins' => $data['plugins'] ?: $INPUT->arr('plugins'), //only array format as url parameter
             'plugintype' => $data['plugintype'] ?: $INPUT->int('plugintype'),
             'plugintag' => $data['plugintag'] ?: trim($INPUT->str('plugintag')),
             'pluginsort' => $data['pluginsort'] ?: strtolower(trim($INPUT->str('pluginsort'))),
             'showall' => $data['showall'] ?: $INPUT->str('showall') == 'yes',
-            'includetemplates' => $data['includetemplates'] ?: $INPUT->str('includetemplates') == 'yes'
+            'includetemplates' => $data['includetemplates'] ?: $INPUT->str('includetemplates') == 'yes',
+            'onlyrecent' => false
         ];
         $plugins = $this->hlp->getPlugins($request);
 
@@ -365,7 +380,7 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
             $R->doc .= '</div>';
         }
 
-        // reset to show all when filtered
+        // show reset link when filtered
         if ($type > 0 || $tag || $request['pluginsort']) {
             $R->doc .= '<div class="resetFilter">';
             $R->doc .= $R->internallink($ID, $this->getLang('t_resetfilter'));
