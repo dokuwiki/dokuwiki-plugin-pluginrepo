@@ -332,7 +332,7 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
             // compatible to older releases
             } elseif (!$uptodate) {
                 $R->doc .= '<p>';
-                $R->doc .= $data['compatible'];
+                $R->doc .= hsc($data['compatible']);
                 $R->doc .= '</p>';
             // compatible to recent releases
             } else {
