@@ -3,8 +3,8 @@
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  *
+ * @author Hideaki Sawada <sawadakun@gmail.com>
  * @author HokkaidoPerson <dosankomali@yahoo.co.jp>
- * @author Hideaki SAWADA <chuno@live.jp>
  * @author Nobuyuki Fukuyori <self@spumoni.org>
  */
 $lang['by']                    = '作者';
@@ -33,6 +33,9 @@ $lang['securityrecommendation'] = 'この問題が修正されるまで、この
 $lang['securitylink']          = 'プラグインのセキュリティガイドライン';
 $lang['name_underscore']       = 'プラグイン名にアンダースコアがあるため、人気のポイントを生成しません。';
 $lang['name_oldage']           = 'この拡張は二年以上更新されていません。もはや維持管理や対応がされておらず、互換性に問題がある可能性があります。';
+$lang['extension_obsoleted']   = '<strong>この拡張機能は廃止済みになっています。</strong> そのため、拡張機能管理と拡張機能一覧には表示されません。さらに、削除の候補です。';
+$lang['missing_downloadurl']   = 'ダウンロード URL が見つからないということは、この拡張機能を拡張機能管理経由でインストールできないことを意味します。<a href="/devel:plugins#publishing_a_plugin_on_dokuwikiorg" class="wikilink1" title="devel:plugins">Publishing a Plugin on dokuwiki.org</a> を参照してください。GitHub、GitLab、Bitbucket などのパブリックリポジトリホストの使用をお勧めします。';
+$lang['wrongnamespace']        = 'この拡張機能は \'plugin\' または \'template\' 名前空間にないため、無視されます。';
 $lang['downloadurl']           = 'ダウンロード';
 $lang['bugtracker']            = 'バグ報告先';
 $lang['sourcerepo']            = 'リポジトリ';
@@ -54,6 +57,7 @@ $lang['t_typehelper']          = '%s プラグインは他のプラグインが�
 $lang['t_typetemplate']        = '%s は DokuWiki のルック·アンド·フィールを変更します。';
 $lang['t_typeremote']          = '%s プラグインはWebサービスを使ってアクセスする方式を RemoteAPI に追加します。';
 $lang['t_typeauth']            = '%s プラグインは、認証モジュールを追加します。';
+$lang['t_typecli']             = '%s プラグインはコマンドラインインターフェースで使用するコマンドを追加します。';
 $lang['t_filterbytag']         = 'タグで抽出する。';
 $lang['t_availabletype']       = '利用可能な %s プラグイン';
 $lang['t_availabletagged']     = '\'%s\' タグ付き';
