@@ -220,7 +220,15 @@ class syntax_plugin_pluginrepo_entry extends SyntaxPlugin
         if ($data['screenshot_img']) {
             $url = $data['screenshot_img'];
             $title = sprintf($this->getLang('screenshot_title'), noNS($ID));
-            $R->doc .= '<a href="' . ml($url) . '" class="media screenshot" title="' . $title . '" rel="lightbox">';
+            $attr = [
+                'href' => ml($url, '', true, '&'),
+                'class' => 'media screenshot',
+                'title' => $title,
+                'rel' => 'lightbox',
+                'data-url' => ml($url, '', true, '&'),
+            ];
+
+            $R->doc .= '<a '.buildAttributes($attr).'>';
             $R->doc .= '<img src="' . ml($url, "w=220") . '" alt="" width="220" /></a>';
         }
 
