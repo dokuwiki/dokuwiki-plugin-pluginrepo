@@ -530,7 +530,15 @@ class syntax_plugin_pluginrepo_table extends SyntaxPlugin
                 $val = $row['screenshot'];
                 if ($val) {
                     $title = sprintf($this->getLang('screenshot_title'), noNS($row['plugin']));
-                    $R->doc .= '<a href="' . ml($val) . '" class="media" title="' . $title . '" rel="lightbox">';
+                    $attr = [
+                        'href' => ml($val, '', true, '&'),
+                        'class' => 'media',
+                        'rel' => 'lightbox',
+                        'data-url' => ml($val, '', true, '&'),
+                        'title' => $title,
+                        'data-caption' => $title,
+                    ];
+                    $R->doc .= '<a ' . buildAttributes($attr) . '>';
                     $R->doc .= '<img src="' . ml($val, "w=80") . '" alt="" width="80" /></a>';
                 }
                 $R->doc .= '</td>';
