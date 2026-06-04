@@ -1,0 +1,85 @@
+<?php
+
+/**
+ * @license    GPL 2 (https://www.gnu.org/licenses/gpl.html)
+ *
+ * @author Wizzard <wizzardsk@gmail.com>
+ */
+$lang['by']                    = 'od';
+$lang['last_updated_on']       = 'Naposledy aktualizované';
+$lang['provides']              = 'Poskytuje';
+$lang['compatible_with']       = 'Kompatibilné s DokuWiki%s';
+$lang['compatible_with_info']  = 'Aktualizujte prosím toto pole';
+$lang['no_compatibility']      = 'Nie sú uvedené informácie o kompatibilite!';
+$lang['compatible_unknown']    = 'neznáme';
+$lang['compatible_yes']        = 'áno';
+$lang['compatible_no']         = 'nie';
+$lang['compatible_probably']   = 'pravdepodobne';
+$lang['develonly']             = 'Iba vývojová verzia';
+$lang['conflicts_with']        = 'V konflikte s';
+$lang['requires']              = 'Vyžaduje';
+$lang['similar_to']            = 'Podobné ako';
+$lang['tagged_with']           = 'Označené tagmi';
+$lang['needed_for']            = 'Potrebné pre';
+$lang['securitywarning']       = 'Bezpečnostné upozornenie (prečítajte si %s):';
+$lang['security_informationleak'] = 'Toto rozšírenie odhaľuje informácie, ktoré môžu byť cenné pre útočníka. Vo verejnej inštalácii sa neodporúča.';
+$lang['security_allowsscript'] = 'Toto rozšírenie umožňuje spúšťanie skriptov. Malo by sa používať iba vtedy, keď dôverujete VŠETKÝM editorom, najvhodnejšie je pre súkromné osobné wiki.';
+$lang['security_requirespatch'] = 'Toto rozšírenie vyžaduje patchovanie jadra DokuWiki. Manuálne patche môžu narušiť kompatibilitu s inými rozšíreniami a sťažiť zabezpečenie inštalácie aktualizáciou na najnovšiu verziu.';
+$lang['security_partlyhidden'] = 'Skrývanie častí DokuWiki stránky nie je podporované jadrom. Väčšina pokusov o zavedenie ACL kontroly pre časti stránky spôsobí únik informácií cez RSS feed, vyhľadávanie alebo inú funkcionalitu jadra.';
+$lang['securityissue']         = 'Pre toto rozšírenie bol nahlásený nasledujúci bezpečnostný problém:';
+$lang['securityrecommendation'] = 'Neodporúča sa používať toto rozšírenie, kým nebude tento problém opravený. Autori rozšírení by si mali prečítať %s';
+$lang['securitylink']          = 'bezpečnostné pokyny pre pluginy';
+$lang['name_underscore']       = 'Názov rozšírenia obsahuje podčiarkovník, nebudú sa generovať body popularity.';
+$lang['name_oldage']           = 'Toto rozšírenie nebolo aktualizované viac ako 2 roky. Možno už nie je udržiavané ani podporované a môže mať problémy s kompatibilitou.';
+$lang['extension_obsoleted']   = '<strong>Toto rozšírenie je označené ako zastarané.</strong> Preto je skryté v Správcovi rozšírení aj v zozname rozšírení. Navyše je kandidátom na odstránenie.';
+$lang['missing_downloadurl']   = 'Chýbajúca URL na stiahnutie znamená, že toto rozšírenie nie je možné nainštalovať cez Správcu rozšírení. Pozrite si <a href="/devel:plugins#publishing_a_plugin_on_dokuwikiorg" class="wikilink1" title="devel:plugins">Publishing a Plugin on dokuwiki.org</a>. Odporúčané sú verejné hostingy repozitárov ako GitHub, GitLab alebo Bitbucket.';
+$lang['wrongnamespace']        = 'Toto rozšírenie nie je v mennom priestore \'plugin\' ani \'template\', a preto je ignorované.';
+$lang['downloadurl']           = 'Stiahnuť';
+$lang['bugtracker']            = 'Nahlásiť chyby';
+$lang['sourcerepo']            = 'Repozitár';
+$lang['source']                = 'Zdrojový kód';
+$lang['donationurl']           = 'Prispieť';
+$lang['more_extensions']       = 'a %d ďalších';
+$lang['t_search_plugins']      = 'Hľadať pluginy';
+$lang['t_search_template']     = 'Hľadať šablóny';
+$lang['t_searchintro_plugins'] = 'Filtrujte dostupné pluginy podľa typu alebo pomocou tag cloudu. Vyhľadávacím poľom môžete hľadať aj v mennom priestore pluginov.';
+$lang['t_searchintro_template'] = 'Filtrujte dostupné šablóny pomocou tag cloudu. Vyhľadávacím poľom môžete hľadať aj v mennom priestore šablón.';
+$lang['t_btn_search']          = 'Hľadať';
+$lang['t_btn_searchtip']       = 'Hľadať v mennom priestore';
+$lang['t_filterbytype']        = 'Filtrovať podľa typu';
+$lang['t_typesyntax']          = '%s pluginy rozširujú základnú syntax DokuWiki.';
+$lang['t_typeaction']          = '%s pluginy nahrádzajú alebo rozširujú základnú funkcionalitu DokuWiki';
+$lang['t_typeadmin']           = '%s pluginy poskytujú ďalšie administračné nástroje';
+$lang['t_typerender']          = '%s pluginy pridávajú nové režimy exportu alebo nahrádzajú štandardný XHTML renderer';
+$lang['t_typehelper']          = '%s pluginy poskytujú funkcionalitu zdieľanú inými pluginmi';
+$lang['t_typetemplate']        = '%s mení vzhľad DokuWiki';
+$lang['t_typeremote']          = '%s pluginy pridávajú metódy do RemoteAPI dostupného cez webové služby';
+$lang['t_typeauth']            = '%s pluginy pridávajú autentifikačné moduly';
+$lang['t_typecli']             = '%s pluginy pridávajú príkazy pre použitie v príkazovom riadku';
+$lang['t_filterbytag']         = 'Filtrovať podľa tagu';
+$lang['t_availabletype']       = 'Dostupné %s pluginy';
+$lang['t_availabletagged']     = 'Označené tagom \'%s\'';
+$lang['t_availableplugins']    = 'Všetky dostupné';
+$lang['t_jumptoplugins']       = 'Prejsť na prvé rozšírenie začínajúce na:';
+$lang['t_resetfilter']         = 'Zobraziť všetko (zrušiť filter/zoradenie)';
+$lang['t_oldercompatibility']  = 'Kompatibilné so staršími verziami DokuWiki';
+$lang['t_name_plugins']        = 'Plugin';
+$lang['t_name_template']       = 'Šablóna';
+$lang['t_sortname']            = 'Zoradiť podľa názvu';
+$lang['t_description']         = 'Popis';
+$lang['t_author']              = 'Autor';
+$lang['t_sortauthor']          = 'Zoradiť podľa autora';
+$lang['t_type']                = 'Typ';
+$lang['t_sorttype']            = 'Zoradiť podľa typu';
+$lang['t_date']                = 'Posledná aktualizácia';
+$lang['t_sortdate']            = 'Zoradiť podľa dátumu';
+$lang['t_popularity']          = 'Popularita';
+$lang['t_sortpopularity']      = 'Zoradiť podľa popularity';
+$lang['t_compatible']          = 'Naposledy kompatibilné';
+$lang['t_sortcompatible']      = 'Zoradiť podľa kompatibility';
+$lang['t_screenshot']          = 'Screenshot';
+$lang['t_download']            = 'Stiahnuť';
+$lang['t_provides']            = 'Poskytuje';
+$lang['t_tags']                = 'Tagy';
+$lang['t_bundled']             = 'súčasť inštalácie';
+$lang['screenshot_title']      = 'Screenshot %s';
