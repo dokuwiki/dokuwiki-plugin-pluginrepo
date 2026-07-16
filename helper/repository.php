@@ -181,10 +181,41 @@ class helper_plugin_pluginrepo_repository extends Plugin
                 } else {
                     $ns .= ':';
                 }
-                $updatedrefs[] = $ns . $id;
+                $ref = $ns . $id;
+                if (!$this->isValidExtensionID($ref)) {
+                    continue;
+                }
+                $updatedrefs[] = $ref;
             }
             $data[$key] = implode(',', $updatedrefs);
         }
+    }
+
+    /**
+     * Check if the given reference is a valid extension id
+     *
+     * Valid ids are a bare extension base name, optionally prefixed with the
+     * template namespace. The base name must consist of alphanumerics, dots,
+     * underscores and hyphens only. This matches what the extension manager in
+     * DokuWiki core accepts, so malformed references never reach a client.
+     *
+     * @param string $id
+     * @return bool
+     */
+    public function isValidExtensionID($id)
+    {
+        return (bool)preg_match('/^(template:)?[a-z0-9][a-z0-9._-]*$/i', (string)$id);
+    }
+
+    /**
+     * Reduce a list of references to those that are valid extension ids
+     *
+     * @param string[] $ids
+     * @return string[] the valid ids, reindexed
+     */
+    public function filterValidExtensionIDs($ids)
+    {
+        return array_values(array_filter($ids, [$this, 'isValidExtensionID']));
     }
 
     /**
@@ -595,9 +626,9 @@ class helper_plugin_pluginrepo_repository extends Plugin
             unset($plugins[$i]['screenshot']);
             unset($plugins[$i]['email']); // no spam
 
-            $plugins[$i]['depends']   = array_filter(explode("\n", $plugins[$i]['depends']));
-            $plugins[$i]['similar']   = array_filter(explode("\n", $plugins[$i]['similar']));
-            $plugins[$i]['conflicts'] = array_filter(explode("\n", $plugins[$i]['conflicts']));
+            $plugins[$i]['depends']   = $this->filterValidExtensionIDs(explode("\n", $plugins[$i]['depends']));
+            $plugins[$i]['similar']   = $this->filterValidExtensionIDs(explode("\n", $plugins[$i]['similar']));
+            $plugins[$i]['conflicts'] = $this->filterValidExtensionIDs(explode("\n", $plugins[$i]['conflicts']));
             $plugins[$i]['tags']      = array_filter(explode("\n", $plugins[$i]['tags']));
 
             $plugins[$i]['compatible'] = $this->cleanCompat($plugins[$i]['compatible']);
@@ -726,12 +757,9 @@ class helper_plugin_pluginrepo_repository extends Plugin
         foreach ($stmt as $row) {
             $meta['sameauthor'][] = $row['plugin'];
         }
-        if (!empty($meta['conflicts'])) {
-            $meta['conflicts'] = array_unique($meta['conflicts']);
-        }
-        if (!empty($meta['similar'])) {
-            $meta['similar'] = array_unique($meta['similar']);
-        }
+        $meta['conflicts'] = $this->filterValidExtensionIDs(array_unique($meta['conflicts']));
+        $meta['similar']   = $this->filterValidExtensionIDs(array_unique($meta['similar']));
+        $meta['depends']   = $this->filterValidExtensionIDs($meta['depends']);
         return $meta;
     }
 
